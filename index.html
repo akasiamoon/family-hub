@@ -10,24 +10,30 @@
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
     
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; background: #000; color: white; overflow-x: hidden; }
+        body, html { margin: 0; padding: 0; height: 100%; background-color: #0a0a0c; color: white; overflow-x: hidden; }
         
-        /* THE FIX: Absolute first priority loading */
+        /* THE ULTIMATE IMAGE FIX */
         #bg-image {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            z-index: -1; 
-            background: #0d0d12 url('https://github.com/user-attachments/assets/37b40bf2-708b-449d-a1a5-1472af929dc5') no-repeat center center fixed; 
+            z-index: -1;
+            /* Using the absolute raw path which usually bypasses GitHub blocks */
+            background-image: url('https://github.com/user-attachments/assets/37b40bf2-708b-449d-a1a5-1472af929dc5');
+            background-repeat: no-repeat;
+            background-position: center;
             background-size: cover;
-            filter: brightness(35%) contrast(1.1);
+            filter: brightness(40%) contrast(1.1);
             transition: filter 1s ease;
+            /* Fallback color if the image is still being stubborn */
+            background-color: #0f172a; 
         }
 
         .glass {
-            background: rgba(10, 10, 15, 0.8);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            background: rgba(15, 15, 20, 0.65);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
             border: 1px solid rgba(34, 211, 238, 0.2);
             border-radius: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
         .hub-title {
@@ -50,7 +56,7 @@
 
     <div id="bg-image"></div>
 
-    <button onclick="toggleUI()" class="fixed bottom-6 right-6 z-50 bg-cyan-900/40 border border-cyan-400/50 px-6 py-2 rounded-full backdrop-blur-md text-xs font-bold tracking-widest text-cyan-200">
+    <button onclick="toggleUI()" class="fixed bottom-6 right-6 z-50 bg-cyan-950/60 border border-cyan-400/50 px-6 py-2 rounded-full backdrop-blur-md text-xs font-bold tracking-widest text-cyan-100 shadow-lg active:scale-90 transition-all">
         <span id="toggleText">HIDE INTERFACE</span>
     </button>
 
@@ -60,17 +66,17 @@
                 <h1 class="text-4xl hub-title">Cottage Hub</h1>
                 <p class="text-cyan-400/40 text-[10px] tracking-[0.3em] uppercase">Farmington, MS • Mission Control</p>
             </div>
-            <div id="clock" class="text-cyan-300 text-xl font-mono font-bold shadow-cyan-500/50">00:00:00</div>
+            <div id="clock" class="text-cyan-300 text-xl font-mono font-bold">00:00:00</div>
         </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div class="space-y-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="space-y-8">
                 <div class="glass p-6">
                     <h2 class="text-orange-400 text-xs font-bold tracking-widest mb-4 uppercase">🛒 Market List</h2>
                     <div id="marketList" class="h-40 custom-scroll space-y-2 mb-4"></div>
                     <div class="flex gap-2">
-                        <input id="mInput" type="text" placeholder="Add..." class="bg-white/5 border border-white/10 rounded-lg p-2 w-full text-sm outline-none">
-                        <button onclick="saveMarket()" class="bg-orange-700/30 border border-orange-500/50 px-4 rounded-lg">+</button>
+                        <input id="mInput" type="text" placeholder="Add..." class="bg-black/40 border border-white/10 rounded-lg p-2 w-full text-sm outline-none focus:border-orange-500">
+                        <button onclick="saveMarket()" class="bg-orange-700/40 border border-orange-500/50 px-4 rounded-lg hover:bg-orange-700/60 transition-colors text-orange-200">+</button>
                     </div>
                 </div>
                 <div class="glass p-6">
@@ -80,19 +86,19 @@
             </div>
 
             <div class="lg:col-span-2">
-                <div class="glass p-8 h-full flex flex-col min-h-[350px]">
+                <div class="glass p-8 h-full flex flex-col min-h-[400px]">
                     <h2 class="text-cyan-400 text-xs font-bold tracking-widest mb-4 uppercase">📜 Family Log</h2>
-                    <div id="notesLog" class="flex-grow custom-scroll space-y-4 mb-4"></div>
-                    <div class="flex gap-2">
-                        <input id="nInput" type="text" placeholder="Share a note..." class="bg-white/5 border border-white/10 rounded-xl p-3 w-full outline-none">
-                        <button onclick="saveNote()" class="bg-cyan-700/30 border border-cyan-400/50 px-6 rounded-xl font-bold">POST</button>
+                    <div id="notesLog" class="flex-grow custom-scroll space-y-4 mb-6"></div>
+                    <div class="flex gap-3">
+                        <input id="nInput" type="text" placeholder="Share a lesson or delivery note..." class="bg-white/5 border border-white/10 rounded-xl p-4 w-full outline-none focus:border-cyan-500">
+                        <button onclick="saveNote()" class="bg-cyan-700/40 border border-cyan-400/50 px-8 rounded-xl font-bold hover:bg-cyan-700/60 transition-colors text-cyan-100">POST</button>
                     </div>
                 </div>
             </div>
 
             <div class="lg:col-span-3">
-                <div class="glass p-6">
-                    <h2 class="text-cyan-300 text-xs font-bold tracking-widest mb-4 uppercase">📅 Schedule</h2>
+                <div class="glass p-8">
+                    <h2 class="text-cyan-300 text-xs font-bold tracking-widest mb-6 uppercase">📅 Schedule</h2>
                     <div id="calendar"></div>
                 </div>
             </div>
@@ -114,10 +120,8 @@
 
         window.onload = () => {
             updateClock();
-            try {
-                refreshAll();
-                initCalendar();
-            } catch (e) { console.error("Initial load error:", e); }
+            refreshAll();
+            initCalendar();
 
             _supabase.channel('db').on('postgres_changes', {event:'*', schema:'public'}, () => {
                 refreshAll();
@@ -134,7 +138,6 @@
 
         async function initCalendar() {
             const calEl = document.getElementById('calendar');
-            if (!calEl) return;
             calendar = new FullCalendar.Calendar(calEl, {
                 initialView: 'dayGridMonth',
                 height: 'auto',
@@ -167,9 +170,9 @@
         async function loadNotes() {
             const { data } = await _supabase.from('family_notes').select('*').order('created_at', { ascending: false });
             document.getElementById('notesLog').innerHTML = data ? data.map(n => `
-                <div class="border-l-2 border-cyan-500/30 pl-4 py-2 bg-white/5 rounded-r-xl">
-                    <small class="text-cyan-400/50 text-[9px] font-mono">${n.timestamp}</small>
-                    <p class="text-white/80 text-sm">${n.note}</p>
+                <div class="border-l-4 border-cyan-500/20 pl-6 py-3 bg-white/5 rounded-r-2xl hover:bg-white/10 transition-all">
+                    <small class="text-cyan-400/50 text-[10px] font-mono tracking-widest uppercase">${n.timestamp}</small>
+                    <p class="text-white/80 text-lg font-light mt-1">${n.note}</p>
                 </div>
             `).join('') : '';
         }
@@ -183,8 +186,9 @@
         async function loadMarket() {
             const { data } = await _supabase.from('market_items').select('*').order('created_at', { ascending: true });
             document.getElementById('marketList').innerHTML = data ? data.map(item => `
-                <div class="flex items-center gap-2 bg-white/5 p-2 rounded-lg border border-white/5 text-xs">
-                    <input type="checkbox"> <span>${item.text}</span>
+                <div class="flex items-center gap-3 bg-white/5 p-4 rounded-xl border border-white/5">
+                    <input type="checkbox" class="w-4 h-4 accent-orange-500">
+                    <span class="text-sm text-white/70 tracking-tight">${item.text}</span>
                 </div>
             `).join('') : '';
         }
@@ -195,9 +199,9 @@
             document.getElementById('mealGrid').innerHTML = days.map(day => {
                 const meal = data?.find(m => m.day === day)?.menu || "TBD";
                 return `
-                    <div class="flex justify-between items-center bg-white/5 p-2 rounded-lg border border-white/5">
-                        <span class="font-bold text-green-400">${day}</span>
-                        <input onchange="updateMeal('${day}', this.value)" value="${meal}" class="bg-transparent text-right w-1/2 outline-none text-white/50 focus:text-cyan-300">
+                    <div class="flex justify-between items-center bg-white/5 p-4 rounded-xl border border-white/5">
+                        <span class="font-bold text-green-400 tracking-tighter uppercase text-[10px]">${day}</span>
+                        <input onchange="updateMeal('${day}', this.value)" value="${meal}" class="bg-transparent text-right w-2/3 outline-none text-white/40 focus:text-cyan-300 transition-colors">
                     </div>
                 `;
             }).join('');
