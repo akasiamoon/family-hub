@@ -10,60 +10,43 @@
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Inter:wght@300;400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@300;400;700&display=swap');
 
+        /* THE SIMPLEST CSS BACKGROUND POSSIBLE */
         body, html { 
             margin: 0; padding: 0; height: 100%; 
-            background: #050508; color: #e2e8f0; 
-            font-family: 'Inter', sans-serif;
-            overflow-x: hidden;
-        }
-
-        /* ATMOSPHERIC BACKGROUND */
-        #bg-layer {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            z-index: -2;
-            background: radial-gradient(circle at bottom right, #431407 0%, #050508 60%),
-                        url('thefamilyhub.jpg') no-repeat center center fixed;
+            background-color: #000;
+            background-image: url('thefamilyhub.jpg');
             background-size: cover;
-            filter: brightness(40%) contrast(1.2);
+            background-position: center;
+            background-attachment: fixed;
+            color: #e2e8f0; 
+            font-family: 'Inter', sans-serif;
         }
 
-        #music-notes {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1; pointer-events: none;
-        }
-
-        /* PREMIUM GLASSMORPHISM */
+        /* Modular Glass Boxes */
         .glass-module {
             background: rgba(10, 10, 15, 0.8);
-            backdrop-filter: blur(30px) saturate(180%);
-            -webkit-backdrop-filter: blur(30px) saturate(180%);
-            border: 1px solid rgba(34, 211, 238, 0.15);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 
-                        inset 0 0 20px rgba(34, 211, 238, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(34, 211, 238, 0.2);
             border-radius: 1rem;
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            overflow: hidden;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
         .module-header {
-            background: rgba(255, 255, 255, 0.03);
+            padding: 1rem;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 1rem 1.5rem;
             display: flex;
             justify-content: space-between;
-            align-items: center;
             cursor: pointer;
         }
 
-        .module-header:hover { background: rgba(34, 211, 238, 0.05); }
-
         .module-content {
             padding: 1.5rem;
-            transition: all 0.5s ease;
-            max-height: 1200px;
-            opacity: 1;
+            transition: max-height 0.3s ease;
+            max-height: 1000px;
         }
 
         .module-collapsed .module-content {
@@ -73,78 +56,56 @@
             pointer-events: none;
         }
 
-        /* RPG BRANDING */
         .hub-title {
             font-family: 'Cinzel', serif;
-            letter-spacing: 0.5em;
+            letter-spacing: 0.4em;
             background: linear-gradient(to right, #fde68a, #22d3ee);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             font-weight: 900;
-            filter: drop-shadow(0 0 15px rgba(34, 211, 238, 0.4));
+            text-transform: uppercase;
         }
 
-        /* INPUTS & BUTTONS */
-        input {
-            background: rgba(0, 0, 0, 0.4) !important;
-            border: 1px solid rgba(255, 255, 255, 0.1) !important;
-            border-radius: 0.5rem !important;
-            color: white !important;
-            padding: 0.75rem !important;
-        }
-        
-        button {
-            background: rgba(34, 211, 238, 0.1) !important;
-            border: 1px solid rgba(34, 211, 238, 0.3) !important;
-            color: #22d3ee !important;
-            font-weight: 800 !important;
-            transition: all 0.3s ease !important;
-        }
-
-        button:hover {
-            background: rgba(34, 211, 238, 0.3) !important;
-            box-shadow: 0 0 20px rgba(34, 211, 238, 0.4) !important;
-        }
+        /* Form Visibility */
+        input { background: rgba(0,0,0,0.5) !important; border: 1px solid #444 !important; color: white !important; padding: 8px !important; border-radius: 4px; }
+        button { background: rgba(34, 211, 238, 0.2) !important; border: 1px solid #22d3ee !important; color: #22d3ee !important; padding: 8px 16px; border-radius: 4px; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <div id="bg-layer"></div>
-    <canvas id="music-notes"></canvas>
-
-    <div class="container mx-auto p-6 lg:p-12">
-        <header class="mb-16 flex flex-col lg:flex-row justify-between items-center gap-6">
-            <div class="text-center lg:text-left">
-                <h1 class="text-4xl lg:text-6xl hub-title mb-4">Cottage Hub</h1>
-                <p class="text-cyan-400/40 text-xs tracking-[0.5em] uppercase font-bold">Farmington Command Center</p>
+    <div class="container mx-auto p-4 lg:p-10">
+        <header class="mb-10 flex justify-between items-center border-b border-white/10 pb-6">
+            <div>
+                <h1 class="text-3xl hub-title">Cottage Hub</h1>
+                <p class="text-cyan-400/50 text-[10px] tracking-widest uppercase">Farmington, MS</p>
             </div>
-            <div id="clock" class="text-cyan-300 font-mono text-2xl font-black tracking-widest bg-black/40 px-6 py-2 rounded-full border border-cyan-500/20">00:00:00</div>
+            <div id="clock" class="text-cyan-300 font-mono text-xl font-bold">00:00:00</div>
         </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
-            <div class="lg:col-span-1 space-y-8">
+            <div class="lg:col-span-1 space-y-6">
                 <div id="marketMod" class="glass-module">
                     <div class="module-header" onclick="toggle('marketMod')">
-                        <h2 class="text-[#fde68a] font-bold text-xs tracking-[0.2em] uppercase">Market List</h2>
-                        <span class="text-cyan-400/50 text-[10px]">COLLAPSE</span>
+                        <span class="text-orange-400 font-bold text-xs tracking-widest uppercase">🛒 Market List</span>
+                        <span class="text-[9px] opacity-40">TOGGLE</span>
                     </div>
                     <div class="module-content">
-                        <div id="marketList" class="h-56 overflow-y-auto mb-6 space-y-3 pr-2"></div>
+                        <div id="marketList" class="h-40 overflow-y-auto mb-4 border-b border-white/5"></div>
                         <div class="flex gap-2">
-                            <input id="mInput" type="text" placeholder="Add provision..." class="w-full text-sm outline-none focus:border-cyan-500">
-                            <button onclick="saveMarket()" class="px-5 rounded-lg">+</button>
+                            <input id="mInput" type="text" placeholder="Add..." class="w-full text-sm">
+                            <button onclick="saveMarket()">+</button>
                         </div>
                     </div>
                 </div>
 
                 <div id="mealMod" class="glass-module">
                     <div class="module-header" onclick="toggle('mealMod')">
-                        <h2 class="text-green-400 font-bold text-xs tracking-[0.2em] uppercase">Meal Plan</h2>
-                        <span class="text-cyan-400/50 text-[10px]">COLLAPSE</span>
+                        <span class="text-green-400 font-bold text-xs tracking-widest uppercase">🍲 Meal Plan</span>
+                        <span class="text-[9px] opacity-40">TOGGLE</span>
                     </div>
                     <div class="module-content">
-                        <div id="mealGrid" class="space-y-3 text-xs"></div>
+                        <div id="mealGrid" class="text-xs space-y-2"></div>
                     </div>
                 </div>
             </div>
@@ -152,14 +113,14 @@
             <div class="lg:col-span-2">
                 <div id="logMod" class="glass-module h-full flex flex-col">
                     <div class="module-header" onclick="toggle('logMod')">
-                        <h2 class="text-cyan-400 font-bold text-xs tracking-[0.2em] uppercase">Family Log</h2>
-                        <span class="text-cyan-400/50 text-[10px]">COLLAPSE</span>
+                        <span class="text-cyan-400 font-bold text-xs tracking-widest uppercase">📜 Family Log</span>
+                        <span class="text-[9px] opacity-40">TOGGLE</span>
                     </div>
                     <div class="module-content flex-grow flex flex-col">
-                        <div id="notesLog" class="flex-grow overflow-y-auto space-y-6 mb-8 min-h-[400px] pr-2"></div>
-                        <div class="flex gap-4">
-                            <input id="nInput" type="text" placeholder="Enter lesson note..." class="w-full text-sm outline-none focus:border-cyan-500">
-                            <button onclick="saveNote()" class="px-10 rounded-lg uppercase tracking-widest text-xs">Post</button>
+                        <div id="notesLog" class="flex-grow overflow-y-auto space-y-4 mb-4 min-h-[300px]"></div>
+                        <div class="flex gap-2">
+                            <input id="nInput" type="text" placeholder="New note..." class="w-full">
+                            <button onclick="saveNote()">POST</button>
                         </div>
                     </div>
                 </div>
@@ -168,8 +129,8 @@
             <div class="lg:col-span-3">
                 <div id="calMod" class="glass-module">
                     <div class="module-header" onclick="toggle('calMod')">
-                        <h2 class="text-cyan-200 font-bold text-xs tracking-[0.2em] uppercase">Schedule & Quests</h2>
-                        <span class="text-cyan-400/50 text-[10px]">COLLAPSE</span>
+                        <span class="text-cyan-200 font-bold text-xs tracking-widest uppercase">📅 Schedule</span>
+                        <span class="text-[9px] opacity-40">TOGGLE</span>
                     </div>
                     <div class="module-content">
                         <div id="calendar"></div>
@@ -189,7 +150,9 @@
         setInterval(updateClock, 1000);
 
         window.onload = () => {
-            updateClock(); refreshAll(); initCalendar();
+            updateClock();
+            refreshAll();
+            initCalendar();
             _supabase.channel('db').on('postgres_changes', {event:'*', schema:'public'}, () => {
                 refreshAll();
                 if(window.calendar) window.calendar.refetchEvents();
@@ -208,72 +171,34 @@
         }
 
         async function refreshAll() { loadNotes(); loadMarket(); loadMeals(); }
-        
         async function saveNote() {
             const i = document.getElementById('nInput');
             if (!i.value) return;
             await _supabase.from('family_notes').insert([{ note: i.value, timestamp: new Date().toLocaleTimeString() }]);
             i.value = "";
         }
-
         async function loadNotes() {
             const { data } = await _supabase.from('family_notes').select('*').order('created_at', { ascending: false });
-            document.getElementById('notesLog').innerHTML = data ? data.map(n => `
-                <div class="border-l-2 border-cyan-500/40 pl-6 py-4 bg-white/[0.02] rounded-r-xl transition-all hover:bg-white/[0.05]">
-                    <small class="text-cyan-400/40 font-mono text-[9px] uppercase tracking-tighter">${n.timestamp}</small>
-                    <p class="text-white/90 text-lg font-light mt-1">${n.note}</p>
-                </div>
-            `).join('') : '';
+            document.getElementById('notesLog').innerHTML = data ? data.map(n => `<div class="bg-white/5 p-3 rounded mb-2 border border-white/5"><small class="text-cyan-500/50 block mb-1 text-[9px]">${n.timestamp}</small><p class="text-sm">${n.note}</p></div>`).join('') : '';
         }
-
         async function saveMarket() {
             const i = document.getElementById('mInput');
             if (i.value) await _supabase.from('market_items').insert([{ text: i.value }]);
             i.value = "";
         }
-
         async function loadMarket() {
             const { data } = await _supabase.from('market_items').select('*');
-            document.getElementById('marketList').innerHTML = data ? data.map(item => `
-                <div class="flex items-center gap-3 bg-white/[0.03] p-4 rounded-xl border border-white/5">
-                    <div class="w-1.5 h-1.5 rounded-full bg-orange-500 shadow-[0_0_8px_orange]"></div>
-                    <span class="text-sm text-white/70 font-medium">${item.text}</span>
-                </div>
-            `).join('') : '';
+            document.getElementById('marketList').innerHTML = data ? data.map(item => `<div class="p-2 border-b border-white/5 text-xs">🔘 ${item.text}</div>`).join('') : '';
         }
-
         async function loadMeals() {
             const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
             const { data } = await _supabase.from('meal_plan').select('*');
             document.getElementById('mealGrid').innerHTML = days.map(day => {
                 const meal = data?.find(m => m.day === day)?.menu || "TBD";
-                return `
-                    <div class="flex justify-between items-center bg-white/[0.02] p-3 rounded-lg border border-white/5">
-                        <span class="font-bold text-green-400/80 uppercase tracking-tighter">${day}</span>
-                        <input onchange="updateMeal('${day}', this.value)" value="${meal}" class="bg-transparent text-right w-1/2 outline-none text-white/50 focus:text-cyan-400 transition-colors">
-                    </div>
-                `;
+                return `<div class="flex justify-between p-2 border-b border-white/5"><span>${day}</span><span class="text-cyan-400">${meal}</span></div>`;
             }).join('');
         }
-
         async function updateMeal(day, menu) { await _supabase.from('meal_plan').upsert({ day, menu }, { onConflict: 'day' }); }
-
-        // --- BARDIC NOTES CANVAS ---
-        const canvas = document.getElementById('music-notes');
-        const ctx = canvas.getContext('2d');
-        let notes = [];
-        const glyphs = ['♪', '♫', '♩', '♬'];
-        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-        window.onresize = resize; resize();
-        class Note {
-            constructor() { this.reset(); }
-            reset() { this.x = Math.random() * canvas.width; this.y = canvas.height + 50; this.text = glyphs[Math.floor(Math.random() * glyphs.length)]; this.size = Math.random() * 18 + 10; this.speed = Math.random() * 0.4 + 0.1; this.opacity = Math.random() * 0.3 + 0.1; }
-            update() { this.y -= this.speed; if (this.y < -50) this.reset(); }
-            draw() { ctx.font = `${this.size}px Cinzel`; ctx.fillStyle = `rgba(34, 211, 238, ${this.opacity})`; ctx.fillText(this.text, this.x, this.y); }
-        }
-        for (let i = 0; i < 15; i++) notes.push(new Note());
-        function animate() { ctx.clearRect(0, 0, canvas.width, canvas.height); notes.forEach(n => { n.update(); n.draw(); }); requestAnimationFrame(animate); }
-        animate();
     </script>
 </body>
 </html>
