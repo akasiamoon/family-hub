@@ -3,44 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Family Mission Control</title>
+    <title>Cottage Hub • Farmington</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; overflow-x: hidden; background: #000; }
+        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #000; }
         
-        /* THE FIX: Changed to a <div> with a background image to ensure it stretches correctly */
         #bg-image {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             z-index: -1; 
-            background-image: url('https://i.imgur.com/nH96gF0.jpeg'); /* Added ./ to force root directory */
+            background: #0b0b0b url('https://i.imgur.com/nH96gF0.jpeg') no-repeat center center fixed; 
             background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
             transition: filter 0.8s ease-in-out;
         }
 
         .glass {
-            background: rgba(10, 10, 15, 0.7);
+            background: rgba(10, 10, 15, 0.75);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(34, 211, 238, 0.2); /* Cyan border like the runes */
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(34, 211, 238, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
         }
 
-        .btn-glow-orange { box-shadow: 0 0 15px rgba(249, 115, 22, 0.4); border: 1px solid rgba(249, 115, 22, 0.6); }
-        .btn-glow-blue { box-shadow: 0 0 15px rgba(6, 182, 212, 0.4); border: 1px solid rgba(6, 182, 212, 0.6); }
+        .btn-glow-orange { box-shadow: 0 0 15px rgba(249, 115, 22, 0.3); border: 1px solid rgba(249, 115, 22, 0.5); }
+        .btn-glow-blue { box-shadow: 0 0 15px rgba(6, 182, 212, 0.3); border: 1px solid rgba(6, 182, 212, 0.5); }
 
         #mainUI { transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
-        .hidden-ui { opacity: 0 !important; transform: translateY(50px) scale(0.95); pointer-events: none; }
-        .bg-dim { filter: brightness(40%) contrast(1.1); }
+        .hidden-ui { opacity: 0 !important; transform: translateY(40px) scale(0.97); pointer-events: none; }
+        .bg-dim { filter: brightness(35%) contrast(1.1); }
         .bg-bright { filter: brightness(100%); }
 
-        /* Calendar Skinning */
-        .fc { border: none !important; color: #fff; }
-        .fc-toolbar-title { color: #22d3ee !important; text-shadow: 0 0 10px rgba(34, 211, 238, 0.5); }
-        .fc-button-primary { background-color: rgba(34, 211, 238, 0.2) !important; border: 1px solid #22d3ee !important; }
+        /* Calendar Styling */
+        .fc { border: none !important; color: #fff; font-family: inherit; }
+        .fc-toolbar-title { color: #22d3ee !important; text-shadow: 0 0 10px rgba(34, 211, 238, 0.4); font-weight: 800 !important; }
+        .fc-button-primary { background-color: rgba(34, 211, 238, 0.1) !important; border: 1px solid #22d3ee !important; border-radius: 10px !important; }
         
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #22d3ee; border-radius: 10px; }
@@ -50,38 +47,38 @@
 
     <div id="bg-image" class="bg-dim"></div>
 
-    <button onclick="toggleUI()" class="fixed bottom-10 right-10 z-50 bg-orange-600/20 hover:bg-orange-600/40 text-orange-200 btn-glow-orange px-8 py-3 rounded-full backdrop-blur-md transition-all">
+    <button onclick="toggleUI()" class="fixed bottom-10 right-10 z-50 bg-orange-600/20 hover:bg-orange-600/40 text-orange-100 btn-glow-orange px-8 py-3 rounded-full backdrop-blur-md transition-all active:scale-90">
         <span id="toggleText" class="font-bold tracking-[0.2em] text-xs uppercase">Hide Interface</span>
     </button>
 
     <div id="mainUI" class="container mx-auto p-6 lg:p-12 min-h-screen">
         <header class="mb-12 text-center lg:text-left">
-            <h1 class="text-5xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-orange-200 to-cyan-300">COTTAGE HUB</h1>
+            <h1 class="text-5xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-orange-200 to-cyan-300">COTTAGE HUB</h1>
             <p class="text-cyan-400/60 text-xs tracking-[0.3em] uppercase mt-2">Farmington, MS • Family Command</p>
         </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
-            <div class="space-y-10">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="space-y-8">
                 <div class="glass p-8 rounded-[2rem]">
-                    <h2 class="text-xl font-bold mb-6 text-orange-400 tracking-widest uppercase">🛒 Market List</h2>
+                    <h2 class="text-lg font-bold mb-6 text-orange-400 tracking-widest uppercase">🛒 Market List</h2>
                     <div id="marketList" class="space-y-3 mb-6 max-h-48 overflow-y-auto custom-scrollbar"></div>
                     <div class="flex gap-2">
-                        <input id="mInput" type="text" placeholder="Add..." class="bg-white/5 border border-white/10 rounded-xl p-3 w-full outline-none focus:border-orange-500 transition-all">
+                        <input id="mInput" type="text" placeholder="Add grocery..." class="bg-white/5 border border-white/10 rounded-xl p-3 w-full outline-none focus:border-orange-500 transition-all text-sm">
                         <button onclick="saveMarket()" class="bg-orange-600/80 px-5 rounded-xl btn-glow-orange">+</button>
                     </div>
                 </div>
                 <div class="glass p-8 rounded-[2rem]">
-                    <h2 class="text-xl font-bold mb-6 text-green-400 tracking-widest uppercase">🍲 Meal Plan</h2>
+                    <h2 class="text-lg font-bold mb-6 text-green-400 tracking-widest uppercase">🍲 Meal Plan</h2>
                     <div id="mealGrid" class="space-y-3"></div>
                 </div>
             </div>
 
             <div class="lg:col-span-2">
                 <div class="glass p-10 rounded-[2rem] h-full flex flex-col">
-                    <h2 class="text-2xl font-bold mb-6 text-cyan-400 tracking-widest uppercase">📜 Family Log</h2>
+                    <h2 class="text-xl font-bold mb-6 text-cyan-400 tracking-widest uppercase">📜 Family Log</h2>
                     <div id="notesLog" class="flex-grow space-y-6 overflow-y-auto mb-8 pr-4 custom-scrollbar min-h-[400px]"></div>
                     <div class="flex gap-4">
-                        <input id="nInput" type="text" placeholder="Note homeschool progress or family updates..." class="bg-white/5 border border-white/10 rounded-2xl p-5 w-full outline-none focus:border-cyan-500 transition-all">
+                        <input id="nInput" type="text" placeholder="Post a family update..." class="bg-white/5 border border-white/10 rounded-2xl p-5 w-full outline-none focus:border-cyan-500 transition-all">
                         <button onclick="saveNote()" class="bg-cyan-600/80 px-10 rounded-2xl font-black btn-glow-blue">POST</button>
                     </div>
                 </div>
@@ -89,7 +86,7 @@
 
             <div class="lg:col-span-3">
                 <div class="glass p-10 rounded-[3rem]">
-                    <h2 class="text-2xl font-bold mb-8 text-cyan-300 tracking-widest uppercase">📅 Schedule</h2>
+                    <h2 class="text-xl font-bold mb-8 text-cyan-300 tracking-widest uppercase">📅 Schedule</h2>
                     <div id="calendar"></div>
                 </div>
             </div>
@@ -106,11 +103,12 @@
         let calendar;
 
         window.onload = () => {
+            if(SUPABASE_URL.includes('PASTE')) return console.warn("Missing Supabase URL");
             refreshAll();
             initCalendar();
-            _supabase.channel('db').on('postgres_changes', { event: '*', schema: 'public' }, () => {
+            _supabase.channel('db').on('postgres_changes', {event:'*', schema:'public'}, () => {
                 refreshAll();
-                calendar.refetchEvents();
+                if(calendar) calendar.refetchEvents();
             }).subscribe();
         };
 
@@ -135,13 +133,14 @@
                 },
                 events: async (info, success) => {
                     const { data } = await _supabase.from('calendar_events').select('*');
-                    success(data.map(e => ({ title: e.title, start: e.start_date, backgroundColor: 'rgba(34, 211, 238, 0.3)', borderColor: '#22d3ee' })));
+                    success(data ? data.map(e => ({ title: e.title, start: e.start_date, backgroundColor: 'rgba(34, 211, 238, 0.2)', borderColor: '#22d3ee' })) : []);
                 }
             });
             calendar.render();
         }
 
         async function refreshAll() { loadNotes(); loadMarket(); loadMeals(); }
+
         async function saveNote() {
             const i = document.getElementById('nInput');
             if (!i.value) return;
@@ -149,41 +148,46 @@
             await _supabase.from('family_notes').insert([{ note: i.value, timestamp: ts }]);
             i.value = "";
         }
+
         async function loadNotes() {
             const { data } = await _supabase.from('family_notes').select('*').order('created_at', { ascending: false });
             document.getElementById('notesLog').innerHTML = data ? data.map(n => `
-                <div class="border-l-4 border-cyan-500/50 pl-6 py-2 bg-white/5 rounded-r-xl">
-                    <span class="text-[10px] uppercase text-cyan-400/80 font-mono tracking-[0.2em]">${n.timestamp}</span>
+                <div class="border-l-4 border-cyan-500/40 pl-6 py-2 bg-white/5 rounded-r-2xl">
+                    <span class="text-[10px] uppercase text-cyan-400/60 font-mono tracking-widest">${n.timestamp}</span>
                     <p class="text-white/90 text-xl font-light">${n.note}</p>
                 </div>
             `).join('') : '';
         }
+
         async function saveMarket() {
             const i = document.getElementById('mInput');
             if (i.value) await _supabase.from('market_items').insert([{ text: i.value }]);
             i.value = "";
         }
+
         async function loadMarket() {
             const { data } = await _supabase.from('market_items').select('*').order('created_at', { ascending: true });
             document.getElementById('marketList').innerHTML = data ? data.map(item => `
                 <div class="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/5">
-                    <input type="checkbox" class="w-5 h-5 accent-orange-500 bg-transparent border-white/20">
-                    <span class="text-lg text-white/80">${item.text}</span>
+                    <input type="checkbox" class="w-5 h-5 accent-orange-500">
+                    <span class="text-lg text-white/70">${item.text}</span>
                 </div>
             `).join('') : '';
         }
+
         async function loadMeals() {
             const { data } = await _supabase.from('meal_plan').select('*');
             document.getElementById('mealGrid').innerHTML = days.map(day => {
                 const meal = data?.find(m => m.day === day)?.menu || "TBD";
                 return `
                     <div class="flex justify-between items-center bg-white/5 p-4 rounded-2xl border border-white/5">
-                        <span class="font-bold text-green-400 tracking-tighter">${day}</span>
-                        <input onchange="updateMeal('${day}', this.value)" value="${meal}" class="bg-transparent text-right outline-none text-white/60 focus:text-white w-2/3">
+                        <span class="font-bold text-green-400">${day}</span>
+                        <input onchange="updateMeal('${day}', this.value)" value="${meal}" class="bg-transparent text-right outline-none text-white/50 focus:text-white w-2/3">
                     </div>
                 `;
             }).join('');
         }
+
         async function updateMeal(day, menu) { await _supabase.from('meal_plan').upsert({ day, menu }, { onConflict: 'day' }); }
     </script>
 </body>
