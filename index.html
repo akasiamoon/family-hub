@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Family Mission Control</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        #bg-video {
+            position: fixed;
+            right: 0; bottom: 0;
+            min-width: 100%; min-height: 100%;
+            z-index: -1;
+            object-fit: cover;
+            filter: brightness(50%);
+        }
+        .glass {
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="text-white font-sans">
+
+    <video autoplay muted loop playsinline id="bg-video">
+        <source src="Druid_s_Cottage_Looping_Video.mp4" type="video/mp4">
+    </video>
+
+    <div class="container mx-auto p-4 lg:p-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <div class="glass p-6 rounded-2xl shadow-2xl animate-fade-in">
+            <h2 class="text-2xl font-bold mb-4 text-orange-300">🛒 Market List</h2>
+            <ul id="marketList" class="space-y-2 mb-4">
+                </ul>
+            <div class="flex gap-2">
+                <input id="marketInput" type="text" placeholder="Add item..." class="bg-black/30 border border-white/20 rounded p-2 w-full outline-none focus:border-orange-300">
+                <button onclick="addMarketItem()" class="bg-orange-600 px-4 rounded hover:bg-orange-500 transition">+</button>
+            </div>
+        </div>
+
+        <div class="glass p-6 rounded-2xl shadow-2xl lg:col-span-2">
+            <h2 class="text-2xl font-bold mb-4 text-blue-300">📜 Family Log</h2>
+            <div id="notesLog" class="space-y-3 h-64 overflow-y-auto mb-4 pr-2 custom-scrollbar">
+                </div>
+            <div class="flex gap-2">
+                <input id="noteInput" type="text" placeholder="Share a note..." class="bg-black/30 border border-white/20 rounded p-2 w-full outline-none focus:border-blue-300">
+                <button onclick="addNote()" class="bg-blue-600 px-6 rounded hover:bg-blue-500 transition">Post</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function addNote() {
+            const input = document.getElementById('noteInput');
+            if (!input.value) return;
+            const now = new Date();
+            const timestamp = `[${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}]`;
+            
+            const log = document.getElementById('notesLog');
+            const entry = document.createElement('div');
+            entry.className = "p-2 border-b border-white/10 animate-slide-in";
+            entry.innerHTML = `<span class="text-xs text-blue-300 font-mono">${timestamp}</span> <p>${input.value}</p>`;
+            log.prepend(entry);
+            input.value = "";
+        }
+
+        function addMarketItem() {
+            const input = document.getElementById('marketInput');
+            if (!input.value) return;
+            const list = document.getElementById('marketList');
+            const li = document.createElement('li');
+            li.className = "flex items-center gap-2 bg-white/5 p-2 rounded";
+            li.innerHTML = `<input type="checkbox" class="w-4 h-4 accent-orange-500"> <span>${input.value}</span>`;
+            list.appendChild(li);
+            input.value = "";
+        }
+    </script>
+</body>
+</html>
