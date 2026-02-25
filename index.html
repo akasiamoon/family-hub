@@ -12,130 +12,116 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@300;400;700&display=swap');
 
-        /* THE SIMPLEST CSS BACKGROUND POSSIBLE */
         body, html { 
             margin: 0; padding: 0; height: 100%; 
-            background-color: #000;
-            background-image: url('thefamilyhub.jpg');
+            background: #000 url('thefamilyhub.jpg') no-repeat center center fixed; 
             background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            color: #e2e8f0; 
-            font-family: 'Inter', sans-serif;
+            color: #e2e8f0; font-family: 'Inter', sans-serif;
+            overflow: hidden; /* Keeps the animation from creating scrollbars */
         }
 
-        /* Modular Glass Boxes */
+        #music-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+
+        .sidebar {
+            position: relative;
+            width: 100%; max-width: 420px; height: 100vh;
+            padding: 2rem; overflow-y: auto; z-index: 10;
+            background: linear-gradient(to right, rgba(0,0,0,0.8), rgba(0,0,0,0));
+        }
+
         .glass-module {
-            background: rgba(10, 10, 15, 0.8);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            background: rgba(10, 10, 15, 0.85);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(34, 211, 238, 0.2);
-            border-radius: 1rem;
-            margin-bottom: 1.5rem;
+            border-radius: 1rem; margin-bottom: 1rem;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: all 0.4s ease;
         }
 
         .module-header {
-            padding: 1rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            display: flex;
-            justify-content: space-between;
-            cursor: pointer;
+            padding: 1rem; display: flex; justify-content: space-between;
+            align-items: center; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05);
         }
 
         .module-content {
-            padding: 1.5rem;
-            transition: max-height 0.3s ease;
-            max-height: 1000px;
+            padding: 1.5rem; transition: max-height 0.4s ease, opacity 0.3s ease;
+            max-height: 800px; opacity: 1;
         }
 
-        .module-collapsed .module-content {
-            max-height: 0;
-            padding: 0;
-            opacity: 0;
-            pointer-events: none;
-        }
+        .module-collapsed .module-content { max-height: 0; padding: 0; opacity: 0; pointer-events: none; }
 
         .hub-title {
-            font-family: 'Cinzel', serif;
-            letter-spacing: 0.4em;
+            font-family: 'Cinzel', serif; letter-spacing: 0.3em;
             background: linear-gradient(to right, #fde68a, #22d3ee);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 900;
-            text-transform: uppercase;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            font-weight: 900; text-transform: uppercase;
         }
 
-        /* Form Visibility */
-        input { background: rgba(0,0,0,0.5) !important; border: 1px solid #444 !important; color: white !important; padding: 8px !important; border-radius: 4px; }
-        button { background: rgba(34, 211, 238, 0.2) !important; border: 1px solid #22d3ee !important; color: #22d3ee !important; padding: 8px 16px; border-radius: 4px; font-weight: bold; }
+        .sidebar::-webkit-scrollbar { width: 4px; }
+        .sidebar::-webkit-scrollbar-thumb { background: rgba(34, 211, 238, 0.3); border-radius: 10px; }
+
+        input { background: rgba(0,0,0,0.6) !important; border: 1px solid #333 !important; color: white !important; padding: 10px !important; border-radius: 8px; width: 100%; margin-bottom: 10px; }
+        button { background: rgba(34, 211, 238, 0.1) !important; border: 1px solid #22d3ee !important; color: #22d3ee !important; width: 100%; padding: 10px; border-radius: 8px; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <div class="container mx-auto p-4 lg:p-10">
-        <header class="mb-10 flex justify-between items-center border-b border-white/10 pb-6">
-            <div>
-                <h1 class="text-3xl hub-title">Cottage Hub</h1>
-                <p class="text-cyan-400/50 text-[10px] tracking-widest uppercase">Farmington, MS</p>
+    <canvas id="music-canvas"></canvas>
+
+    <div class="sidebar">
+        <header class="mb-8">
+            <h1 class="text-3xl hub-title">Cottage Hub</h1>
+            <p class="text-cyan-400/40 text-[9px] tracking-widest uppercase mt-1">Farmington Command</p>
+            
+            <div class="mt-6 flex items-center gap-3">
+                <button id="audioBtn" onclick="toggleAudio()" class="!w-auto px-4 text-[10px] tracking-widest uppercase border-cyan-500/30">Play Ambiance</button>
+                <audio id="beachAudio" loop src="https://actions.google.com/sounds/v1/water/ocean_waves.ogg"></audio>
             </div>
-            <div id="clock" class="text-cyan-300 font-mono text-xl font-bold">00:00:00</div>
+            
+            <div id="clock" class="text-cyan-300 font-mono text-xs mt-4 opacity-60">00:00:00</div>
         </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            
-            <div class="lg:col-span-1 space-y-6">
-                <div id="marketMod" class="glass-module">
-                    <div class="module-header" onclick="toggle('marketMod')">
-                        <span class="text-orange-400 font-bold text-xs tracking-widest uppercase">🛒 Market List</span>
-                        <span class="text-[9px] opacity-40">TOGGLE</span>
-                    </div>
-                    <div class="module-content">
-                        <div id="marketList" class="h-40 overflow-y-auto mb-4 border-b border-white/5"></div>
-                        <div class="flex gap-2">
-                            <input id="mInput" type="text" placeholder="Add..." class="w-full text-sm">
-                            <button onclick="saveMarket()">+</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="mealMod" class="glass-module">
-                    <div class="module-header" onclick="toggle('mealMod')">
-                        <span class="text-green-400 font-bold text-xs tracking-widest uppercase">🍲 Meal Plan</span>
-                        <span class="text-[9px] opacity-40">TOGGLE</span>
-                    </div>
-                    <div class="module-content">
-                        <div id="mealGrid" class="text-xs space-y-2"></div>
-                    </div>
-                </div>
+        <div id="marketMod" class="glass-module">
+            <div class="module-header" onclick="toggle('marketMod')">
+                <span class="text-orange-400 font-bold text-[10px] tracking-widest uppercase">🛒 Market</span>
+                <span class="text-[9px] opacity-40">+/-</span>
             </div>
-
-            <div class="lg:col-span-2">
-                <div id="logMod" class="glass-module h-full flex flex-col">
-                    <div class="module-header" onclick="toggle('logMod')">
-                        <span class="text-cyan-400 font-bold text-xs tracking-widest uppercase">📜 Family Log</span>
-                        <span class="text-[9px] opacity-40">TOGGLE</span>
-                    </div>
-                    <div class="module-content flex-grow flex flex-col">
-                        <div id="notesLog" class="flex-grow overflow-y-auto space-y-4 mb-4 min-h-[300px]"></div>
-                        <div class="flex gap-2">
-                            <input id="nInput" type="text" placeholder="New note..." class="w-full">
-                            <button onclick="saveNote()">POST</button>
-                        </div>
-                    </div>
-                </div>
+            <div class="module-content">
+                <div id="marketList" class="max-h-40 overflow-y-auto mb-4 space-y-2 text-xs"></div>
+                <input id="mInput" type="text" placeholder="Provision...">
+                <button onclick="saveMarket()">Add</button>
             </div>
+        </div>
 
-            <div class="lg:col-span-3">
-                <div id="calMod" class="glass-module">
-                    <div class="module-header" onclick="toggle('calMod')">
-                        <span class="text-cyan-200 font-bold text-xs tracking-widest uppercase">📅 Schedule</span>
-                        <span class="text-[9px] opacity-40">TOGGLE</span>
-                    </div>
-                    <div class="module-content">
-                        <div id="calendar"></div>
-                    </div>
-                </div>
+        <div id="mealMod" class="glass-module">
+            <div class="module-header" onclick="toggle('mealMod')">
+                <span class="text-green-400 font-bold text-[10px] tracking-widest uppercase">🍲 Meals</span>
+                <span class="text-[9px] opacity-40">+/-</span>
+            </div>
+            <div class="module-content">
+                <div id="mealGrid" class="text-[10px] space-y-2"></div>
+            </div>
+        </div>
+
+        <div id="logMod" class="glass-module">
+            <div class="module-header" onclick="toggle('logMod')">
+                <span class="text-cyan-400 font-bold text-[10px] tracking-widest uppercase">📜 Log</span>
+                <span class="text-[9px] opacity-40">+/-</span>
+            </div>
+            <div class="module-content">
+                <div id="notesLog" class="max-h-48 overflow-y-auto mb-4 space-y-3"></div>
+                <input id="nInput" type="text" placeholder="Entry...">
+                <button onclick="saveNote()">Post</button>
+            </div>
+        </div>
+
+        <div id="calMod" class="glass-module">
+            <div class="module-header" onclick="toggle('calMod')">
+                <span class="text-cyan-200 font-bold text-[10px] tracking-widest uppercase">📅 Schedule</span>
+                <span class="text-[9px] opacity-40">+/-</span>
+            </div>
+            <div class="module-content">
+                <div id="calendar" class="text-[9px]"></div>
             </div>
         </div>
     </div>
@@ -145,17 +131,22 @@
         const SUPABASE_KEY = 'sb_publishable_OUXpGQk3QkOoUu94S9YZNg_Sb34-Jc4';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+        // --- CORE FUNCTIONS ---
         function toggle(id) { document.getElementById(id).classList.toggle('module-collapsed'); }
         function updateClock() { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }
         setInterval(updateClock, 1000);
 
+        function toggleAudio() {
+            const a = document.getElementById('beachAudio');
+            const b = document.getElementById('audioBtn');
+            if (a.paused) { a.play(); b.innerText = "Stop Ambiance"; } 
+            else { a.pause(); b.innerText = "Play Ambiance"; }
+        }
+
         window.onload = () => {
-            updateClock();
-            refreshAll();
-            initCalendar();
+            updateClock(); refreshAll(); initCalendar();
             _supabase.channel('db').on('postgres_changes', {event:'*', schema:'public'}, () => {
-                refreshAll();
-                if(window.calendar) window.calendar.refetchEvents();
+                refreshAll(); if(window.calendar) window.calendar.refetchEvents();
             }).subscribe();
         };
 
@@ -170,35 +161,21 @@
             window.calendar.render();
         }
 
+        // --- DATA LOADERS ---
         async function refreshAll() { loadNotes(); loadMarket(); loadMeals(); }
         async function saveNote() {
-            const i = document.getElementById('nInput');
-            if (!i.value) return;
+            const i = document.getElementById('nInput'); if (!i.value) return;
             await _supabase.from('family_notes').insert([{ note: i.value, timestamp: new Date().toLocaleTimeString() }]);
             i.value = "";
         }
         async function loadNotes() {
             const { data } = await _supabase.from('family_notes').select('*').order('created_at', { ascending: false });
-            document.getElementById('notesLog').innerHTML = data ? data.map(n => `<div class="bg-white/5 p-3 rounded mb-2 border border-white/5"><small class="text-cyan-500/50 block mb-1 text-[9px]">${n.timestamp}</small><p class="text-sm">${n.note}</p></div>`).join('') : '';
+            document.getElementById('notesLog').innerHTML = data ? data.map(n => `<div class="bg-white/5 p-2 rounded text-[11px] border border-white/5">${n.note}</div>`).join('') : '';
         }
         async function saveMarket() {
-            const i = document.getElementById('mInput');
-            if (i.value) await _supabase.from('market_items').insert([{ text: i.value }]);
+            const i = document.getElementById('mInput'); if (i.value) await _supabase.from('market_items').insert([{ text: i.value }]);
             i.value = "";
         }
         async function loadMarket() {
             const { data } = await _supabase.from('market_items').select('*');
-            document.getElementById('marketList').innerHTML = data ? data.map(item => `<div class="p-2 border-b border-white/5 text-xs">🔘 ${item.text}</div>`).join('') : '';
-        }
-        async function loadMeals() {
-            const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-            const { data } = await _supabase.from('meal_plan').select('*');
-            document.getElementById('mealGrid').innerHTML = days.map(day => {
-                const meal = data?.find(m => m.day === day)?.menu || "TBD";
-                return `<div class="flex justify-between p-2 border-b border-white/5"><span>${day}</span><span class="text-cyan-400">${meal}</span></div>`;
-            }).join('');
-        }
-        async function updateMeal(day, menu) { await _supabase.from('meal_plan').upsert({ day, menu }, { onConflict: 'day' }); }
-    </script>
-</body>
-</html>
+            document.getElementById('marketList').innerHTML = data ? data.map(item => `<div class="p-1 border-b border-white/5">🔘 ${item.
