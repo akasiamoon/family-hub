@@ -6,65 +6,89 @@
     <title>Family Mission Control</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #0b0b0b; }
-        #bg-video {
+        body, html { margin: 0; padding: 0; height: 100%; overflow-x: hidden; background: #0b0b0b; }
+        
+        #bg-image {
             position: fixed; right: 0; bottom: 0;
-            min-width: 100%; min-height: 100%;
+            width: 100%; height: 100%;
             z-index: -1; object-fit: cover;
+            background-image: url('familyhub.jpg'); 
+            background-position: center;
             transition: filter 0.6s ease;
         }
+
         .glass {
-            background: rgba(0, 0, 0, 0.55);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
         }
-        .hidden-ui { opacity: 0 !important; transform: translateY(40px); pointer-events: none; }
-        .video-dim { filter: brightness(40%); }
-        .video-bright { filter: brightness(100%); }
+
+        #mainUI { transition: all 0.5s ease-in-out; z-index: 10; position: relative; }
+        .hidden-ui { opacity: 0 !important; transform: translateY(40px) scale(0.98); pointer-events: none; }
+        .bg-dim { filter: brightness(45%); }
+        .bg-bright { filter: brightness(100%); }
+
+        /* Calendar custom styles to match the Bardic theme */
+        .fc { background: rgba(0,0,0,0.3); padding: 10px; border-radius: 15px; }
+        .fc-toolbar-title { color: #22d3ee !important; font-size: 1.2rem !important; }
+        .fc-daygrid-day:hover { background: rgba(34, 211, 238, 0.1) !important; cursor: pointer; }
+        .fc-col-header-cell { color: #f97316 !important; }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
     </style>
 </head>
-<body class="text-white">
+<body class="text-white font-sans">
 
-    <video autoplay muted loop playsinline preload="auto" id="bg-video" class="video-dim">
-        <source src="Druid_s_Cottage_Looping_Video.mp4" type="video/mp4">
-    </video>
+    <div id="bg-image" class="bg-dim"></div>
 
-    <button onclick="toggleUI()" class="fixed bottom-8 right-8 z-50 bg-orange-700/80 px-6 py-3 rounded-full border border-orange-400/50 shadow-lg">
-        <span id="toggleText" class="font-bold text-xs uppercase">Hide Interface</span>
+    <button onclick="toggleUI()" class="fixed bottom-8 right-8 z-50 bg-orange-700/90 hover:bg-orange-600 border border-orange-400/50 px-6 py-3 rounded-full shadow-lg transition-all active:scale-95">
+        <span id="toggleText" class="font-bold text-xs uppercase tracking-widest">Hide Interface</span>
     </button>
 
-    <div id="mainUI" class="container mx-auto p-4 lg:p-10 transition-all duration-500">
-        <header class="mb-8">
-            <h1 class="text-3xl font-bold text-orange-200">Cottage Hub</h1>
-            <p class="text-white/50 text-xs">Family Mission Control • Farmington, MS</p>
+    <div id="mainUI" class="container mx-auto p-4 lg:p-10 min-h-screen">
+        <header class="mb-10 text-center lg:text-left">
+            <h1 class="text-4xl font-bold tracking-tighter text-orange-200">Cottage Hub</h1>
+            <p class="text-white/60 text-sm">Family Mission Control • Farmington, MS</p>
         </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div class="space-y-6">
-                <div class="glass p-5 rounded-2xl">
-                    <h2 class="text-lg font-bold mb-4 text-orange-300">🛒 Market List</h2>
-                    <div id="marketList" class="space-y-2 mb-4 max-h-40 overflow-y-auto"></div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <div class="space-y-8 lg:col-span-1">
+                <div class="glass p-6 rounded-3xl">
+                    <h2 class="text-xl font-bold mb-4 text-orange-300">🛒 Market List</h2>
+                    <div id="marketList" class="space-y-2 mb-4 max-h-40 overflow-y-auto custom-scrollbar"></div>
                     <div class="flex gap-2">
-                        <input id="mInput" type="text" placeholder="Add..." class="bg-black/40 border border-white/10 rounded p-2 w-full text-sm">
-                        <button onclick="saveMarket()" class="bg-orange-700 px-3 rounded">+</button>
+                        <input id="mInput" type="text" placeholder="Add..." class="bg-black/40 border border-white/10 rounded-lg p-2 w-full text-sm outline-none">
+                        <button onclick="saveMarket()" class="bg-orange-700 px-4 rounded-lg">+</button>
                     </div>
                 </div>
-                <div class="glass p-5 rounded-2xl">
-                    <h2 class="text-lg font-bold mb-4 text-green-300">🍲 Meal Plan</h2>
-                    <div id="mealGrid" class="space-y-2 text-xs"></div>
+
+                <div class="glass p-6 rounded-3xl">
+                    <h2 class="text-xl font-bold mb-4 text-green-300">🍲 Meal Plan</h2>
+                    <div id="mealGrid" class="space-y-2 text-sm"></div>
                 </div>
             </div>
 
             <div class="lg:col-span-2">
-                <div class="glass p-6 rounded-2xl h-full flex flex-col min-h-[400px]">
-                    <h2 class="text-xl font-bold mb-4 text-blue-300">📜 Family Log</h2>
-                    <div id="notesLog" class="flex-grow space-y-4 overflow-y-auto mb-4"></div>
-                    <div class="flex gap-2">
-                        <input id="nInput" type="text" placeholder="New note..." class="bg-black/40 border border-white/10 rounded p-3 w-full">
-                        <button onclick="saveNote()" class="bg-blue-700 px-6 rounded font-bold">POST</button>
+                <div class="glass p-8 rounded-3xl h-full flex flex-col">
+                    <h2 class="text-2xl font-bold mb-4 text-blue-300">📜 Family Log</h2>
+                    <div id="notesLog" class="flex-grow space-y-4 overflow-y-auto mb-6 pr-2 custom-scrollbar min-h-[300px]"></div>
+                    <div class="flex gap-3">
+                        <input id="nInput" type="text" placeholder="Share a note..." class="bg-black/40 border border-white/10 rounded-xl p-4 w-full outline-none">
+                        <button onclick="saveNote()" class="bg-blue-700 px-8 rounded-xl font-bold">POST</button>
                     </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-3">
+                <div class="glass p-8 rounded-3xl">
+                    <h2 class="text-2xl font-bold mb-6 text-cyan-300 flex items-center gap-2">📅 Family Schedule</h2>
+                    <div id="calendar"></div>
                 </div>
             </div>
         </div>
@@ -77,22 +101,47 @@
 
         let uiVisible = true;
         const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        let calendar;
 
         window.onload = () => {
             refreshAll();
-            _supabase.channel('db').on('postgres_changes', {event:'*', schema:'public'}, () => refreshAll()).subscribe();
-            // Critical: Force video play for mobile
-            document.getElementById('bg-video').play();
+            initCalendar();
+            _supabase.channel('db').on('postgres_changes', { event: '*', schema: 'public' }, () => {
+                refreshAll();
+                calendar.refetchEvents();
+            }).subscribe();
         };
 
         function toggleUI() {
             uiVisible = !uiVisible;
             document.getElementById('mainUI').classList.toggle('hidden-ui', !uiVisible);
-            document.getElementById('bg-video').className = uiVisible ? 'video-dim' : 'video-bright';
+            document.getElementById('bg-image').className = uiVisible ? 'bg-dim' : 'bg-bright';
             document.getElementById('toggleText').innerText = uiVisible ? "Hide Interface" : "Show Interface";
         }
 
+        async function initCalendar() {
+            const calendarEl = document.getElementById('calendar');
+            calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                height: 'auto',
+                selectable: true,
+                select: async function(info) {
+                    const title = prompt('Add Appointment or Lesson:');
+                    if (title) {
+                        await _supabase.from('calendar_events').insert([{ title, start_date: info.startStr }]);
+                        calendar.refetchEvents();
+                    }
+                },
+                events: async function(info, successCallback) {
+                    const { data } = await _supabase.from('calendar_events').select('*');
+                    successCallback(data.map(e => ({ title: e.title, start: e.start_date, backgroundColor: '#0e7490', borderColor: '#22d3ee' })));
+                }
+            });
+            calendar.render();
+        }
+
         async function refreshAll() { loadNotes(); loadMarket(); loadMeals(); }
+
         async function saveNote() {
             const i = document.getElementById('nInput');
             if (!i.value) return;
@@ -100,27 +149,49 @@
             await _supabase.from('family_notes').insert([{ note: i.value, timestamp: ts }]);
             i.value = "";
         }
+
         async function loadNotes() {
-            const { data } = await _supabase.from('family_notes').select('*').order('created_at', {ascending: false});
-            document.getElementById('notesLog').innerHTML = data ? data.map(n => `<div class="border-l-2 border-blue-500/30 pl-3"><span class="text-[10px] text-blue-400 font-mono">${n.timestamp}</span><p class="text-white/80">${n.note}</p></div>`).join('') : '';
+            const { data } = await _supabase.from('family_notes').select('*').order('created_at', { ascending: false });
+            document.getElementById('notesLog').innerHTML = data ? data.map(n => `
+                <div class="border-l-2 border-blue-500/30 pl-4 py-1">
+                    <span class="text-[10px] uppercase text-blue-400/60 font-mono">${n.timestamp}</span>
+                    <p class="text-white/90 text-lg">${n.note}</p>
+                </div>
+            `).join('') : '';
         }
+
         async function saveMarket() {
             const i = document.getElementById('mInput');
             if (i.value) await _supabase.from('market_items').insert([{ text: i.value }]);
             i.value = "";
         }
+
         async function loadMarket() {
-            const { data } = await _supabase.from('market_items').select('*').order('created_at', {ascending: true});
-            document.getElementById('marketList').innerHTML = data ? data.map(item => `<div class="flex gap-2 bg-white/5 p-2 rounded text-sm"><input type="checkbox"><span>${item.text}</span></div>`).join('') : '';
+            const { data } = await _supabase.from('market_items').select('*').order('created_at', { ascending: true });
+            document.getElementById('marketList').innerHTML = data ? data.map(item => `
+                <div class="flex items-center gap-3 bg-white/5 p-2 rounded-lg">
+                    <input type="checkbox" class="w-4 h-4 accent-orange-500">
+                    <span class="text-sm">${item.text}</span>
+                </div>
+            `).join('') : '';
         }
+
         async function loadMeals() {
             const { data } = await _supabase.from('meal_plan').select('*');
             document.getElementById('mealGrid').innerHTML = days.map(day => {
-                const m = data?.find(x => x.day === day)?.menu || "TBD";
-                return `<div class="flex justify-between bg-white/5 p-2 rounded"><span>${day}</span><input onchange="updateMeal('${day}', this.value)" value="${m}" class="bg-transparent text-right w-1/2 outline-none"></div>`;
+                const meal = data?.find(m => m.day === day)?.menu || "TBD";
+                return `
+                    <div class="flex justify-between items-center bg-white/5 p-2 rounded-lg border border-white/5">
+                        <span class="font-bold text-green-400/80">${day}</span>
+                        <input onchange="updateMeal('${day}', this.value)" value="${meal}" class="bg-transparent text-right outline-none text-white/60 focus:text-white w-2/3">
+                    </div>
+                `;
             }).join('');
         }
-        async function updateMeal(day, menu) { await _supabase.from('meal_plan').upsert({ day, menu }, {onConflict: 'day'}); }
+
+        async function updateMeal(day, menu) {
+            await _supabase.from('meal_plan').upsert({ day, menu }, { onConflict: 'day' });
+        }
     </script>
 </body>
 </html>
