@@ -91,6 +91,60 @@
             log.innerHTML = `<div class="p-2 border-b border-white/10"><span class="text-xs text-blue-300 font-mono">[${timestamp}]</span><p>${input.value}</p></div>` + log.innerHTML;
             input.value = "";
         }
-    </script>
+    </script>const SUPABASE_URL = 'sb_publishable_OUXpGQk3QkOoUu94S9YZNg_Sb34-Jc4';
+const SUPABASE_KEY = 'sb_publishable_OUXpGQk3QkOoUu94S9YZNg_Sb34-Jc4';
+const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// 1. Fetch data on load
+window.onload = async () => {
+    loadNotes();
+    loadMarket();
+    
+    // 2. Listen for real-time updates (RPG-style sync!)
+    _supabase.channel('any').on('postgres_changes', { event: '*', schema: 'public' }, () => {
+        loadNotes();
+        loadMarket();
+    }).subscribe();
+};
+
+async function saveNote() {
+    const input = document.getElementById('nInput');
+    if (!input.value) return;
+    
+    const now = new Date();
+    const ts = `${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
+    
+    await _supabase.from('family_notes').insert([{ note: input.value, timestamp: ts }]);
+    input.value = "";
+}
+
+async function loadNotes() {
+    const { data } = await _supabase.from('family_notes').select('*').order('created_at', { ascending: false });
+    const log = document.getElementById('notesLog');
+    log.innerHTML = data.map(n => `
+        <div class="p-2 border-b border-white/10 animate-fade-in">
+            <span class="text-xs text-blue-300 font-mono">[${n.timestamp}]</span>
+            <p>${n.note}</p>
+        </div>
+    `).join('');
+}
+
+async function saveMarket() {
+    const input = document.getElementById('mInput');
+    if (!input.value) return;
+    await _supabase.from('market_items').insert([{ text: input.value }]);
+    input.value = "";
+}
+
+async function loadMarket() {
+    const { data } = await _supabase.from('market_items').select('*').order('created_at', { ascending: true });
+    const list = document.getElementById('marketList');
+    list.innerHTML = data.map(item => `
+        <div class="flex items-center gap-2 bg-white/5 p-2 rounded mb-1">
+            <input type="checkbox" ${item.is_completed ? 'checked' : ''} class="w-4 h-4 accent-orange-500">
+            <span>${item.text}</span>
+        </div>
+    `).join('');
+}
 </body>
 </html>
