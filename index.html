@@ -10,36 +10,39 @@
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@300;400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@300;400;700&display=swap');
 
         body, html { 
             margin: 0; padding: 0; height: 100%; 
             background: #000 url('thefamilyhub.jpg') no-repeat center center fixed; 
             background-size: cover;
             color: #e2e8f0; font-family: 'Inter', sans-serif;
-            overflow: hidden; /* Keeps the animation from creating scrollbars */
+            overflow: hidden; 
         }
 
         #music-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
 
+        /* THE BARDIC SIDEBAR */
         .sidebar {
             position: relative;
             width: 100%; max-width: 420px; height: 100vh;
-            padding: 2rem; overflow-y: auto; z-index: 10;
-            background: linear-gradient(to right, rgba(0,0,0,0.8), rgba(0,0,0,0));
+            padding: 2.5rem; overflow-y: auto; z-index: 10;
+            background: linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 70%, rgba(0,0,0,0) 100%);
+            border-right: 1px solid rgba(34, 211, 238, 0.05);
         }
 
         .glass-module {
-            background: rgba(10, 10, 15, 0.85);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(25px) saturate(160%);
+            -webkit-backdrop-filter: blur(25px) saturate(160%);
             border: 1px solid rgba(34, 211, 238, 0.2);
-            border-radius: 1rem; margin-bottom: 1rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            transition: all 0.4s ease;
+            border-radius: 1.25rem; margin-bottom: 1.25rem;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+            transition: transform 0.3s ease;
         }
 
         .module-header {
-            padding: 1rem; display: flex; justify-content: space-between;
+            padding: 1rem 1.25rem; display: flex; justify-content: space-between;
             align-items: center; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05);
         }
 
@@ -57,11 +60,13 @@
             font-weight: 900; text-transform: uppercase;
         }
 
-        .sidebar::-webkit-scrollbar { width: 4px; }
-        .sidebar::-webkit-scrollbar-thumb { background: rgba(34, 211, 238, 0.3); border-radius: 10px; }
+        /* Elements */
+        .sidebar::-webkit-scrollbar { width: 3px; }
+        .sidebar::-webkit-scrollbar-thumb { background: rgba(34, 211, 238, 0.2); }
 
-        input { background: rgba(0,0,0,0.6) !important; border: 1px solid #333 !important; color: white !important; padding: 10px !important; border-radius: 8px; width: 100%; margin-bottom: 10px; }
-        button { background: rgba(34, 211, 238, 0.1) !important; border: 1px solid #22d3ee !important; color: #22d3ee !important; width: 100%; padding: 10px; border-radius: 8px; font-weight: bold; }
+        input { background: rgba(0,0,0,0.7) !important; border: 1px solid rgba(255,255,255,0.1) !important; color: white !important; padding: 10px !important; border-radius: 8px; width: 100%; margin-bottom: 8px; font-size: 13px; }
+        button { background: rgba(34, 211, 238, 0.1) !important; border: 1px solid #22d3ee55 !important; color: #22d3ee !important; width: 100%; padding: 8px; border-radius: 8px; font-weight: 800; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
+        button:hover { background: rgba(34, 211, 238, 0.2) !important; box-shadow: 0 0 15px rgba(34, 211, 238, 0.3); }
     </style>
 </head>
 <body>
@@ -71,57 +76,57 @@
     <div class="sidebar">
         <header class="mb-8">
             <h1 class="text-3xl hub-title">Cottage Hub</h1>
-            <p class="text-cyan-400/40 text-[9px] tracking-widest uppercase mt-1">Farmington Command</p>
+            <p class="text-cyan-400/40 text-[10px] tracking-[0.4em] uppercase mt-1">Farmington Command</p>
             
             <div class="mt-6 flex items-center gap-3">
-                <button id="audioBtn" onclick="toggleAudio()" class="!w-auto px-4 text-[10px] tracking-widest uppercase border-cyan-500/30">Play Ambiance</button>
+                <button id="audioBtn" onclick="toggleAudio()" class="!w-auto px-4 py-2">Listen to the Tides</button>
                 <audio id="beachAudio" loop src="https://actions.google.com/sounds/v1/water/ocean_waves.ogg"></audio>
             </div>
             
-            <div id="clock" class="text-cyan-300 font-mono text-xs mt-4 opacity-60">00:00:00</div>
+            <div id="clock" class="text-cyan-300 font-mono text-xs mt-4 opacity-50 tracking-widest">00:00:00</div>
         </header>
 
         <div id="marketMod" class="glass-module">
             <div class="module-header" onclick="toggle('marketMod')">
-                <span class="text-orange-400 font-bold text-[10px] tracking-widest uppercase">🛒 Market</span>
-                <span class="text-[9px] opacity-40">+/-</span>
+                <span class="text-orange-400 font-bold text-[10px] tracking-[0.2em] uppercase">Market Provisions</span>
+                <span class="text-[9px] opacity-30">▼</span>
             </div>
             <div class="module-content">
-                <div id="marketList" class="max-h-40 overflow-y-auto mb-4 space-y-2 text-xs"></div>
-                <input id="mInput" type="text" placeholder="Provision...">
-                <button onclick="saveMarket()">Add</button>
+                <div id="marketList" class="max-h-40 overflow-y-auto mb-4 space-y-2 text-xs pr-2"></div>
+                <input id="mInput" type="text" placeholder="Add grocery...">
+                <button onclick="saveMarket()">Add to Market</button>
             </div>
         </div>
 
         <div id="mealMod" class="glass-module">
             <div class="module-header" onclick="toggle('mealMod')">
-                <span class="text-green-400 font-bold text-[10px] tracking-widest uppercase">🍲 Meals</span>
-                <span class="text-[9px] opacity-40">+/-</span>
+                <span class="text-green-400 font-bold text-[10px] tracking-[0.2em] uppercase">Weekly Feast</span>
+                <span class="text-[9px] opacity-30">▼</span>
             </div>
             <div class="module-content">
-                <div id="mealGrid" class="text-[10px] space-y-2"></div>
+                <div id="mealGrid" class="text-[11px] space-y-3"></div>
             </div>
         </div>
 
         <div id="logMod" class="glass-module">
             <div class="module-header" onclick="toggle('logMod')">
-                <span class="text-cyan-400 font-bold text-[10px] tracking-widest uppercase">📜 Log</span>
-                <span class="text-[9px] opacity-40">+/-</span>
+                <span class="text-cyan-400 font-bold text-[10px] tracking-[0.2em] uppercase">Chronicle Log</span>
+                <span class="text-[9px] opacity-30">▼</span>
             </div>
             <div class="module-content">
-                <div id="notesLog" class="max-h-48 overflow-y-auto mb-4 space-y-3"></div>
-                <input id="nInput" type="text" placeholder="Entry...">
-                <button onclick="saveNote()">Post</button>
+                <div id="notesLog" class="max-h-56 overflow-y-auto mb-4 space-y-4 pr-2"></div>
+                <input id="nInput" type="text" placeholder="Share a lesson note...">
+                <button onclick="saveNote()">Post Chronicle</button>
             </div>
         </div>
 
         <div id="calMod" class="glass-module">
             <div class="module-header" onclick="toggle('calMod')">
-                <span class="text-cyan-200 font-bold text-[10px] tracking-widest uppercase">📅 Schedule</span>
-                <span class="text-[9px] opacity-40">+/-</span>
+                <span class="text-cyan-200 font-bold text-[10px] tracking-[0.2em] uppercase">Family Quests</span>
+                <span class="text-[9px] opacity-30">▼</span>
             </div>
             <div class="module-content">
-                <div id="calendar" class="text-[9px]"></div>
+                <div id="calendar" class="text-[10px]"></div>
             </div>
         </div>
     </div>
@@ -131,7 +136,6 @@
         const SUPABASE_KEY = 'sb_publishable_OUXpGQk3QkOoUu94S9YZNg_Sb34-Jc4';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // --- CORE FUNCTIONS ---
         function toggle(id) { document.getElementById(id).classList.toggle('module-collapsed'); }
         function updateClock() { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }
         setInterval(updateClock, 1000);
@@ -139,8 +143,8 @@
         function toggleAudio() {
             const a = document.getElementById('beachAudio');
             const b = document.getElementById('audioBtn');
-            if (a.paused) { a.play(); b.innerText = "Stop Ambiance"; } 
-            else { a.pause(); b.innerText = "Play Ambiance"; }
+            if (a.paused) { a.play(); b.innerText = "Mute Ambiance"; } 
+            else { a.pause(); b.innerText = "Listen to the Tides"; }
         }
 
         window.onload = () => {
@@ -161,7 +165,6 @@
             window.calendar.render();
         }
 
-        // --- DATA LOADERS ---
         async function refreshAll() { loadNotes(); loadMarket(); loadMeals(); }
         async function saveNote() {
             const i = document.getElementById('nInput'); if (!i.value) return;
@@ -170,7 +173,7 @@
         }
         async function loadNotes() {
             const { data } = await _supabase.from('family_notes').select('*').order('created_at', { ascending: false });
-            document.getElementById('notesLog').innerHTML = data ? data.map(n => `<div class="bg-white/5 p-2 rounded text-[11px] border border-white/5">${n.note}</div>`).join('') : '';
+            document.getElementById('notesLog').innerHTML = data ? data.map(n => `<div class="bg-white/[0.03] p-3 rounded-xl border border-white/5"><p class="text-[13px] leading-relaxed">${n.note}</p></div>`).join('') : '';
         }
         async function saveMarket() {
             const i = document.getElementById('mInput'); if (i.value) await _supabase.from('market_items').insert([{ text: i.value }]);
@@ -178,4 +181,34 @@
         }
         async function loadMarket() {
             const { data } = await _supabase.from('market_items').select('*');
-            document.getElementById('marketList').innerHTML = data ? data.map(item => `<div class="p-1 border-b border-white/5">🔘 ${item.
+            document.getElementById('marketList').innerHTML = data ? data.map(item => `<div class="flex items-center gap-2 p-1 text-[12px]"><span class="text-orange-500/50">✦</span> ${item.text}</div>`).join('') : '';
+        }
+        async function loadMeals() {
+            const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            const { data } = await _supabase.from('meal_plan').select('*');
+            document.getElementById('mealGrid').innerHTML = days.map(day => {
+                const meal = data?.find(m => m.day === day)?.menu || "TBD";
+                return `<div class="flex justify-between border-b border-white/5 pb-1"><span>${day}</span><input onchange="updateMeal('${day}', this.value)" value="${meal}" class="!bg-transparent !border-none !p-0 !m-0 !w-auto text-right text-cyan-400"></div>`;
+            }).join('');
+        }
+        async function updateMeal(day, menu) { await _supabase.from('meal_plan').upsert({ day, menu }, { onConflict: 'day' }); }
+
+        // --- MUSIC NOTES ---
+        const canvas = document.getElementById('music-canvas');
+        const ctx = canvas.getContext('2d');
+        let notes = [];
+        const glyphs = ['♪', '♫', '♩', '♬'];
+        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.onresize = resize; resize();
+        class Note {
+            constructor() { this.reset(); }
+            reset() { this.x = Math.random() * canvas.width; this.y = canvas.height + 50; this.text = glyphs[Math.floor(Math.random() * glyphs.length)]; this.size = Math.random() * 18 + 10; this.speed = Math.random() * 0.4 + 0.1; this.opacity = Math.random() * 0.4 + 0.1; }
+            update() { this.y -= this.speed; if (this.y < -50) this.reset(); }
+            draw() { ctx.font = `${this.size}px serif`; ctx.fillStyle = `rgba(34, 211, 238, ${this.opacity})`; ctx.fillText(this.text, this.x, this.y); }
+        }
+        for (let i = 0; i < 20; i++) notes.push(new Note());
+        function animate() { ctx.clearRect(0, 0, canvas.width, canvas.height); notes.forEach(n => { n.update(); n.draw(); }); requestAnimationFrame(animate); }
+        animate();
+    </script>
+</body>
+</html>
