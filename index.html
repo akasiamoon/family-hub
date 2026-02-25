@@ -7,74 +7,63 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #1a1a1a; }
-        
-        /* Video Fix: Added poster and z-index check */
+        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #0b0b0b; }
         #bg-video {
             position: fixed; right: 0; bottom: 0;
             min-width: 100%; min-height: 100%;
             z-index: -1; object-fit: cover;
-            transition: filter 0.6s ease-in-out;
-            background-size: cover;
+            transition: filter 0.6s ease;
         }
-
         .glass {
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.55);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
-        #mainUI { transition: all 0.5s ease-in-out; z-index: 10; position: relative; }
-        .hidden-ui { opacity: 0 !important; transform: translateY(40px) scale(0.98); pointer-events: none; }
-        .video-dim { filter: brightness(45%); }
+        .hidden-ui { opacity: 0 !important; transform: translateY(40px); pointer-events: none; }
+        .video-dim { filter: brightness(40%); }
         .video-bright { filter: brightness(100%); }
-
-        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
     </style>
 </head>
-<body class="text-white font-sans">
+<body class="text-white">
 
     <video autoplay muted loop playsinline preload="auto" id="bg-video" class="video-dim">
         <source src="Druid_s_Cottage_Looping_Video.mp4" type="video/mp4">
     </video>
 
-    <button onclick="toggleUI()" class="fixed bottom-8 right-8 z-50 bg-orange-700/80 hover:bg-orange-600 border border-orange-400/50 px-6 py-3 rounded-full shadow-[0_0_15px_rgba(194,65,12,0.5)] transition-all active:scale-90">
-        <span id="toggleText" class="font-bold uppercase tracking-wider text-sm">Hide Interface</span>
+    <button onclick="toggleUI()" class="fixed bottom-8 right-8 z-50 bg-orange-700/80 px-6 py-3 rounded-full border border-orange-400/50 shadow-lg">
+        <span id="toggleText" class="font-bold text-xs uppercase">Hide Interface</span>
     </button>
 
-    <div id="mainUI" class="container mx-auto p-4 lg:p-10 min-h-screen">
-        <header class="mb-10 text-center lg:text-left">
-            <h1 class="text-4xl font-bold tracking-tighter text-orange-200 drop-shadow-lg">Cottage Hub</h1>
-            <p class="text-white/60 text-sm">Family Mission Control • Farmington, MS</p>
+    <div id="mainUI" class="container mx-auto p-4 lg:p-10 transition-all duration-500">
+        <header class="mb-8">
+            <h1 class="text-3xl font-bold text-orange-200">Cottage Hub</h1>
+            <p class="text-white/50 text-xs">Family Mission Control • Farmington, MS</p>
         </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div class="space-y-8">
-                <div class="glass p-6 rounded-3xl shadow-2xl">
-                    <h2 class="text-xl font-bold mb-4 text-orange-300 flex items-center gap-2">🛒 Market List</h2>
-                    <div id="marketList" class="space-y-2 mb-4 max-h-40 overflow-y-auto custom-scrollbar"></div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="space-y-6">
+                <div class="glass p-5 rounded-2xl">
+                    <h2 class="text-lg font-bold mb-4 text-orange-300">🛒 Market List</h2>
+                    <div id="marketList" class="space-y-2 mb-4 max-h-40 overflow-y-auto"></div>
                     <div class="flex gap-2">
-                        <input id="mInput" type="text" placeholder="Add grocery..." class="bg-black/40 border border-white/10 rounded-lg p-2 w-full text-sm outline-none">
-                        <button onclick="saveMarket()" class="bg-orange-700 px-4 rounded-lg hover:bg-orange-600">+</button>
+                        <input id="mInput" type="text" placeholder="Add..." class="bg-black/40 border border-white/10 rounded p-2 w-full text-sm">
+                        <button onclick="saveMarket()" class="bg-orange-700 px-3 rounded">+</button>
                     </div>
                 </div>
-
-                <div class="glass p-6 rounded-3xl shadow-2xl">
-                    <h2 class="text-xl font-bold mb-4 text-green-300 flex items-center gap-2">🍲 Meal Plan</h2>
-                    <div id="mealGrid" class="space-y-2 text-sm"></div>
+                <div class="glass p-5 rounded-2xl">
+                    <h2 class="text-lg font-bold mb-4 text-green-300">🍲 Meal Plan</h2>
+                    <div id="mealGrid" class="space-y-2 text-xs"></div>
                 </div>
             </div>
 
             <div class="lg:col-span-2">
-                <div class="glass p-8 rounded-3xl shadow-2xl h-full flex flex-col">
-                    <h2 class="text-2xl font-bold mb-4 text-blue-300 flex items-center gap-2">📜 Family Log</h2>
-                    <div id="notesLog" class="flex-grow space-y-4 overflow-y-auto mb-6 pr-4 custom-scrollbar min-h-[300px]"></div>
-                    <div class="flex gap-3 mt-auto">
-                        <input id="nInput" type="text" placeholder="Share a note..." class="bg-black/40 border border-white/10 rounded-xl p-4 w-full outline-none">
-                        <button onclick="saveNote()" class="bg-blue-700 px-8 rounded-xl font-bold">POST</button>
+                <div class="glass p-6 rounded-2xl h-full flex flex-col min-h-[400px]">
+                    <h2 class="text-xl font-bold mb-4 text-blue-300">📜 Family Log</h2>
+                    <div id="notesLog" class="flex-grow space-y-4 overflow-y-auto mb-4"></div>
+                    <div class="flex gap-2">
+                        <input id="nInput" type="text" placeholder="New note..." class="bg-black/40 border border-white/10 rounded p-3 w-full">
+                        <button onclick="saveNote()" class="bg-blue-700 px-6 rounded font-bold">POST</button>
                     </div>
                 </div>
             </div>
@@ -82,7 +71,6 @@
     </div>
 
     <script>
-        // Use your existing Supabase URL and the key you provided
         const SUPABASE_URL = 'PASTE_YOUR_SUPABASE_URL_HERE';
         const SUPABASE_KEY = 'sb_publishable_OUXpGQk3QkOoUu94S9YZNg_Sb34-Jc4';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -92,96 +80,47 @@
 
         window.onload = () => {
             refreshAll();
-            _supabase.channel('db-changes').on('postgres_changes', { event: '*', schema: 'public' }, () => {
-                refreshAll();
-            }).subscribe();
-            
-            // Mobile Autoplay Fix: Try to play video if browser blocked it
-            const video = document.getElementById('bg-video');
-            video.play().catch(() => {
-                console.log("Autoplay blocked - awaiting user interaction");
-            });
+            _supabase.channel('db').on('postgres_changes', {event:'*', schema:'public'}, () => refreshAll()).subscribe();
+            // Critical: Force video play for mobile
+            document.getElementById('bg-video').play();
         };
 
-        function refreshAll() {
-            loadNotes();
-            loadMarket();
-            loadMeals();
-        }
-
         function toggleUI() {
-            const ui = document.getElementById('mainUI');
-            const video = document.getElementById('bg-video');
-            const btnText = document.getElementById('toggleText');
             uiVisible = !uiVisible;
-            
-            if (uiVisible) {
-                ui.classList.remove('hidden-ui');
-                video.className = 'video-dim';
-                btnText.innerText = "Hide Interface";
-            } else {
-                ui.classList.add('hidden-ui');
-                video.className = 'video-bright';
-                btnText.innerText = "Show Interface";
-            }
+            document.getElementById('mainUI').classList.toggle('hidden-ui', !uiVisible);
+            document.getElementById('bg-video').className = uiVisible ? 'video-dim' : 'video-bright';
+            document.getElementById('toggleText').innerText = uiVisible ? "Hide Interface" : "Show Interface";
         }
 
+        async function refreshAll() { loadNotes(); loadMarket(); loadMeals(); }
         async function saveNote() {
-            const input = document.getElementById('nInput');
-            if (!input.value) return;
-            const now = new Date();
-            const ts = `${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
-            await _supabase.from('family_notes').insert([{ note: input.value, timestamp: ts }]);
-            input.value = "";
+            const i = document.getElementById('nInput');
+            if (!i.value) return;
+            const ts = new Date().toLocaleString([], {month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit'});
+            await _supabase.from('family_notes').insert([{ note: i.value, timestamp: ts }]);
+            i.value = "";
         }
-
         async function loadNotes() {
-            const { data } = await _supabase.from('family_notes').select('*').order('created_at', { ascending: false });
-            if (data) {
-                document.getElementById('notesLog').innerHTML = data.map(n => `
-                    <div class="border-l-2 border-blue-500/30 pl-4 py-1">
-                        <span class="text-[10px] uppercase tracking-widest text-blue-400/60 font-mono">${n.timestamp}</span>
-                        <p class="text-white/90 text-lg">${n.note}</p>
-                    </div>
-                `).join('');
-            }
+            const { data } = await _supabase.from('family_notes').select('*').order('created_at', {ascending: false});
+            document.getElementById('notesLog').innerHTML = data ? data.map(n => `<div class="border-l-2 border-blue-500/30 pl-3"><span class="text-[10px] text-blue-400 font-mono">${n.timestamp}</span><p class="text-white/80">${n.note}</p></div>`).join('') : '';
         }
-
         async function saveMarket() {
-            const input = document.getElementById('mInput');
-            if (!input.value) return;
-            await _supabase.from('market_items').insert([{ text: input.value }]);
-            input.value = "";
+            const i = document.getElementById('mInput');
+            if (i.value) await _supabase.from('market_items').insert([{ text: i.value }]);
+            i.value = "";
         }
-
         async function loadMarket() {
-            const { data } = await _supabase.from('market_items').select('*').order('created_at', { ascending: true });
-            if (data) {
-                document.getElementById('marketList').innerHTML = data.map(item => `
-                    <div class="flex items-center gap-3 bg-white/5 p-2 rounded-lg">
-                        <input type="checkbox" class="w-4 h-4 accent-orange-500">
-                        <span class="text-sm">${item.text}</span>
-                    </div>
-                `).join('');
-            }
+            const { data } = await _supabase.from('market_items').select('*').order('created_at', {ascending: true});
+            document.getElementById('marketList').innerHTML = data ? data.map(item => `<div class="flex gap-2 bg-white/5 p-2 rounded text-sm"><input type="checkbox"><span>${item.text}</span></div>`).join('') : '';
         }
-
         async function loadMeals() {
             const { data } = await _supabase.from('meal_plan').select('*');
             document.getElementById('mealGrid').innerHTML = days.map(day => {
-                const meal = data?.find(m => m.day === day)?.menu || "TBD";
-                return `
-                    <div class="flex justify-between items-center bg-white/5 p-2 rounded-lg border border-white/5">
-                        <span class="font-bold text-green-400/80">${day}</span>
-                        <input onchange="updateMeal('${day}', this.value)" value="${meal}" class="bg-transparent text-right outline-none text-white/60 focus:text-white w-2/3">
-                    </div>
-                `;
+                const m = data?.find(x => x.day === day)?.menu || "TBD";
+                return `<div class="flex justify-between bg-white/5 p-2 rounded"><span>${day}</span><input onchange="updateMeal('${day}', this.value)" value="${m}" class="bg-transparent text-right w-1/2 outline-none"></div>`;
             }).join('');
         }
-
-        async function updateMeal(day, menu) {
-            await _supabase.from('meal_plan').upsert({ day, menu }, { onConflict: 'day' });
-        }
+        async function updateMeal(day, menu) { await _supabase.from('meal_plan').upsert({ day, menu }, {onConflict: 'day'}); }
     </script>
 </body>
 </html>
