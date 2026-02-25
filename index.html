@@ -10,104 +10,87 @@
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap');
-        body, html { margin: 0; padding: 0; height: 100%; background: #000; color: white; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        body, html { margin: 0; padding: 0; height: 100%; background: #000; color: white; overflow-x: hidden; }
+        
+        /* The Image Layer */
+        #bg-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; }
+        #bg-container img { width: 100%; height: 100%; object-fit: cover; filter: brightness(40%); }
 
-        /* The Robust Background Fix */
-        .bg-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; overflow: hidden; }
-        .bg-layer img { width: 100%; height: 100%; object-fit: cover; filter: brightness(40%) contrast(1.1); transition: filter 0.5s ease; }
+        #music-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
 
-        #music-notes { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
-
-        /* Modular Glass Boxes */
         .glass-module {
-            background: rgba(10, 10, 15, 0.75);
-            backdrop-filter: blur(20px) saturate(160%);
+            background: rgba(15, 15, 20, 0.85);
+            backdrop-filter: blur(15px);
             border: 1px solid rgba(34, 211, 238, 0.2);
-            border-radius: 1.5rem;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 1rem;
+            margin-bottom: 1rem;
             overflow: hidden;
-            margin-bottom: 1.5rem;
         }
 
-        .module-content { transition: max-height 0.4s ease-out, opacity 0.3s ease; max-height: 1000px; opacity: 1; padding: 1.5rem; }
-        .module-collapsed .module-content { max-height: 0; opacity: 0; padding-top: 0; padding-bottom: 0; pointer-events: none; }
+        .module-content { transition: max-height 0.3s ease; max-height: 1000px; padding: 1.25rem; }
+        .module-collapsed .module-content { max-height: 0; padding: 0; opacity: 0; }
 
-        .hub-title {
-            letter-spacing: 0.4em;
-            background: linear-gradient(to right, #fde68a, #22d3ee);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            font-weight: 900;
-        }
-
-        .custom-scroll { overflow-y: auto; scrollbar-width: thin; scrollbar-color: #22d3ee transparent; }
-        .custom-scroll::-webkit-scrollbar { width: 4px; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #22d3ee; border-radius: 10px; }
+        .hub-title { letter-spacing: 0.3em; font-weight: 900; text-transform: uppercase; color: #22d3ee; }
     </style>
 </head>
 <body>
 
-    <div class="bg-layer"><img id="main-bg" src="thefamilyhub.jpg" alt="Background"></div>
-    <canvas id="music-notes"></canvas>
+    <div id="bg-container">
+        <img src="thefamilyhub.jpg" alt="Background" onerror="this.parentElement.style.background='linear-gradient(#1e1b4b, #431407)'">
+    </div>
+    
+    <canvas id="music-canvas"></canvas>
 
-    <div id="mainUI" class="container mx-auto p-4 lg:p-10">
-        <header class="mb-8 flex justify-between items-center">
-            <div>
-                <h1 class="text-3xl hub-title">Cottage Hub</h1>
-                <p class="text-cyan-400/50 text-[10px] tracking-widest uppercase">Farmington, MS</p>
-            </div>
-            <div id="clock" class="text-cyan-300 font-mono font-bold text-lg">00:00:00</div>
+    <div class="container mx-auto p-4">
+        <header class="mb-6 flex justify-between items-center">
+            <h1 class="text-2xl hub-title">Cottage Hub</h1>
+            <div id="clock" class="text-cyan-300 font-mono">00:00:00</div>
         </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            
-            <div class="lg:col-span-1">
-                <div id="marketMod" class="glass-module">
-                    <div class="flex justify-between items-center p-4 border-b border-white/5 cursor-pointer" onclick="toggleModule('marketMod')">
-                        <h2 class="text-orange-400 font-bold text-xs tracking-widest uppercase">🛒 Market List</h2>
-                        <span class="toggle-icon text-xs opacity-50">▲</span>
-                    </div>
-                    <div class="module-content">
-                        <div id="marketList" class="h-40 custom-scroll space-y-2 mb-4"></div>
-                        <div class="flex gap-2">
-                            <input id="mInput" type="text" placeholder="Add..." class="bg-white/5 border border-white/10 rounded-lg p-2 w-full text-sm outline-none">
-                            <button onclick="saveMarket()" class="bg-orange-700/40 border border-orange-500/50 px-4 rounded-lg">+</button>
-                        </div>
-                    </div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div id="marketMod" class="glass-module">
+                <div class="flex justify-between p-4 bg-white/5 cursor-pointer" onclick="toggle('marketMod')">
+                    <span class="text-xs font-bold uppercase tracking-widest">🛒 Market</span>
+                    <span class="text-[10px]">+/-</span>
                 </div>
-
-                <div id="mealMod" class="glass-module">
-                    <div class="flex justify-between items-center p-4 border-b border-white/5 cursor-pointer" onclick="toggleModule('mealMod')">
-                        <h2 class="text-green-400 font-bold text-xs tracking-widest uppercase">🍲 Meal Plan</h2>
-                        <span class="toggle-icon text-xs opacity-50">▲</span>
-                    </div>
-                    <div class="module-content">
-                        <div id="mealGrid" class="space-y-2 text-[11px]"></div>
+                <div class="module-content">
+                    <div id="marketList" class="h-40 overflow-y-auto mb-4"></div>
+                    <div class="flex gap-2">
+                        <input id="mInput" type="text" placeholder="Milk..." class="bg-black/40 border border-white/10 p-2 w-full rounded">
+                        <button onclick="saveMarket()" class="bg-cyan-500/20 px-4 rounded">+</button>
                     </div>
                 </div>
             </div>
 
-            <div class="lg:col-span-2">
-                <div id="logMod" class="glass-module h-full flex flex-col">
-                    <div class="flex justify-between items-center p-4 border-b border-white/5 cursor-pointer" onclick="toggleModule('logMod')">
-                        <h2 class="text-cyan-400 font-bold text-xs tracking-widest uppercase">📜 Family Log</h2>
-                        <span class="toggle-icon text-xs opacity-50">▲</span>
+            <div id="mealMod" class="glass-module">
+                <div class="flex justify-between p-4 bg-white/5 cursor-pointer" onclick="toggle('mealMod')">
+                    <span class="text-xs font-bold uppercase tracking-widest">🍲 Meals</span>
+                    <span class="text-[10px]">+/-</span>
+                </div>
+                <div class="module-content">
+                    <div id="mealGrid" class="text-xs space-y-1"></div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-1">
+                <div id="logMod" class="glass-module">
+                    <div class="flex justify-between p-4 bg-white/5 cursor-pointer" onclick="toggle('logMod')">
+                        <span class="text-xs font-bold uppercase tracking-widest">📜 Log</span>
+                        <span class="text-[10px]">+/-</span>
                     </div>
-                    <div class="module-content flex-grow flex flex-col">
-                        <div id="notesLog" class="flex-grow custom-scroll space-y-4 mb-4 min-h-[300px]"></div>
-                        <div class="flex gap-2">
-                            <input id="nInput" type="text" placeholder="Share a note..." class="bg-white/5 border border-white/10 rounded-xl p-3 w-full outline-none">
-                            <button onclick="saveNote()" class="bg-cyan-700/40 border border-cyan-400/50 px-6 rounded-xl font-bold">POST</button>
-                        </div>
+                    <div class="module-content">
+                        <div id="notesLog" class="h-60 overflow-y-auto mb-4"></div>
+                        <input id="nInput" type="text" placeholder="Add note..." class="bg-black/40 border border-white/10 p-2 w-full rounded mb-2">
+                        <button onclick="saveNote()" class="bg-cyan-500/20 w-full py-2 rounded font-bold">POST</button>
                     </div>
                 </div>
             </div>
 
             <div class="lg:col-span-3">
                 <div id="calMod" class="glass-module">
-                    <div class="flex justify-between items-center p-4 border-b border-white/5 cursor-pointer" onclick="toggleModule('calMod')">
-                        <h2 class="text-cyan-200 font-bold text-xs tracking-widest uppercase">📅 Schedule</h2>
-                        <span class="toggle-icon text-xs opacity-50">▲</span>
+                    <div class="flex justify-between p-4 bg-white/5 cursor-pointer" onclick="toggle('calMod')">
+                        <span class="text-xs font-bold uppercase tracking-widest">📅 Schedule</span>
+                        <span class="text-[10px]">+/-</span>
                     </div>
                     <div class="module-content">
                         <div id="calendar"></div>
@@ -122,20 +105,12 @@
         const SUPABASE_KEY = 'sb_publishable_OUXpGQk3QkOoUu94S9YZNg_Sb34-Jc4';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        function toggleModule(id) {
-            const el = document.getElementById(id);
-            el.classList.toggle('module-collapsed');
-            const icon = el.querySelector('.toggle-icon');
-            icon.innerText = el.classList.contains('module-collapsed') ? '▼' : '▲';
-        }
-
+        function toggle(id) { document.getElementById(id).classList.toggle('module-collapsed'); }
         function updateClock() { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }
         setInterval(updateClock, 1000);
 
         window.onload = () => {
-            updateClock();
-            refreshAll();
-            initCalendar();
+            updateClock(); refreshAll(); initCalendar();
             _supabase.channel('db').on('postgres_changes', {event:'*', schema:'public'}, () => {
                 refreshAll();
                 if(calendar) calendar.refetchEvents();
@@ -144,11 +119,7 @@
 
         async function initCalendar() {
             calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
-                initialView: 'dayGridMonth', height: 'auto', selectable: true,
-                select: async (info) => {
-                    const title = prompt('Add Entry:');
-                    if (title) { await _supabase.from('calendar_events').insert([{ title, start_date: info.startStr }]); calendar.refetchEvents(); }
-                },
+                initialView: 'dayGridMonth', height: 'auto',
                 events: async (info, success) => {
                     const { data } = await _supabase.from('calendar_events').select('*');
                     success(data ? data.map(e => ({ title: e.title, start: e.start_date, color: '#0e7490' })) : []);
@@ -161,13 +132,12 @@
         async function saveNote() {
             const i = document.getElementById('nInput');
             if (!i.value) return;
-            const ts = new Date().toLocaleString([], {month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit'});
-            await _supabase.from('family_notes').insert([{ note: i.value, timestamp: ts }]);
+            await _supabase.from('family_notes').insert([{ note: i.value, timestamp: new Date().toLocaleTimeString() }]);
             i.value = "";
         }
         async function loadNotes() {
             const { data } = await _supabase.from('family_notes').select('*').order('created_at', { ascending: false });
-            document.getElementById('notesLog').innerHTML = data ? data.map(n => `<div class="border-l-2 border-cyan-500/30 pl-4 py-2 bg-white/5 rounded-r-xl"><small class="text-cyan-400/50 text-[9px] font-mono">${n.timestamp}</small><p class="text-white/80 text-sm">${n.note}</p></div>`).join('') : '';
+            document.getElementById('notesLog').innerHTML = data ? data.map(n => `<div class="bg-white/5 p-2 mb-2 rounded text-sm">${n.note}</div>`).join('') : '';
         }
         async function saveMarket() {
             const i = document.getElementById('mInput');
@@ -175,31 +145,30 @@
             i.value = "";
         }
         async function loadMarket() {
-            const { data } = await _supabase.from('market_items').select('*').order('created_at', { ascending: true });
-            document.getElementById('marketList').innerHTML = data ? data.map(item => `<div class="flex items-center gap-2 bg-white/5 p-2 rounded-lg text-xs"><input type="checkbox"> <span>${item.text}</span></div>`).join('') : '';
+            const { data } = await _supabase.from('market_items').select('*');
+            document.getElementById('marketList').innerHTML = data ? data.map(item => `<div class="text-xs p-1">🔘 ${item.text}</div>`).join('') : '';
         }
         async function loadMeals() {
             const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
             const { data } = await _supabase.from('meal_plan').select('*');
             document.getElementById('mealGrid').innerHTML = days.map(day => {
                 const meal = data?.find(m => m.day === day)?.menu || "TBD";
-                return `<div class="flex justify-between items-center bg-white/5 p-2 rounded-lg border border-white/5"><span class="font-bold text-green-400">${day}</span><input onchange="updateMeal('${day}', this.value)" value="${meal}" class="bg-transparent text-right w-1/2 outline-none text-white/50 focus:text-cyan-300"></div>`;
+                return `<div class="flex justify-between border-b border-white/5 p-1"><span>${day}</span><span>${meal}</span></div>`;
             }).join('');
         }
-        async function updateMeal(day, menu) { await _supabase.from('meal_plan').upsert({ day, menu }, { onConflict: 'day' }); }
 
-        // Music Notes Logic
-        const canvas = document.getElementById('music-notes');
+        // --- MUSIC NOTES ---
+        const canvas = document.getElementById('music-canvas');
         const ctx = canvas.getContext('2d');
         let notes = [];
-        const glyphs = ['♪', '♫', '♩', '♬'];
+        const glyphs = ['♪', '♫', '♩'];
         function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
         window.onresize = resize; resize();
         class Note {
             constructor() { this.reset(); }
-            reset() { this.x = Math.random() * canvas.width; this.y = canvas.height + 50; this.text = glyphs[Math.floor(Math.random() * glyphs.length)]; this.size = Math.random() * 12 + 8; this.speedY = Math.random() * 0.5 + 0.2; this.opacity = Math.random() * 0.3 + 0.1; }
-            update() { this.y -= this.speedY; if (this.y < -50) this.reset(); }
-            draw() { ctx.font = `${this.size}px serif`; ctx.fillStyle = `rgba(34, 211, 238, ${this.opacity})`; ctx.fillText(this.text, this.x, this.y); }
+            reset() { this.x = Math.random() * canvas.width; this.y = canvas.height + 20; this.text = glyphs[Math.floor(Math.random() * glyphs.length)]; this.speed = Math.random() * 0.5 + 0.2; this.opacity = Math.random() * 0.4 + 0.1; }
+            update() { this.y -= this.speed; if (this.y < -20) this.reset(); }
+            draw() { ctx.fillStyle = `rgba(34, 211, 238, ${this.opacity})`; ctx.fillText(this.text, this.x, this.y); }
         }
         for (let i = 0; i < 15; i++) notes.push(new Note());
         function animate() { ctx.clearRect(0, 0, canvas.width, canvas.height); notes.forEach(n => { n.update(); n.draw(); }); requestAnimationFrame(animate); }
