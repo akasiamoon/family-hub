@@ -7,47 +7,37 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; overflow-x: hidden; background: #000; }
+        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #1a1a1a; }
         
+        /* Video Fix: Added poster and z-index check */
         #bg-video {
             position: fixed; right: 0; bottom: 0;
             min-width: 100%; min-height: 100%;
             z-index: -1; object-fit: cover;
             transition: filter 0.6s ease-in-out;
+            background-size: cover;
         }
 
         .glass {
-            background: rgba(0, 0, 0, 0.45);
+            background: rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* The fix for your Hide UI button */
-        #mainUI {
-            transition: all 0.5s ease-in-out;
-            z-index: 10;
-        }
-
-        .hidden-ui {
-            opacity: 0 !important;
-            transform: translateY(40px) scale(0.98);
-            pointer-events: none;
-        }
-
+        #mainUI { transition: all 0.5s ease-in-out; z-index: 10; position: relative; }
+        .hidden-ui { opacity: 0 !important; transform: translateY(40px) scale(0.98); pointer-events: none; }
         .video-dim { filter: brightness(45%); }
         .video-bright { filter: brightness(100%); }
 
-        /* Custom Scrollbar for the RPG Log feel */
         .custom-scrollbar::-webkit-scrollbar { width: 5px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
     </style>
 </head>
 <body class="text-white font-sans">
 
-    <video autoplay muted loop playsinline id="bg-video" class="video-dim">
+    <video autoplay muted loop playsinline preload="auto" id="bg-video" class="video-dim">
         <source src="Druid_s_Cottage_Looping_Video.mp4" type="video/mp4">
     </video>
 
@@ -58,17 +48,16 @@
     <div id="mainUI" class="container mx-auto p-4 lg:p-10 min-h-screen">
         <header class="mb-10 text-center lg:text-left">
             <h1 class="text-4xl font-bold tracking-tighter text-orange-200 drop-shadow-lg">Cottage Hub</h1>
-            <p class="text-white/60 text-sm">Family Mission Control • Adamsville, TN</p>
+            <p class="text-white/60 text-sm">Family Mission Control • Farmington, MS</p>
         </header>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            
             <div class="space-y-8">
                 <div class="glass p-6 rounded-3xl shadow-2xl">
                     <h2 class="text-xl font-bold mb-4 text-orange-300 flex items-center gap-2">🛒 Market List</h2>
                     <div id="marketList" class="space-y-2 mb-4 max-h-40 overflow-y-auto custom-scrollbar"></div>
                     <div class="flex gap-2">
-                        <input id="mInput" type="text" placeholder="Add grocery..." class="bg-black/40 border border-white/10 rounded-lg p-2 w-full text-sm focus:border-orange-500 outline-none">
+                        <input id="mInput" type="text" placeholder="Add grocery..." class="bg-black/40 border border-white/10 rounded-lg p-2 w-full text-sm outline-none">
                         <button onclick="saveMarket()" class="bg-orange-700 px-4 rounded-lg hover:bg-orange-600">+</button>
                     </div>
                 </div>
@@ -82,11 +71,10 @@
             <div class="lg:col-span-2">
                 <div class="glass p-8 rounded-3xl shadow-2xl h-full flex flex-col">
                     <h2 class="text-2xl font-bold mb-4 text-blue-300 flex items-center gap-2">📜 Family Log</h2>
-                    <div id="notesLog" class="flex-grow space-y-4 overflow-y-auto mb-6 pr-4 custom-scrollbar min-h-[300px]">
-                        </div>
+                    <div id="notesLog" class="flex-grow space-y-4 overflow-y-auto mb-6 pr-4 custom-scrollbar min-h-[300px]"></div>
                     <div class="flex gap-3 mt-auto">
-                        <input id="nInput" type="text" placeholder="Note homeschool progress or family updates..." class="bg-black/40 border border-white/10 rounded-xl p-4 w-full focus:border-blue-500 outline-none">
-                        <button onclick="saveNote()" class="bg-blue-700 px-8 rounded-xl font-bold hover:bg-blue-600 transition-colors">POST</button>
+                        <input id="nInput" type="text" placeholder="Share a note..." class="bg-black/40 border border-white/10 rounded-xl p-4 w-full outline-none">
+                        <button onclick="saveNote()" class="bg-blue-700 px-8 rounded-xl font-bold">POST</button>
                     </div>
                 </div>
             </div>
@@ -94,7 +82,8 @@
     </div>
 
     <script>
-        const SUPABASE_URL = 'https://yflfpwcaowzkoxqnohso.supabase.co';
+        // Use your existing Supabase URL and the key you provided
+        const SUPABASE_URL = 'PASTE_YOUR_SUPABASE_URL_HERE';
         const SUPABASE_KEY = 'sb_publishable_OUXpGQk3QkOoUu94S9YZNg_Sb34-Jc4';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -103,10 +92,15 @@
 
         window.onload = () => {
             refreshAll();
-            // Subscribe to real-time changes
             _supabase.channel('db-changes').on('postgres_changes', { event: '*', schema: 'public' }, () => {
                 refreshAll();
             }).subscribe();
+            
+            // Mobile Autoplay Fix: Try to play video if browser blocked it
+            const video = document.getElementById('bg-video');
+            video.play().catch(() => {
+                console.log("Autoplay blocked - awaiting user interaction");
+            });
         };
 
         function refreshAll() {
@@ -119,7 +113,6 @@
             const ui = document.getElementById('mainUI');
             const video = document.getElementById('bg-video');
             const btnText = document.getElementById('toggleText');
-
             uiVisible = !uiVisible;
             
             if (uiVisible) {
@@ -144,12 +137,14 @@
 
         async function loadNotes() {
             const { data } = await _supabase.from('family_notes').select('*').order('created_at', { ascending: false });
-            document.getElementById('notesLog').innerHTML = data.map(n => `
-                <div class="border-l-2 border-blue-500/30 pl-4 py-1">
-                    <span class="text-[10px] uppercase tracking-widest text-blue-400/60 font-mono">${n.timestamp}</span>
-                    <p class="text-white/90 text-lg">${n.note}</p>
-                </div>
-            `).join('');
+            if (data) {
+                document.getElementById('notesLog').innerHTML = data.map(n => `
+                    <div class="border-l-2 border-blue-500/30 pl-4 py-1">
+                        <span class="text-[10px] uppercase tracking-widest text-blue-400/60 font-mono">${n.timestamp}</span>
+                        <p class="text-white/90 text-lg">${n.note}</p>
+                    </div>
+                `).join('');
+            }
         }
 
         async function saveMarket() {
@@ -161,12 +156,14 @@
 
         async function loadMarket() {
             const { data } = await _supabase.from('market_items').select('*').order('created_at', { ascending: true });
-            document.getElementById('marketList').innerHTML = data.map(item => `
-                <div class="flex items-center gap-3 bg-white/5 p-2 rounded-lg">
-                    <input type="checkbox" class="w-4 h-4 accent-orange-500">
-                    <span class="text-sm">${item.text}</span>
-                </div>
-            `).join('');
+            if (data) {
+                document.getElementById('marketList').innerHTML = data.map(item => `
+                    <div class="flex items-center gap-3 bg-white/5 p-2 rounded-lg">
+                        <input type="checkbox" class="w-4 h-4 accent-orange-500">
+                        <span class="text-sm">${item.text}</span>
+                    </div>
+                `).join('');
+            }
         }
 
         async function loadMeals() {
