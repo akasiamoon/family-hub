@@ -31,10 +31,7 @@
             transition: all 0.8s ease;
         }
 
-        .hub-title { font-family: 'Cinzel', serif; letter-spacing: 0.2em; background: linear-gradient(135deg, #fde68a 0%, #d97706 50%, #22d3ee 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; text-transform: uppercase; }
-
-        .heart-counter { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 2px; color: #f472b6; margin-top: 5px; text-shadow: 0 0 10px rgba(244, 114, 182, 0.4); font-weight: 900; }
-
+        /* EXPENSIVE GOLD HEADERS */
         .expensive-header {
             font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.3em; font-weight: 900; text-transform: uppercase;
             color: #fde68a; padding: 1.1rem 1.25rem; background: linear-gradient(to right, rgba(253, 230, 138, 0.15), transparent);
@@ -42,34 +39,42 @@
             display: flex; justify-content: space-between; align-items: center;
         }
 
-        /* DAILY FOCUS BANNER */
-        .focus-banner {
-            background: linear-gradient(45deg, rgba(253, 230, 138, 0.1), rgba(34, 211, 238, 0.05));
-            border: 1px solid rgba(253, 230, 138, 0.3);
-            border-radius: 1rem; padding: 1.5rem; margin-top: 1rem;
-            text-align: center; box-shadow: 0 0 20px rgba(253, 230, 138, 0.05);
-        }
-
         .glass-module {
             background: rgba(8, 8, 12, 0.92); backdrop-filter: blur(40px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 1.25rem; margin-bottom: 2.5rem; overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
         }
 
+        /* AVATAR GALLERY */
         .avatar-bar { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 15px; padding: 12px; }
-        .avatar-option { height: 40px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; font-size: 20px; background: rgba(0,0,0,0.5); filter: grayscale(100%); opacity: 0.4; }
+        .avatar-option {
+            height: 40px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);
+            cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; font-size: 20px;
+            background: rgba(0,0,0,0.5); filter: grayscale(100%); opacity: 0.4;
+        }
         .avatar-option.active { border-color: var(--sigil-color, #22d3ee); filter: grayscale(0%); opacity: 1; box-shadow: 0 0 15px var(--sigil-color, #22d3ee); transform: scale(1.1); }
+
         .name-input { background: rgba(0,0,0,0.8) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; text-align: center; font-weight: 900; color: #fde68a !important; letter-spacing: 2px; text-transform: uppercase; font-size: 11px !important; }
 
+        .hub-title { font-family: 'Cinzel', serif; letter-spacing: 0.2em; background: linear-gradient(135deg, #fde68a, #d97706, #22d3ee); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; text-transform: uppercase; }
+
+        /* CALENDAR */
         .calendar-container { min-height: 280px; padding: 1.5rem; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
-        .cal-date { aspect-ratio: 1/1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; border-radius: 6px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); transition: 0.2s ease; cursor: pointer; position: relative; }
+        .cal-date { 
+            aspect-ratio: 1/1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            font-size: 11px; font-weight: 600; border-radius: 6px;
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);
+            transition: 0.2s ease; cursor: pointer; position: relative;
+        }
         .cal-date.has-quest { border-color: var(--sigil-color, #22d3ee) !important; box-shadow: inset 0 0 8px var(--sigil-color, #22d3ee); }
         .cal-today { color: #fde68a; border: 1px solid #fde68a !important; font-weight: 900; }
         .heart-indicator { font-size: 8px; position: absolute; bottom: 2px; filter: drop-shadow(0 0 3px #f472b6); }
 
+        /* ARCHIVE TOGGLE */
         .archive-btn { font-size: 8px; color: #f472b6; border: 1px solid rgba(244, 114, 182, 0.3); padding: 2px 10px; border-radius: 20px; transition: 0.3s; cursor: pointer; letter-spacing: 1px; font-weight: 900; }
-        .archive-btn.active { background: rgba(244, 114, 182, 0.2); border-color: #f472b6; }
+        .archive-btn.active { background: rgba(244, 114, 182, 0.2); border-color: #f472b6; box-shadow: 0 0 10px rgba(244, 114, 182, 0.3); }
 
         .pinned-tag { font-size: 8px; background: rgba(244, 114, 182, 0.15); color: #f472b6; padding: 4px 12px; border-radius: 20px; letter-spacing: 2px; font-weight: 900; border: 1px solid rgba(244, 114, 182, 0.3); }
         .heart-pin { cursor: pointer; transition: 0.3s; opacity: 0.2; filter: grayscale(100%); font-size: 18px; }
@@ -101,8 +106,7 @@
     <div class="sidebar">
         <header class="mb-12 text-center">
             <h1 class="text-3xl hub-title">Tucker Cooper Burns</h1>
-            <p class="text-cyan-400/40 text-[9px] tracking-[0.8em] uppercase mt-1 font-black">Family Hub</p>
-            <div id="heartCount" class="heart-counter">❤️ 0 SHARED HEARTS</div>
+            <p class="text-cyan-400/40 text-[9px] tracking-[0.8em] uppercase mt-3 font-black">Family Hub</p>
             
             <div class="mt-10">
                 <div class="avatar-bar">
@@ -132,7 +136,10 @@
         </header>
 
         <div class="glass-module">
-            <div class="expensive-header"><span>Grocery List</span></div>
+            <div class="expensive-header">
+                <span>Grocery List</span>
+                <span onclick="triggerPurge(event)" class="text-[8px] opacity-30 hover:opacity-100 cursor-pointer">Clear</span>
+            </div>
             <div class="p-6">
                 <div id="marketList" class="space-y-3 mb-6"></div>
                 <input id="mInput" type="text" placeholder="Add provision..." onkeydown="if(event.key==='Enter') saveMarket()">
@@ -157,13 +164,11 @@
                 <span onclick="changeMonth(1)" class="cursor-pointer">▶</span>
             </div>
             <div class="calendar-container">
+                <div class="calendar-grid mb-4 opacity-40">
+                    <div class="text-[9px] text-cyan-400 font-black text-center">S</div><div class="text-[9px] text-cyan-400 font-black text-center">M</div><div class="text-[9px] text-cyan-400 font-black text-center">T</div><div class="text-[9px] text-cyan-400 font-black text-center">W</div><div class="text-[9px] text-cyan-400 font-black text-center">T</div><div class="text-[9px] text-cyan-400 font-black text-center">F</div><div class="text-[9px] text-cyan-400 font-black text-center">S</div>
+                </div>
                 <div id="calendarDates" class="calendar-grid"></div>
             </div>
-        </div>
-
-        <div class="focus-banner">
-            <small class="text-[9px] text-yellow-200 uppercase tracking-[4px] font-black block mb-2 opacity-60">Upcoming Quest</small>
-            <div id="nextQuestDisplay" class="text-white font-light italic text-[14px]">Consulting the stars...</div>
         </div>
     </div>
 
@@ -172,7 +177,7 @@
         const SUPABASE_KEY = 'sb_publishable_OUXpGQk3QkOoUu94S9YZNg_Sb34-Jc4';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        let currentSigil = '🔱', displayedDate = new Date(), favoritesOnly = false;
+        let currentSigil = '🔱', displayedDate = new Date(), activeDay = null, favoritesOnly = false;
 
         function selectAvatar(el, icon) { 
             document.querySelectorAll('.avatar-option').forEach(opt => opt.classList.remove('active'));
@@ -182,7 +187,11 @@
             document.documentElement.style.setProperty('--sigil-shadow', color + '66');
         }
 
-        function toggleArchive() { favoritesOnly = !favoritesOnly; document.getElementById('archiveToggle').classList.toggle('active'); loadNotes(); }
+        function toggleArchive() {
+            favoritesOnly = !favoritesOnly;
+            document.getElementById('archiveToggle').classList.toggle('active');
+            loadNotes();
+        }
 
         window.onload = () => { 
             const saved = localStorage.getItem('sands_name');
@@ -195,14 +204,8 @@
             document.getElementById('calMonth').innerText = displayedDate.toLocaleString('default', { month: 'long', year: 'numeric' });
             const first = new Date(y, m, 1).getDay(), days = new Date(y, m + 1, 0).getDate();
             const grid = document.getElementById('calendarDates'); grid.innerHTML = '';
-            
             const { data: appts } = await _supabase.from('calendar_events').select('*');
             const { data: pinned } = await _supabase.from('family_notes').select('*').eq('is_pinned', true);
-
-            // Update Next Quest Banner
-            const upcoming = appts?.filter(a => new Date(a.start_date) >= today).sort((a,b) => new Date(a.start_date) - new Date(b.start_date))[0];
-            document.getElementById('nextQuestDisplay').innerText = upcoming ? `${upcoming.title} • ${new Date(upcoming.start_date).toLocaleDateString()}` : "No quests currently assigned.";
-
             for (let i = 0; i < first; i++) grid.innerHTML += '<div></div>';
             for (let d = 1; d <= days; d++) {
                 const ds = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
@@ -214,6 +217,7 @@
         }
 
         async function openQuestModal(ds, d) {
+            activeDay = ds;
             document.getElementById('modalDateTitle').innerText = `${d} ${displayedDate.toLocaleString('default', { month: 'long' })}`;
             document.getElementById('questModal').style.display = 'flex';
             const { data: evs } = await _supabase.from('calendar_events').select('*').eq('start_date', ds);
@@ -225,7 +229,6 @@
             };
         }
         function closeQuestModal() { document.getElementById('questModal').style.display = 'none'; }
-        function changeMonth(offset) { displayedDate.setMonth(displayedDate.getMonth() + offset); buildCalendar(); }
 
         function getUser() { return `${currentSigil} ${document.getElementById('userName').value || 'Someone'}`; }
         async function refreshAll() { loadNotes(); loadMarket(); }
@@ -246,10 +249,10 @@
         async function loadNotes() {
             let { data } = await _supabase.from('family_notes').select('*').order('created_at', { ascending: false });
             if(!data) return;
-            document.getElementById('heartCount').innerText = `❤️ ${data.length} SHARED HEARTS`;
             if(favoritesOnly) data = data.filter(n => n.is_pinned);
+            const p = data.filter(n => n.is_pinned), r = data.filter(n => !n.is_pinned);
             const rN = (n) => `<div class="group"><div class="flex justify-between items-center mb-1"><small class="text-cyan-400 font-black text-[9px] uppercase tracking-widest">${n.timestamp}</small><div class="flex gap-4"><span class="heart-pin ${n.is_pinned ? 'heart-active' : ''}" onclick="togglePin('${n.id}', ${n.is_pinned})">❤️</span><span class="text-red-900 opacity-0 group-hover:opacity-100 cursor-pointer" onclick="deleteItem('family_notes', '${n.id}')">×</span></div></div>${n.is_pinned ? '<span class="pinned-tag mb-2 inline-block">❤️ PINNED ❤️</span>' : ''}<p class="text-[15px] font-light italic text-white/90">"${n.note}"</p></div>`;
-            document.getElementById('notesLog').innerHTML = data.map(rN).join('');
+            document.getElementById('notesLog').innerHTML = p.map(rN).join('') + r.map(rN).join('');
         }
         async function togglePin(id, s) { await _supabase.from('family_notes').update({ is_pinned: !s }).eq('id', id); refreshAll(); buildCalendar(); }
         async function deleteItem(t, id) { await _supabase.from(t).delete().eq('id', id); refreshAll(); buildCalendar(); }
