@@ -21,7 +21,6 @@
 
         #particle-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1; pointer-events: none; }
 
-        /* REACTIVE SIDEBAR */
         .sidebar {
             position: relative;
             width: 100%; max-width: 480px; height: 100vh;
@@ -32,7 +31,7 @@
             transition: all 0.8s ease;
         }
 
-        /* AVATAR GALLERY */
+        /* 20-AVATAR GALLERY */
         .avatar-bar { 
             display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; 
             margin-bottom: 15px; background: rgba(255, 255, 255, 0.03); 
@@ -45,13 +44,7 @@
         }
         .avatar-option.active { border-color: var(--sigil-color, #22d3ee); filter: grayscale(0%); opacity: 1; box-shadow: 0 0 15px var(--sigil-color, #22d3ee); transform: scale(1.1); }
 
-        .name-input {
-            background: rgba(0,0,0,0.8) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important;
-            text-align: center; font-weight: 900; color: #fde68a !important;
-            letter-spacing: 2px; text-transform: uppercase; font-size: 11px !important;
-        }
-
-        /* GOLD ETCHED HEADERS */
+        /* BOX TITLES */
         .expensive-header {
             font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.3em; font-weight: 900; text-transform: uppercase;
             color: #fde68a; padding: 1rem 1.25rem; background: linear-gradient(to right, rgba(253, 230, 138, 0.1), transparent);
@@ -69,23 +62,22 @@
         
         input { background: rgba(0,0,0,0.9) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; color: #fff !important; padding: 12px !important; border-radius: 10px; width: 100%; margin-bottom: 10px; }
 
+        /* HEART PIN STYLING */
+        .pinned-tag { font-size: 8px; background: rgba(244, 114, 182, 0.2); color: #f472b6; padding: 3px 10px; border-radius: 6px; letter-spacing: 2px; font-weight: 900; }
+        .heart-pin { cursor: pointer; transition: 0.3s; opacity: 0.3; filter: grayscale(100%); }
+        .heart-active { opacity: 1 !important; filter: grayscale(0%) drop-shadow(0 0 8px #f472b6) !important; color: #f472b6; }
+
         /* CALENDAR */
+        .cal-nav-btn { cursor: pointer; padding: 0 10px; transition: 0.3s; color: #22d3ee; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
-        .cal-day-label { font-size: 9px; font-weight: 900; color: #22d3ee; text-align: center; opacity: 0.6; padding-bottom: 5px; }
-        .cal-date { 
-            aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center;
-            font-size: 11px; font-weight: 700; border-radius: 8px;
-            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);
-            transition: 0.3s; cursor: pointer;
-        }
+        .cal-date { aspect-ratio: 1/1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; border-radius: 8px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); cursor: pointer; position: relative; }
         .cal-date.has-quest { border-color: var(--sigil-color, #22d3ee) !important; background: rgba(34, 211, 238, 0.1); }
-        .cal-today { color: #fde68a; border-color: #fde68a !important; font-weight: 900; }
+        .cal-date.has-heart { border-color: #f472b6 !important; background: rgba(244, 114, 182, 0.1); }
+        .heart-indicator { font-size: 7px; position: absolute; bottom: 2px; color: #f472b6; text-shadow: 0 0 5px #f472b6; }
+        .cal-today { color: #fde68a; border-color: #fde68a !important; }
 
         #questModal { display: none; position: fixed; inset: 0; z-index: 100; background: rgba(0,0,0,0.85); backdrop-filter: blur(15px); align-items: center; justify-content: center; }
         .modal-glass { background: rgba(10, 10, 15, 0.95); border: 1px solid #fde68a; padding: 2.5rem; border-radius: 1.5rem; width: 90%; max-width: 400px; }
-
-        .sidebar::-webkit-scrollbar { width: 3px; }
-        .sidebar::-webkit-scrollbar-thumb { background: linear-gradient(#fde68a, #22d3ee); border-radius: 10px; }
     </style>
 </head>
 <body>
@@ -154,8 +146,9 @@
 
         <div class="glass-module">
             <div class="expensive-header">
-                <span>Appointments</span>
-                <span id="calMonth" class="text-[9px] opacity-50"></span>
+                <span class="cal-nav-btn" onclick="changeMonth(-1)">◀</span>
+                <span id="calMonth" style="min-width: 100px; text-align: center;"></span>
+                <span class="cal-nav-btn" onclick="changeMonth(1)">▶</span>
             </div>
             <div class="p-6">
                 <div class="calendar-grid">
@@ -171,13 +164,11 @@
         const SUPABASE_KEY = 'sb_publishable_OUXpGQk3QkOoUu94S9YZNg_Sb34-Jc4';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        let currentSigil = '🔱';
-        let activeDay = null;
+        let currentSigil = '🔱', displayedDate = new Date();
 
         function selectAvatar(el, icon) { 
             document.querySelectorAll('.avatar-option').forEach(opt => opt.classList.remove('active'));
-            el.classList.add('active');
-            currentSigil = icon;
+            el.classList.add('active'); currentSigil = icon;
             const color = el.getAttribute('data-color');
             document.documentElement.style.setProperty('--sigil-color', color);
             document.documentElement.style.setProperty('--sigil-shadow', color + '44');
@@ -189,115 +180,116 @@
             refreshAll(); buildCalendar(); animate(); 
         };
 
-        // --- CALENDAR LOGIC ---
-        async function buildCalendar() {
-            const now = new Date();
-            document.getElementById('calMonth').innerText = now.toLocaleString('default', { month: 'long' });
-            const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).getDay();
-            const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-            const grid = document.getElementById('calendarDates'); grid.innerHTML = '';
-            const { data: events } = await _supabase.from('calendar_events').select('*');
-            for (let i = 0; i < firstDay; i++) grid.innerHTML += '<div></div>';
-            for (let d = 1; d <= daysInMonth; d++) {
-                const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-                const hasEvent = events?.some(e => e.start_date === dateStr);
-                let today = (d === now.getDate()) ? 'cal-today' : '';
-                let quest = hasEvent ? 'has-quest' : '';
-                grid.innerHTML += `<div class="cal-date ${today} ${quest}" onclick="openQuestModal('${dateStr}', ${d})">${d}</div>`;
-            }
-        }
-        async function openQuestModal(dateStr, d) {
-            activeDay = dateStr;
-            const modal = document.getElementById('questModal');
-            document.getElementById('modalDateTitle').innerText = `${d} ${document.getElementById('calMonth').innerText}`;
-            modal.style.display = 'flex';
-            const { data: dayEvents } = await _supabase.from('calendar_events').select('*').eq('start_date', dateStr);
-            const list = document.getElementById('modalEventList');
-            list.innerHTML = dayEvents?.length ? dayEvents.map(e => `<div class="bg-white/5 p-2 rounded text-[11px] flex justify-between"><span>✦ ${e.title}</span><span class="text-red-500 cursor-pointer" onclick="deleteEvent('${e.id}')">×</span></div>`).join('') : '<p class="text-[10px] text-center opacity-40">No appointments.</p>';
-            document.getElementById('addQuestBtn').onclick = async () => {
-                const val = document.getElementById('modalInput').value; if(!val) return;
-                await _supabase.from('calendar_events').insert([{ title: val, start_date: dateStr }]);
-                document.getElementById('modalInput').value = ""; openQuestModal(dateStr, d); buildCalendar();
-            };
-        }
-        function closeQuestModal() { document.getElementById('questModal').style.display = 'none'; }
-        async function deleteEvent(id) { await _supabase.from('calendar_events').delete().eq('id', id); openQuestModal(activeDay, parseInt(activeDay.split('-')[2])); buildCalendar(); }
-
-        // --- DATA & SPARKLES ---
-        function getUser() { return `${currentSigil} ${document.getElementById('userName').value || 'Someone'}`; }
         async function refreshAll() { loadNotes(); loadMarket(); }
-        async function saveMarket() { const i = document.getElementById('mInput'); if(i.value) await _supabase.from('market_items').insert([{ text: `${getUser()}: ${i.value}` }]); i.value = ""; refreshAll(); }
-        async function loadMarket() {
-            const { data } = await _supabase.from('market_items').select('*').order('created_at', { ascending: true });
-            document.getElementById('marketList').innerHTML = data ? data.map(item => `<div class="bg-white/5 p-3 rounded-lg border border-white/5 text-[11px] flex justify-between"><span>${item.text}</span><span class="cursor-pointer text-red-500" onclick="deleteItem('market_items', '${item.id}')">×</span></div>`).join('') : '';
-        }
 
+        // --- LOVE NOTES WITH HEART PINNING ---
         async function saveNote() { 
             const i = document.getElementById('nInput'); 
             if(i.value) {
-                await _supabase.from('family_notes').insert([{ note: i.value, timestamp: `${getUser()} • ${new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}` }]); 
+                const now = new Date();
+                const dateKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+                await _supabase.from('family_notes').insert([{ 
+                    note: i.value, 
+                    timestamp: `${currentSigil} ${document.getElementById('userName').value || 'Someone'} • ${now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}`,
+                    is_pinned: false,
+                    post_date: dateKey
+                }]); 
                 triggerSparkles();
             }
-            i.value = ""; 
-            refreshAll(); 
+            i.value = ""; refreshAll(); buildCalendar();
         }
 
-        function triggerSparkles() {
-            for (let i = 0; i < 20; i++) {
-                particles.push(new SpecialParticle(true)); // Hearts
-                particles.push(new SpecialParticle(false)); // Golden Sparks
-            }
+        async function togglePin(id, currentStatus) {
+            await _supabase.from('family_notes').update({ is_pinned: !currentStatus }).eq('id', id);
+            refreshAll(); buildCalendar();
         }
 
         async function loadNotes() {
             const { data } = await _supabase.from('family_notes').select('*').order('created_at', { ascending: false });
-            document.getElementById('notesLog').innerHTML = data ? data.map(n => `<div class="bg-white/5 p-4 rounded-xl border border-white/5 relative"><small class="text-cyan-400 font-black text-[9px] block mb-2 uppercase tracking-widest">${n.timestamp}</small><p class="text-[14px] font-light leading-relaxed">${n.note}</p><span class="absolute top-2 right-3 text-red-400 cursor-pointer" onclick="deleteItem('family_notes', '${n.id}')">×</span></div>`).join('') : '';
-        }
-        async function deleteItem(table, id) { await _supabase.from(table).delete().eq('id', id); refreshAll(); }
+            if(!data) return;
+            const pinned = data.filter(n => n.is_pinned), regular = data.filter(n => !n.is_pinned);
 
-        // --- ANIMATIONS ENGINE ---
-        const canvas = document.getElementById('particle-canvas');
-        const ctx = canvas.getContext('2d');
+            const renderNote = (n) => `
+                <div class="bg-white/5 p-4 rounded-xl border border-white/5 relative group ${n.is_pinned ? 'border-pink-500/30 bg-pink-500/5' : ''}">
+                    <div class="flex justify-between items-center mb-2">
+                        <small class="text-cyan-400 font-black text-[9px] uppercase tracking-widest">${n.timestamp}</small>
+                        <div class="flex gap-3">
+                            <span class="heart-pin ${n.is_pinned ? 'heart-active' : ''}" onclick="togglePin('${n.id}', ${n.is_pinned})">❤️</span>
+                            <span class="text-red-400 cursor-pointer opacity-0 group-hover:opacity-100" onclick="deleteItem('family_notes', '${n.id}')">×</span>
+                        </div>
+                    </div>
+                    ${n.is_pinned ? '<span class="pinned-tag mb-2 inline-block">❤️ PINNED ❤️</span>' : ''}
+                    <p class="text-[14px] font-light leading-relaxed">${n.note}</p>
+                </div>`;
+            document.getElementById('notesLog').innerHTML = pinned.map(renderNote).join('') + regular.map(renderNote).join('');
+        }
+
+        // --- CALENDAR & MARKET ---
+        function changeMonth(offset) { displayedDate.setMonth(displayedDate.getMonth() + offset); buildCalendar(); }
+        async function buildCalendar() {
+            const year = displayedDate.getFullYear(), month = displayedDate.getMonth(), today = new Date();
+            document.getElementById('calMonth').innerText = displayedDate.toLocaleString('default', { month: 'long', year: 'numeric' });
+            const firstDay = new Date(year, month, 1).getDay(), daysInMonth = new Date(year, month + 1, 0).getDate();
+            const grid = document.getElementById('calendarDates'); grid.innerHTML = '';
+            
+            const { data: appts } = await _supabase.from('calendar_events').select('*');
+            const { data: notes } = await _supabase.from('family_notes').select('*').eq('is_pinned', true);
+
+            for (let i = 0; i < firstDay; i++) grid.innerHTML += '<div></div>';
+            for (let d = 1; d <= daysInMonth; d++) {
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                const hasAppt = appts?.some(e => e.start_date === dateStr);
+                const hasHeart = notes?.some(n => n.post_date === dateStr);
+                
+                let isToday = (d === today.getDate() && month === today.getMonth() && year === today.getFullYear()) ? 'cal-today' : '';
+                grid.innerHTML += `
+                    <div class="cal-date ${isToday} ${hasAppt ? 'has-quest' : ''} ${hasHeart ? 'has-heart' : ''}" onclick="openQuestModal('${dateStr}', ${d})">
+                        ${d}
+                        ${hasHeart ? '<span class="heart-indicator">❤️</span>' : ''}
+                    </div>`;
+            }
+        }
+
+        async function openQuestModal(dateStr, d) {
+            const modal = document.getElementById('questModal');
+            document.getElementById('modalDateTitle').innerText = `${d} ${displayedDate.toLocaleString('default', { month: 'long' })}`;
+            modal.style.display = 'flex';
+            const { data: dayEvents } = await _supabase.from('calendar_events').select('*').eq('start_date', dateStr);
+            const list = document.getElementById('modalEventList');
+            list.innerHTML = dayEvents?.length ? dayEvents.map(e => `<div class="bg-white/5 p-2 rounded text-xs flex justify-between"><span>✦ ${e.title}</span><span class="text-red-500 cursor-pointer" onclick="deleteItem('calendar_events', '${e.id}'); openQuestModal('${dateStr}', ${d}); buildCalendar();">×</span></div>`).join('') : '<p class="text-[10px] text-center opacity-40">Empty...</p>';
+            document.getElementById('addQuestBtn').onclick = async () => {
+                const v = document.getElementById('modalInput').value; if(!v) return;
+                await _supabase.from('calendar_events').insert([{ title: v, start_date: dateStr }]);
+                document.getElementById('modalInput').value = ""; openQuestModal(dateStr, d); buildCalendar();
+            };
+        }
+        function closeQuestModal() { document.getElementById('questModal').style.display = 'none'; }
+        async function loadMarket() {
+            const { data } = await _supabase.from('market_items').select('*').order('created_at', { ascending: true });
+            document.getElementById('marketList').innerHTML = data ? data.map(i => `<div class="bg-white/5 p-3 rounded-lg border border-white/5 text-[11px] flex justify-between"><span>${i.text}</span><span class="cursor-pointer text-red-500" onclick="deleteItem('market_items', '${i.id}')">×</span></div>`).join('') : '';
+        }
+        async function saveMarket() { const i = document.getElementById('mInput'); if(i.value) await _supabase.from('market_items').insert([{ text: `${currentSigil} ${document.getElementById('userName').value || 'Someone'}: ${i.value}` }]); i.value = ""; refreshAll(); }
+        async function deleteItem(table, id) { await _supabase.from(table).delete().eq('id', id); refreshAll(); buildCalendar(); }
+
+        // --- ANIMATIONS ---
+        const canvas = document.getElementById('particle-canvas'), ctx = canvas.getContext('2d');
         let particles = [];
         function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
         window.addEventListener('resize', resize); resize();
-
         class Particle {
             constructor() { this.reset(); }
             reset() { this.x = Math.random() * canvas.width; this.y = canvas.height + 50; this.isNote = Math.random() > 0.4; this.size = Math.random() * 35 + 20; this.speed = Math.random() * 1.5 + 0.5; this.opacity = Math.random() * 0.4 + 0.1; this.color = this.isNote ? '34, 211, 238' : '251, 191, 36'; }
             update() { this.y -= this.speed; this.x += Math.sin(this.y / 60) * 1; if (this.y < -50) this.reset(); }
             draw() { ctx.fillStyle = `rgba(${this.color}, ${this.opacity})`; if (this.isNote) { ctx.font = `${this.size}px Cinzel`; ctx.fillText('♪', this.x, this.y); } else { ctx.beginPath(); ctx.arc(this.x, this.y, this.size / 4, 0, Math.PI * 2); ctx.fill(); } }
         }
-
         class SpecialParticle {
-            constructor(isHeart) {
-                this.x = Math.random() * 400; // Launch from sidebar area
-                this.y = canvas.height * 0.6;
-                this.isHeart = isHeart;
-                this.size = Math.random() * 20 + 10;
-                this.speedX = (Math.random() - 0.5) * 4;
-                this.speedY = -Math.random() * 5 - 2;
-                this.opacity = 1;
-                this.life = 100;
-            }
-            update() {
-                this.x += this.speedX; this.y += this.speedY; this.opacity -= 0.01; this.life--;
-            }
-            draw() {
-                if(this.opacity <= 0) return;
-                ctx.fillStyle = this.isHeart ? `rgba(244, 114, 182, ${this.opacity})` : `rgba(253, 230, 138, ${this.opacity})`;
-                ctx.font = `${this.size}px serif`;
-                ctx.fillText(this.isHeart ? '❤️' : '✨', this.x, this.y);
-            }
+            constructor(isHeart) { this.x = Math.random() * 400; this.y = canvas.height * 0.6; this.isHeart = isHeart; this.size = Math.random() * 20 + 10; this.speedX = (Math.random() - 0.5) * 4; this.speedY = -Math.random() * 5 - 2; this.opacity = 1; this.life = 100; }
+            update() { this.x += this.speedX; this.y += this.speedY; this.opacity -= 0.01; this.life--; }
+            draw() { if(this.opacity <= 0) return; ctx.fillStyle = this.isHeart ? `rgba(244, 114, 182, ${this.opacity})` : `rgba(253, 230, 138, ${this.opacity})`; ctx.font = `${this.size}px serif`; ctx.fillText(this.isHeart ? '❤️' : '✨', this.x, this.y); }
         }
-
+        function triggerSparkles() { for (let i = 0; i < 20; i++) { particles.push(new SpecialParticle(true)); particles.push(new SpecialParticle(false)); } }
         for (let i = 0; i < 35; i++) particles.push(new Particle());
-        function animate() { 
-            ctx.clearRect(0, 0, canvas.width, canvas.height); 
-            particles = particles.filter(p => p.life === undefined || p.life > 0);
-            particles.forEach(p => { p.update(); p.draw(); }); 
-            requestAnimationFrame(animate); 
-        }
+        function animate() { ctx.clearRect(0, 0, canvas.width, canvas.height); particles = particles.filter(p => p.life === undefined || p.life > 0); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animate); }
         animate();
     </script>
 </body>
