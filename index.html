@@ -25,19 +25,20 @@
             position: relative;
             width: 100%; max-width: 480px; height: 100vh;
             padding: 2.5rem; overflow-y: auto; z-index: 10;
-            background: linear-gradient(to right, rgba(0,0,0,0.98) 0%, rgba(0,0,0,0.8) 85%, rgba(0,0,0,0) 100%);
+            background: linear-gradient(to right, rgba(0,0,0,0.98) 0%, rgba(0,0,0,0.85) 85%, rgba(0,0,0,0) 100%);
             border-right: 2px solid var(--sigil-color, #22d3ee);
-            box-shadow: 10px 0 50px rgba(0,0,0,0.8);
             transition: all 0.8s ease;
         }
 
-        /* VIVID GOLD HEADERS */
+        /* GRADIENT BOX HEADERS */
         .expensive-header {
             font-family: 'Cinzel', serif; font-size: 12px; letter-spacing: 0.35em; font-weight: 900; text-transform: uppercase;
-            color: #fbbf24; padding: 1.25rem; 
-            background: linear-gradient(to right, rgba(251, 191, 36, 0.25), transparent);
-            border-bottom: 2px solid #fbbf24; 
-            text-shadow: 0 0 15px rgba(251, 191, 36, 0.8);
+            padding: 1.25rem; 
+            background: linear-gradient(to right, #fbbf24, #22d3ee);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            border-bottom: 2px solid transparent;
+            border-image: linear-gradient(to right, #fbbf24, #22d3ee) 1;
+            filter: drop-shadow(0 0 8px rgba(34, 211, 238, 0.4));
             display: flex; justify-content: space-between; align-items: center;
         }
 
@@ -46,56 +47,52 @@
             background: linear-gradient(135deg, #fbbf24 0%, #d97706 50%, #22d3ee 100%); 
             -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
             font-weight: 900; text-transform: uppercase;
-            filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.3));
         }
 
-        .heart-counter { 
-            font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 2px; 
-            color: #ef4444; margin-top: 5px; 
-            text-shadow: 0 0 12px rgba(239, 68, 68, 0.6); 
-            font-weight: 900; 
+        /* OBSIDIAN INPUTS (No White) */
+        input {
+            background: rgba(0, 0, 0, 0.7) !important;
+            border: 1px solid rgba(34, 211, 238, 0.2) !important;
+            color: #fff !important;
+            padding: 14px !important;
+            border-radius: 8px;
+            width: 100%;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+            font-weight: 300;
         }
+        input:focus {
+            border-color: #22d3ee !important;
+            background: rgba(0, 0, 0, 0.9) !important;
+            box-shadow: 0 0 15px rgba(34, 211, 238, 0.2);
+            outline: none;
+        }
+        input::placeholder { color: rgba(255, 255, 255, 0.3); font-style: italic; }
 
-        /* GLASS MODULES */
         .glass-module {
             background: rgba(8, 8, 12, 0.95); backdrop-filter: blur(50px);
-            border: 1px solid rgba(34, 211, 238, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 1.25rem; margin-bottom: 2.5rem; overflow: hidden;
             box-shadow: 0 30px 60px rgba(0,0,0,0.9);
         }
 
-        .name-input { background: rgba(0,0,0,0.9) !important; border: 1px solid rgba(34, 211, 238, 0.3) !important; text-align: center; font-weight: 900; color: #fbbf24 !important; letter-spacing: 3px; text-transform: uppercase; font-size: 11px !important; }
-
-        /* VIVID CALENDAR */
-        .calendar-container { min-height: 280px; padding: 1.5rem; }
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
         .cal-date { 
             aspect-ratio: 1/1; display: flex; flex-direction: column; align-items: center; justify-content: center; 
             font-size: 11px; font-weight: 700; border-radius: 6px; 
-            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); 
+            background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); 
             transition: 0.2s ease; cursor: pointer; position: relative; 
         }
-        .cal-date.has-quest { border-color: #22d3ee !important; box-shadow: inset 0 0 10px rgba(34, 211, 238, 0.4); }
-        .cal-today { color: #fbbf24; border: 2px solid #fbbf24 !important; font-weight: 900; box-shadow: 0 0 15px rgba(251, 191, 36, 0.4); }
-        .heart-indicator { font-size: 9px; position: absolute; bottom: 2px; filter: drop-shadow(0 0 5px #ef4444); }
+        .cal-date.has-quest { border-color: #22d3ee !important; box-shadow: inset 0 0 10px rgba(34, 211, 238, 0.2); }
+        .cal-today { color: #fbbf24; border: 2px solid #fbbf24 !important; font-weight: 900; }
+        
+        .archive-btn { font-size: 8px; color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.4); padding: 3px 12px; border-radius: 20px; cursor: pointer; letter-spacing: 1px; font-weight: 900; }
+        .archive-btn.active { background: rgba(239, 68, 68, 0.2); border-color: #ef4444; }
 
-        /* ARCHIVE OF HEARTS TAG */
-        .archive-btn { font-size: 8px; color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.4); padding: 3px 12px; border-radius: 20px; transition: 0.3s; cursor: pointer; letter-spacing: 1px; font-weight: 900; }
-        .archive-btn.active { background: rgba(239, 68, 68, 0.2); border-color: #ef4444; box-shadow: 0 0 15px rgba(239, 68, 68, 0.3); }
-
-        .pinned-tag { font-size: 8px; background: rgba(239, 68, 68, 0.15); color: #ef4444; padding: 5px 14px; border-radius: 20px; letter-spacing: 2px; font-weight: 900; border: 1px solid rgba(239, 68, 68, 0.4); }
-        .heart-pin { cursor: pointer; transition: 0.3s; opacity: 0.2; filter: grayscale(100%); font-size: 20px; }
-        .heart-active { opacity: 1 !important; filter: grayscale(0%) drop-shadow(0 0 12px #ef4444) !important; color: #ef4444; }
-
-        /* FOCUS BANNER */
         .focus-banner {
-            background: linear-gradient(45deg, rgba(251, 191, 36, 0.15), rgba(34, 211, 238, 0.08));
-            border: 1px solid #fbbf24; border-radius: 1rem; padding: 1.5rem; margin-top: 1rem;
-            text-align: center; box-shadow: 0 0 30px rgba(251, 191, 36, 0.1);
+            background: linear-gradient(45deg, rgba(251, 191, 36, 0.1), rgba(34, 211, 238, 0.05));
+            border: 1px solid rgba(34, 211, 238, 0.3); border-radius: 1rem; padding: 1.5rem; margin-top: 1rem;
+            text-align: center;
         }
-
-        .avatar-option { height: 42px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; font-size: 22px; background: rgba(0,0,0,0.6); filter: grayscale(100%); opacity: 0.4; }
-        .avatar-option.active { border-color: var(--sigil-color, #22d3ee); filter: grayscale(0%); opacity: 1; box-shadow: 0 0 20px var(--sigil-color, #22d3ee); transform: scale(1.15); }
     </style>
 </head>
 <body>
@@ -103,13 +100,13 @@
     <canvas id="particle-canvas"></canvas>
 
     <div id="questModal" class="hidden fixed inset-0 z-[100] bg-black/90 backdrop-blur-xl flex items-center justify-center">
-        <div class="bg-black/95 border-2 border-[#fbbf24] p-10 rounded-none w-90 max-w-[420px] shadow-[0_0_50px_rgba(251,191,36,0.2)]">
+        <div class="bg-black/95 border-2 border-cyan-500/50 p-10 rounded-xl w-90 max-w-[420px]">
             <h2 id="modalDateTitle" class="hub-title text-xl mb-8 text-center"></h2>
             <div id="modalEventList" class="space-y-4 mb-8 max-h-48 overflow-y-auto pr-2"></div>
-            <input id="modalInput" type="text" placeholder="Add New Appointment..." class="mb-4 w-full p-3 bg-black border border-cyan-500/30 text-white">
-            <div class="flex gap-4">
+            <input id="modalInput" type="text" placeholder="Assign New Appointment...">
+            <div class="flex gap-4 mt-4">
                 <button onclick="closeQuestModal()" class="w-full py-3 border border-white/20 text-[10px] uppercase font-bold tracking-widest text-white">Close</button>
-                <button id="addQuestBtn" class="w-full py-3 bg-yellow-600/20 border border-[#fbbf24] text-[#fbbf24] text-[10px] uppercase font-bold tracking-widest">Assign</button>
+                <button id="addQuestBtn" class="w-full py-3 bg-cyan-500/20 border border-cyan-500 text-cyan-400 text-[10px] uppercase font-bold tracking-widest">Assign</button>
             </div>
         </div>
     </div>
@@ -118,30 +115,20 @@
         <header class="mb-12 text-center">
             <h1 class="text-3xl hub-title">Tucker Cooper Burns</h1>
             <p class="text-cyan-400 text-[10px] tracking-[0.8em] uppercase mt-1 font-black">Family Hub</p>
-            <div id="heartCount" class="heart-counter">❤️ 0 ARCHIVED HEARTS</div>
+            <div id="heartCount" class="heart-counter font-black text-[10px] text-red-500 mt-2 tracking-widest">❤️ 0 ARCHIVED HEARTS</div>
             
             <div class="mt-10">
                 <div class="avatar-bar grid grid-cols-5 gap-2 p-3 bg-white/5 rounded-xl border border-white/10">
-                    <div class="avatar-option active" data-color="#22d3ee" onclick="selectAvatar(this, '🔱')">🔱</div>
-                    <div class="avatar-option" data-color="#f87171" onclick="selectAvatar(this, '🧜‍♀️')">🧜‍♀️</div>
-                    <div class="avatar-option" data-color="#cbd5e1" onclick="selectAvatar(this, '🐚')">🐚</div>
-                    <div class="avatar-option" data-color="#ef4444" onclick="selectAvatar(this, '🏴‍☠️')">🏴‍☠️</div>
-                    <div class="avatar-option" data-color="#f97316" onclick="selectAvatar(this, '🔥')">🔥</div>
-                    <div class="avatar-option" data-color="#4ade80" onclick="selectAvatar(this, '🐢')">🐢</div>
-                    <div class="avatar-option" data-color="#94a3b8" onclick="selectAvatar(this, '🐺')">🐺</div>
-                    <div class="avatar-option" data-color="#fbbf24" onclick="selectAvatar(this, '🦉')">🦉</div>
-                    <div class="avatar-option" data-color="#38bdf8" onclick="selectAvatar(this, '⚓')">⚓</div>
-                    <div class="avatar-option" data-color="#a78bfa" onclick="selectAvatar(this, '📖')">📖</div>
-                    <div class="avatar-option" data-color="#84cc16" onclick="selectAvatar(this, '🥥')">🥥</div>
-                    <div class="avatar-option" data-color="#059669" onclick="selectAvatar(this, '🌴')">🌴</div>
-                    <div class="avatar-option" data-color="#60a5fa" onclick="selectAvatar(this, '🐬')">🐬</div>
-                    <div class="avatar-option" data-color="#f87171" onclick="selectAvatar(this, '🦀')">🦀</div>
-                    <div class="avatar-option" data-color="#e879f9" onclick="selectAvatar(this, '🎸')">🎸</div>
-                    <div class="avatar-option" data-color="#8b5cf6" onclick="selectAvatar(this, '🏹')">🏹</div>
-                    <div class="avatar-option" data-color="#d1d5db" onclick="selectAvatar(this, '⚔️')">⚔️</div>
-                    <div class="avatar-option" data-color="#ef4444" onclick="selectAvatar(this, '🍄')">🍄</div>
-                    <div class="avatar-option" data-color="#fbbf24" onclick="selectAvatar(this, '💎')">💎</div>
-                    <div class="avatar-option" data-color="#f97316" onclick="selectAvatar(this, '🍺')">🍺</div>
+                    <div class="avatar-option active cursor-pointer p-2 border border-white/10 rounded-lg bg-black/40 text-center text-xl" data-color="#22d3ee" onclick="selectAvatar(this, '🔱')">🔱</div>
+                    <div class="avatar-option cursor-pointer p-2 border border-white/10 rounded-lg bg-black/40 text-center text-xl" data-color="#f87171" onclick="selectAvatar(this, '🧜‍♀️')">🧜‍♀️</div>
+                    <div class="avatar-option cursor-pointer p-2 border border-white/10 rounded-lg bg-black/40 text-center text-xl" data-color="#cbd5e1" onclick="selectAvatar(this, '🐚')">🐚</div>
+                    <div class="avatar-option cursor-pointer p-2 border border-white/10 rounded-lg bg-black/40 text-center text-xl" data-color="#ef4444" onclick="selectAvatar(this, '🏴‍☠️')">🏴‍☠️</div>
+                    <div class="avatar-option cursor-pointer p-2 border border-white/10 rounded-lg bg-black/40 text-center text-xl" data-color="#f97316" onclick="selectAvatar(this, '🔥')">🔥</div>
+                    <div class="avatar-option cursor-pointer p-2 border border-white/10 rounded-lg bg-black/40 text-center text-xl" data-color="#4ade80" onclick="selectAvatar(this, '🐢')">🐢</div>
+                    <div class="avatar-option cursor-pointer p-2 border border-white/10 rounded-lg bg-black/40 text-center text-xl" data-color="#94a3b8" onclick="selectAvatar(this, '🐺')">🐺</div>
+                    <div class="avatar-option cursor-pointer p-2 border border-white/10 rounded-lg bg-black/40 text-center text-xl" data-color="#fbbf24" onclick="selectAvatar(this, '🦉')">🦉</div>
+                    <div class="avatar-option cursor-pointer p-2 border border-white/10 rounded-lg bg-black/40 text-center text-xl" data-color="#38bdf8" onclick="selectAvatar(this, '⚓')">⚓</div>
+                    <div class="avatar-option cursor-pointer p-2 border border-white/10 rounded-lg bg-black/40 text-center text-xl" data-color="#a78bfa" onclick="selectAvatar(this, '📖')">📖</div>
                 </div>
                 <input id="userName" type="text" placeholder="IDENTIFY" class="name-input w-full mt-4">
             </div>
@@ -179,7 +166,7 @@
 
         <div class="focus-banner">
             <small class="text-[9px] text-[#fbbf24] uppercase tracking-[5px] font-black block mb-2">Upcoming Quest</small>
-            <div id="nextQuestDisplay" class="text-white font-light italic text-[14px]">...</div>
+            <div id="nextQuestDisplay" class="text-white font-light italic text-[14px]">Consulting the oracle...</div>
         </div>
     </div>
 
@@ -191,10 +178,10 @@
         let currentSigil = '🔱', displayedDate = new Date(), favoritesOnly = false;
 
         function selectAvatar(el, icon) { 
-            document.querySelectorAll('.avatar-option').forEach(opt => opt.classList.remove('active'));
-            el.classList.add('active'); currentSigil = icon;
-            const color = el.getAttribute('data-color');
-            document.documentElement.style.setProperty('--sigil-color', color);
+            document.querySelectorAll('.avatar-option').forEach(opt => opt.style.borderColor = 'rgba(255,255,255,0.1)');
+            el.style.borderColor = el.getAttribute('data-color');
+            currentSigil = icon;
+            document.documentElement.style.setProperty('--sigil-color', el.getAttribute('data-color'));
         }
 
         function toggleArchive() { favoritesOnly = !favoritesOnly; document.getElementById('archiveToggle').classList.toggle('active'); loadNotes(); }
@@ -215,7 +202,7 @@
                 const hasA = appts?.some(e => e.start_date === ds);
                 const hasH = pinned?.some(n => n.post_date === ds);
                 let ist = (d === today.getDate() && m === today.getMonth() && y === today.getFullYear()) ? 'cal-today' : '';
-                grid.innerHTML += `<div class="cal-date ${ist} ${hasA ? 'has-quest' : ''}" onclick="openQuestModal('${ds}', ${d})">${d}${hasH ? '<span class="heart-indicator">❤️</span>' : ''}</div>`;
+                grid.innerHTML += `<div class="cal-date ${ist} ${hasA ? 'has-quest' : ''}" onclick="openQuestModal('${ds}', ${d})">${d}${hasH ? '<span class="absolute bottom-1">❤️</span>' : ''}</div>`;
             }
         }
 
@@ -223,7 +210,7 @@
             document.getElementById('modalDateTitle').innerText = `${d} ${displayedDate.toLocaleString('default', { month: 'long' })}`;
             document.getElementById('questModal').classList.remove('hidden');
             const { data: evs } = await _supabase.from('calendar_events').select('*').eq('start_date', ds);
-            document.getElementById('modalEventList').innerHTML = evs?.length ? evs.map(e => `<div class="bg-white/5 p-4 rounded flex justify-between items-center border border-white/5"><span>${e.title}</span><span class="text-red-600 font-bold cursor-pointer" onclick="deleteItem('calendar_events', '${e.id}'); openQuestModal('${ds}', ${d}); buildCalendar();">×</span></div>`).join('') : '<p class="opacity-30 text-center">No assignments.</p>';
+            document.getElementById('modalEventList').innerHTML = evs?.length ? evs.map(e => `<div class="bg-white/5 p-4 rounded flex justify-between border border-white/5"><span>${e.title}</span><span class="text-red-600 font-bold cursor-pointer" onclick="deleteItem('calendar_events', '${e.id}'); openQuestModal('${ds}', ${d}); buildCalendar();">×</span></div>`).join('') : '<p class="opacity-30 text-center italic text-xs">No assignments.</p>';
             document.getElementById('addQuestBtn').onclick = async () => {
                 const v = document.getElementById('modalInput').value; if(!v) return;
                 await _supabase.from('calendar_events').insert([{ title: v, start_date: ds }]);
@@ -238,7 +225,7 @@
         async function saveMarket() { const i = document.getElementById('mInput'); if(i.value) await _supabase.from('market_items').insert([{ text: `${getUser()} • ${i.value}` }]); i.value = ""; refreshAll(); }
         async function loadMarket() {
             const { data } = await _supabase.from('market_items').select('*').order('created_at', { ascending: true });
-            document.getElementById('marketList').innerHTML = data ? data.map(item => `<div class="flex justify-between items-center text-[13px] font-light border-b border-white/5 pb-2"><span>${item.text}</span><span class="cursor-pointer text-red-900 opacity-50 hover:opacity-100 font-bold" onclick="deleteItem('market_items', '${item.id}')">×</span></div>`).join('') : '';
+            document.getElementById('marketList').innerHTML = data ? data.map(item => `<div class="flex justify-between items-center text-[13px] font-light border-b border-white/5 pb-2"><span>${item.text}</span><span class="cursor-pointer text-red-900 font-bold" onclick="deleteItem('market_items', '${item.id}')">×</span></div>`).join('') : '';
         }
         async function saveNote() { 
             const i = document.getElementById('nInput'); if(i.value) {
@@ -253,7 +240,7 @@
             if(!data) return;
             document.getElementById('heartCount').innerText = `❤️ ${data.length} ARCHIVED HEARTS`;
             if(favoritesOnly) data = data.filter(n => n.is_pinned);
-            const rN = (n) => `<div class="group"><div class="flex justify-between items-center mb-1"><small class="text-cyan-400 font-black text-[9px] uppercase tracking-widest">${n.timestamp}</small><div class="flex gap-4"><span class="heart-pin ${n.is_pinned ? 'heart-active' : ''}" onclick="togglePin('${n.id}', ${n.is_pinned})">❤️</span><span class="text-red-900 opacity-0 group-hover:opacity-100 cursor-pointer font-bold" onclick="deleteItem('family_notes', '${n.id}')">×</span></div></div>${n.is_pinned ? '<span class="pinned-tag mb-3 inline-block">❤️ PINNED ❤️</span>' : ''}<p class="text-[16px] font-light italic text-white/95 leading-relaxed">"${n.note}"</p></div>`;
+            const rN = (n) => `<div class="group"><div class="flex justify-between items-center mb-1"><small class="text-cyan-400 font-black text-[9px] uppercase tracking-widest">${n.timestamp}</small><div class="flex gap-4"><span class="cursor-pointer ${n.is_pinned ? 'text-red-500' : 'opacity-20'}" onclick="togglePin('${n.id}', ${n.is_pinned})">❤️</span><span class="text-red-900 opacity-0 group-hover:opacity-100 cursor-pointer font-bold" onclick="deleteItem('family_notes', '${n.id}')">×</span></div></div>${n.is_pinned ? '<span class="text-[8px] bg-red-500/10 text-red-500 px-3 py-1 rounded-full mb-2 inline-block font-black tracking-widest">❤️ PINNED ❤️</span>' : ''}<p class="text-[16px] font-light italic text-white/95 leading-relaxed">"${n.note}"</p></div>`;
             document.getElementById('notesLog').innerHTML = data.map(rN).join('');
         }
         async function togglePin(id, s) { await _supabase.from('family_notes').update({ is_pinned: !s }).eq('id', id); refreshAll(); buildCalendar(); }
