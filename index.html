@@ -49,7 +49,7 @@
             font-weight: 900; text-transform: uppercase;
         }
 
-        /* OBSIDIAN INPUTS (No White) */
+        /* OBSIDIAN INPUTS */
         input {
             background: rgba(0, 0, 0, 0.7) !important;
             border: 1px solid rgba(34, 211, 238, 0.2) !important;
@@ -93,6 +93,9 @@
             border: 1px solid rgba(34, 211, 238, 0.3); border-radius: 1rem; padding: 1.5rem; margin-top: 1rem;
             text-align: center;
         }
+
+        .avatar-option { cursor: pointer; transition: 0.3s; filter: grayscale(100%); opacity: 0.4; }
+        .avatar-option.active { filter: grayscale(0%); opacity: 1; transform: scale(1.1); }
     </style>
 </head>
 <body>
@@ -103,7 +106,7 @@
         <div class="bg-black/95 border-2 border-cyan-500/50 p-10 rounded-xl w-90 max-w-[420px]">
             <h2 id="modalDateTitle" class="hub-title text-xl mb-8 text-center"></h2>
             <div id="modalEventList" class="space-y-4 mb-8 max-h-48 overflow-y-auto pr-2"></div>
-            <input id="modalInput" type="text" placeholder="Assign New Appointment...">
+            <input id="modalInput" type="text" placeholder="Add New Appointment...">
             <div class="flex gap-4 mt-4">
                 <button onclick="closeQuestModal()" class="w-full py-3 border border-white/20 text-[10px] uppercase font-bold tracking-widest text-white">Close</button>
                 <button id="addQuestBtn" class="w-full py-3 bg-cyan-500/20 border border-cyan-500 text-cyan-400 text-[10px] uppercase font-bold tracking-widest">Assign</button>
@@ -119,18 +122,18 @@
             
             <div class="mt-10">
                 <div class="avatar-bar grid grid-cols-5 gap-2 p-3 bg-white/5 rounded-xl border border-white/10">
-                    <div class="avatar-option active cursor-pointer p-2 border border-white/10 rounded-lg bg-black/40 text-center text-xl" data-color="#22d3ee" onclick="selectAvatar(this, '🔱')">🔱</div>
-                    <div class="avatar-option cursor-pointer p-2 border border-white/10 rounded-lg bg-black/40 text-center text-xl" data-color="#f87171" onclick="selectAvatar(this, '🧜‍♀️')">🧜‍♀️</div>
-                    <div class="avatar-option cursor-pointer p-2 border border-white/10 rounded-lg bg-black/40 text-center text-xl" data-color="#cbd5e1" onclick="selectAvatar(this, '🐚')">🐚</div>
-                    <div class="avatar-option cursor-pointer p-2 border border-white/10 rounded-lg bg-black/40 text-center text-xl" data-color="#ef4444" onclick="selectAvatar(this, '🏴‍☠️')">🏴‍☠️</div>
-                    <div class="avatar-option cursor-pointer p-2 border border-white/10 rounded-lg bg-black/40 text-center text-xl" data-color="#f97316" onclick="selectAvatar(this, '🔥')">🔥</div>
-                    <div class="avatar-option cursor-pointer p-2 border border-white/10 rounded-lg bg-black/40 text-center text-xl" data-color="#4ade80" onclick="selectAvatar(this, '🐢')">🐢</div>
-                    <div class="avatar-option cursor-pointer p-2 border border-white/10 rounded-lg bg-black/40 text-center text-xl" data-color="#94a3b8" onclick="selectAvatar(this, '🐺')">🐺</div>
-                    <div class="avatar-option cursor-pointer p-2 border border-white/10 rounded-lg bg-black/40 text-center text-xl" data-color="#fbbf24" onclick="selectAvatar(this, '🦉')">🦉</div>
-                    <div class="avatar-option cursor-pointer p-2 border border-white/10 rounded-lg bg-black/40 text-center text-xl" data-color="#38bdf8" onclick="selectAvatar(this, '⚓')">⚓</div>
-                    <div class="avatar-option cursor-pointer p-2 border border-white/10 rounded-lg bg-black/40 text-center text-xl" data-color="#a78bfa" onclick="selectAvatar(this, '📖')">📖</div>
+                    <div class="avatar-option active p-2 rounded-lg bg-black/40 text-center text-xl" data-color="#22d3ee" onclick="selectAvatar(this, '🔱')">🔱</div>
+                    <div class="avatar-option p-2 rounded-lg bg-black/40 text-center text-xl" data-color="#f87171" onclick="selectAvatar(this, '🧜‍♀️')">🧜‍♀️</div>
+                    <div class="avatar-option p-2 rounded-lg bg-black/40 text-center text-xl" data-color="#cbd5e1" onclick="selectAvatar(this, '🐚')">🐚</div>
+                    <div class="avatar-option p-2 rounded-lg bg-black/40 text-center text-xl" data-color="#ef4444" onclick="selectAvatar(this, '🏴‍☠️')">🏴‍☠️</div>
+                    <div class="avatar-option p-2 rounded-lg bg-black/40 text-center text-xl" data-color="#f97316" onclick="selectAvatar(this, '🔥')">🔥</div>
+                    <div class="avatar-option p-2 rounded-lg bg-black/40 text-center text-xl" data-color="#4ade80" onclick="selectAvatar(this, '🐢')">🐢</div>
+                    <div class="avatar-option p-2 rounded-lg bg-black/40 text-center text-xl" data-color="#94a3b8" onclick="selectAvatar(this, '🐺')">🐺</div>
+                    <div class="avatar-option p-2 rounded-lg bg-black/40 text-center text-xl" data-color="#fbbf24" onclick="selectAvatar(this, '🦉')">🦉</div>
+                    <div class="avatar-option p-2 rounded-lg bg-black/40 text-center text-xl" data-color="#38bdf8" onclick="selectAvatar(this, '⚓')">⚓</div>
+                    <div class="avatar-option p-2 rounded-lg bg-black/40 text-center text-xl" data-color="#a78bfa" onclick="selectAvatar(this, '📖')">📖</div>
                 </div>
-                <input id="userName" type="text" placeholder="IDENTIFY" class="name-input w-full mt-4">
+                <input id="userName" type="text" placeholder="NAME" class="name-input w-full mt-4">
             </div>
         </header>
 
@@ -166,7 +169,7 @@
 
         <div class="focus-banner">
             <small class="text-[9px] text-[#fbbf24] uppercase tracking-[5px] font-black block mb-2">Upcoming Quest</small>
-            <div id="nextQuestDisplay" class="text-white font-light italic text-[14px]">Consulting the oracle...</div>
+            <div id="nextQuestDisplay" class="text-white font-light italic text-[14px]">Consulting the stars...</div>
         </div>
     </div>
 
@@ -178,8 +181,8 @@
         let currentSigil = '🔱', displayedDate = new Date(), favoritesOnly = false;
 
         function selectAvatar(el, icon) { 
-            document.querySelectorAll('.avatar-option').forEach(opt => opt.style.borderColor = 'rgba(255,255,255,0.1)');
-            el.style.borderColor = el.getAttribute('data-color');
+            document.querySelectorAll('.avatar-option').forEach(opt => opt.classList.remove('active'));
+            el.classList.add('active');
             currentSigil = icon;
             document.documentElement.style.setProperty('--sigil-color', el.getAttribute('data-color'));
         }
