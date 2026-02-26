@@ -29,12 +29,11 @@
             border-right: 3px solid var(--sigil); scrollbar-width: none;
         }
 
-        /* ORACLE ROW */
         .oracle-row {
             display: flex; justify-content: space-around; align-items: center; 
             font-size: 11px; font-weight: 900; letter-spacing: 2px;
-            color: var(--sigil); margin: 20px 0 40px 0;
-            text-shadow: 0 0 10px rgba(34, 211, 238, 0.4);
+            color: var(--sigil); margin: 25px 0 40px 0;
+            text-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
         }
 
         .expensive-header {
@@ -45,27 +44,27 @@
             display: flex; justify-content: space-between; align-items: center;
         }
 
-        /* REACTIVE GLASSMORPHISM */
         .glass-module {
             background: rgba(10, 10, 15, 0.9); backdrop-filter: blur(40px);
             border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1rem;
             margin-bottom: 2.5rem; overflow: hidden; transition: 0.4s ease;
         }
-        .glass-module:hover { border-color: var(--sigil); box-shadow: 0 0 30px rgba(34, 211, 238, 0.15); }
+        .glass-module:hover { border-color: var(--sigil); box-shadow: 0 0 40px rgba(34, 211, 238, 0.1); }
 
         .avatar-bar { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; padding: 15px; }
         .avatar-option { height: 45px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 24px; background: rgba(0,0,0,0.6); transition: 0.3s; }
         .avatar-option.active { border-color: var(--sigil); box-shadow: 0 0 15px var(--sigil); transform: scale(1.1); }
 
-        input { background: rgba(0,0,0,1) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; color: #fff !important; padding: 15px !important; border-radius: 10px; font-family: 'Inter', sans-serif; width: 100%; }
+        input { background: rgba(0,0,0,1) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; color: #fff !important; padding: 12px !important; border-radius: 10px; font-family: 'Inter', sans-serif; width: 100%; }
 
-        .cal-date { aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; font-size: 11px; border: 1px solid rgba(255,255,255,0.05); cursor: pointer; font-weight: 900; }
+        .cal-date { aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; font-size: 11px; border: 1px solid rgba(255,255,255,0.05); cursor: pointer; font-weight: 900; position: relative; }
         .cal-today { border: 2px solid var(--gold) !important; color: var(--gold); }
         .has-quest { border-color: var(--sigil) !important; box-shadow: inset 0 0 10px var(--sigil); }
-        .quest-banner { background: linear-gradient(to right, rgba(251,191,36,0.15), transparent); border-left: 4px solid var(--gold); padding: 15px; margin-top: 10px; border-radius: 0 8px 8px 0; }
+
+        .appointment-banner { background: linear-gradient(to right, rgba(251,191,36,0.15), transparent); border-left: 4px solid var(--gold); padding: 12px; margin-top: 10px; border-radius: 0 8px 8px 0; }
 
         #questModal { display: none; position: fixed; inset: 0; z-index: 100; background: rgba(0,0,0,0.95); backdrop-blur: 15px; align-items: center; justify-content: center; }
-        .modal-glass { background: #08080c; border: 2px solid var(--gold); padding: 3rem; border-radius: 1rem; width: 90%; max-width: 450px; text-align: center; }
+        .modal-glass { background: #08080c; border: 2px solid var(--gold); padding: 2.5rem; border-radius: 1rem; width: 90%; max-width: 420px; text-align: center; }
     </style>
 </head>
 <body id="mainBody">
@@ -132,7 +131,18 @@
 
         <div class="glass-module">
             <div class="expensive-header"><span>Grocery List</span><span onclick="purgeList()" class="text-[8px] cursor-pointer opacity-30">Purge</span></div>
-            <div class="p-6"><div id="marketList" class="space-y-4 mb-4 text-sm font-bold font-inter"></div><input id="mInput" type="text" placeholder="Provision..." onkeydown="if(event.key==='Enter') saveMarket()"></div>
+            <div class="p-6">
+                <div id="marketList" class="space-y-4 mb-4 text-sm font-bold font-inter"></div>
+                <input id="mInput" type="text" placeholder="Provision..." onkeydown="if(event.key==='Enter') saveMarket()">
+            </div>
+        </div>
+
+        <div class="glass-module">
+            <div class="expensive-header">Meal Plan</div>
+            <div class="p-6">
+                <div id="mealList" class="space-y-4 mb-4 text-sm font-bold font-inter"></div>
+                <input id="mealInput" type="text" placeholder="What's for dinner?..." onkeydown="if(event.key==='Enter') saveMeal()">
+            </div>
         </div>
         
         <div class="glass-module">
@@ -165,19 +175,26 @@
         function changeMonth(o) { dispDate.setMonth(dispDate.getMonth() + o); buildCalendar(); }
 
         window.onload = async () => { 
-            await refreshAll(); buildCalendar(); animate(); 
+            await refreshAll(); buildCalendar(); animate(); updateWeather(); 
             setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'}); }, 1000);
         };
 
-        async function refreshAll() { await Promise.all([loadNotes(), loadMarket()]); }
-        async function purgeList() { if(confirm("Clear provisioning list?")) { await _supabase.from('market_items').delete().neq('id', 0); loadMarket(); } }
+        async function updateWeather() {
+            try {
+                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=34.93&longitude=-88.51&current_weather=true');
+                const d = await res.json();
+                document.getElementById('temp').innerText = `${Math.round(d.current_weather.temperature * 9/5 + 32)}°F`;
+            } catch(e) {}
+        }
+
+        async function refreshAll() { await Promise.all([loadNotes(), loadMarket(), loadMeals()]); }
+        async function purgeList() { if(confirm("Clear grocery list?")) { await _supabase.from('market_items').delete().neq('id', 0); loadMarket(); } }
         
         async function saveMarket() {
             const i = document.getElementById('mInput'); if(!i.value) return;
             const name = document.getElementById('userName').value || 'Someone';
-            const { error } = await _supabase.from('market_items').insert([{ text: `${currentSigil} ${name}: ${i.value}` }]);
-            if (error) console.error("Market Save Error:", error);
-            i.value = ""; await loadMarket();
+            await _supabase.from('market_items').insert([{ text: `${currentSigil} ${name}: ${i.value}` }]);
+            i.value = ""; loadMarket();
         }
 
         async function loadMarket() {
@@ -185,11 +202,22 @@
             document.getElementById('marketList').innerHTML = data ? data.map(item => `<div class="flex justify-between border-b border-white/5 pb-2"><span>${item.text}</span><span class="text-red-900 font-bold cursor-pointer" onclick="deleteItem('market_items', '${item.id}')">×</span></div>`).join('') : '';
         }
 
+        async function saveMeal() {
+            const i = document.getElementById('mealInput'); if(!i.value) return;
+            const name = document.getElementById('userName').value || 'Someone';
+            await _supabase.from('meal_plan').insert([{ text: `${currentSigil} ${name}: ${i.value}` }]);
+            i.value = ""; loadMeals();
+        }
+
+        async function loadMeals() {
+            const { data } = await _supabase.from('meal_plan').select('*').order('created_at', { ascending: true });
+            document.getElementById('mealList').innerHTML = data ? data.map(item => `<div class="flex justify-between border-b border-white/5 pb-2"><span>${item.text}</span><span class="text-red-900 font-bold cursor-pointer" onclick="deleteItem('meal_plan', '${item.id}')">×</span></div>`).join('') : '';
+        }
+
         async function saveNote() {
             const i = document.getElementById('nInput'); if(!i.value) return;
             const name = document.getElementById('userName').value || 'Someone';
-            const { error } = await _supabase.from('family_notes').insert([{ note: i.value, timestamp: `${currentSigil} ${name} • ${new Date().toLocaleTimeString()}`, is_pinned: false }]);
-            if (error) console.error("Note Save Error:", error);
+            await _supabase.from('family_notes').insert([{ note: i.value, timestamp: `${currentSigil} ${name} • ${new Date().toLocaleTimeString()}`, is_pinned: false }]);
             i.value = ""; await loadNotes();
         }
 
@@ -204,7 +232,7 @@
         }
 
         async function togglePin(id, s) { await _supabase.from('family_notes').update({ is_pinned: !s }).eq('id', id); await loadNotes(); }
-        async function deleteItem(t, id) { await _supabase.from(t).delete().eq('id', id); refreshAll(); buildCalendar(); }
+        async function deleteItem(t, id) { await _supabase.from(t).delete().eq('id', id); if(t === 'meal_plan') loadMeals(); else if(t === 'market_items') loadMarket(); else if(t === 'family_notes') loadNotes(); }
 
         async function buildCalendar() {
             const y = dispDate.getFullYear(), m = dispDate.getMonth();
@@ -215,7 +243,7 @@
             
             const todayStr = new Date().toISOString().split('T')[0];
             const todayQuests = appts?.filter(a => a.start_date === todayStr);
-            document.getElementById('bannerArea').innerHTML = todayQuests?.length ? todayQuests.map(q => `<div class="quest-banner"><small class="text-[8px] uppercase tracking-widest text-[#fbbf24] font-black">Today's Quest</small><div class="text-sm font-bold">${q.title}</div></div>`).join('') : '<div class="text-[9px] opacity-30 italic">No quests today.</div>';
+            document.getElementById('bannerArea').innerHTML = todayQuests?.length ? todayQuests.map(q => `<div class="appointment-banner"><small class="text-[8px] uppercase tracking-widest text-[#fbbf24] font-black">Today's Quest</small><div class="text-sm font-bold">${q.title}</div></div>`).join('') : '<div class="text-[9px] opacity-30 italic">No quests today.</div>';
 
             for (let i = 0; i < first; i++) grid.innerHTML += '<div></div>';
             for (let d = 1; d <= days; d++) {
@@ -233,8 +261,7 @@
             document.getElementById('modalEventList').innerHTML = evs?.length ? evs.map(e => `<div class="bg-white/5 p-4 rounded flex justify-between items-center border border-white/10 text-xs font-bold"><span>${e.title}</span><span class="text-red-500 font-black cursor-pointer" onclick="deleteItem('calendar_events', '${e.id}'); openQuestModal('${ds}', ${d});">×</span></div>`).join('') : '<p class="opacity-30 italic text-xs text-center">No assignments.</p>';
             document.getElementById('addQuestBtn').onclick = async () => {
                 const v = document.getElementById('modalInput').value; if(!v) return;
-                const { error } = await _supabase.from('calendar_events').insert([{ title: v, start_date: ds }]);
-                if (error) console.error("Calendar Save Error:", error);
+                await _supabase.from('calendar_events').insert([{ title: v, start_date: ds }]);
                 document.getElementById('modalInput').value = ""; await buildCalendar(); openQuestModal(ds, d);
             };
         }
