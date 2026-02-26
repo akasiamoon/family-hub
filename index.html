@@ -14,18 +14,59 @@
         [data-theme="red"] { --sigil: #ef4444; }
 
         body, html { 
-            margin: 0; padding: 0; height: 100%; width: 100%;
-            background: #000 url('thefamilyhub.jpg') no-repeat center center fixed; background-size: cover;
-            color: #e2e8f0; font-family: 'Cinzel', serif; overflow: hidden; 
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            background: #000; color: #e2e8f0; font-family: 'Cinzel', serif;
+            overflow-x: hidden; 
         }
 
         #particle-canvas { position: fixed; inset: 0; z-index: 2; pointer-events: none; }
 
+        /* THE MASTER LAYOUT CONTAINER */
+        .hub-container {
+            display: flex;
+            flex-direction: column; /* Stack vertically on mobile */
+            min-height: 100vh;
+        }
+
+        /* THE HERO IMAGE BLOCK */
+        .hero-image {
+            width: 100%;
+            height: 40vh; /* Image takes 40% height on mobile */
+            background: url('thefamilyhub.jpg') no-repeat center center;
+            background-size: cover;
+            border-bottom: 3px solid var(--sigil);
+            position: relative;
+            z-index: 5;
+        }
+
+        /* THE SIDEBAR / CONTENT AREA */
         .sidebar {
-            position: relative; width: 100%; max-width: 480px; height: 100vh;
-            padding: 2.5rem; overflow-y: auto; z-index: 10;
-            background: linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,0.85) 85%, rgba(0,0,0,0) 100%);
-            border-right: 3px solid var(--sigil); scrollbar-width: none;
+            position: relative; 
+            width: 100%; 
+            padding: 2rem 1.5rem; 
+            background: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.85) 100%);
+            z-index: 10;
+            flex-grow: 1;
+        }
+
+        /* DESKTOP RESTORATION (Side-by-side above 1024px) */
+        @media (min-width: 1024px) {
+            .hub-container { flex-direction: row; height: 100vh; overflow: hidden; }
+            
+            .hero-image { 
+                width: 65%; 
+                height: 100vh; 
+                border-bottom: none;
+                border-right: 3px solid var(--sigil);
+            }
+
+            .sidebar { 
+                max-width: 480px; 
+                height: 100vh;
+                overflow-y: auto;
+                background: linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,0.85) 100%);
+                scrollbar-width: none;
+            }
         }
 
         .oracle-row {
@@ -67,45 +108,49 @@
 
     <canvas id="particle-canvas"></canvas>
 
-    <div class="sidebar">
-        <header class="text-center mb-6">
-            <h1 class="text-3xl font-black tracking-[0.1em]" style="background: linear-gradient(to right, var(--gold), var(--sigil)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">HERE'S THE DAMN LIST</h1>
-            <p class="text-[10px] tracking-[0.8em] opacity-40 uppercase mt-1">Cory's a poo poo head!</p>
-            
-            <div class="oracle-row">
-                <span id="clock">00:00:00</span>
-                <div class="flex items-center gap-2"><span id="weatherIcon">🌧️</span> <span id="temp">59°F</span></div>
-                <span>FARMINGTON</span>
-            </div>
+    <div class="hub-container">
+        <div class="hero-image"></div>
 
-            <div class="avatar-bar bg-white/5 rounded-2xl border border-white/5">
-                <div class="avatar-option active" onclick="selectAvatar(this, '🔱')">🔱</div>
-                <div class="avatar-option" onclick="selectAvatar(this, '🧜‍♀️')">🧜‍♀️</div>
-                <div class="avatar-option" onclick="selectAvatar(this, '🐚')">🐚</div>
-                <div class="avatar-option" onclick="selectAvatar(this, '🏴‍☠️')">🏴‍☠️</div>
-                <div class="avatar-option" onclick="selectAvatar(this, '🔥')">🔥</div>
-                <div class="avatar-option" onclick="selectAvatar(this, '🐢')">🐢</div>
-            </div>
-            
-            <div class="flex gap-2 mt-4">
-                <input id="userName" type="text" placeholder="NAME" class="text-center font-black">
-                <button onclick="toggleThemeMenu()" class="p-4 border border-white/10 rounded-xl text-[9px] uppercase font-black hover:bg-white/5">Vibe</button>
-            </div>
-            <div id="themeMenu" class="mt-2">
-                <div class="theme-dot bg-cyan-400" onclick="setTheme('')"></div>
-                <div class="theme-dot bg-purple-600" onclick="setTheme('purple')"></div>
-                <div class="theme-dot bg-red-600" onclick="setTheme('red')"></div>
-            </div>
-        </header>
+        <div class="sidebar">
+            <header class="text-center mb-6">
+                <h1 class="text-3xl font-black tracking-[0.1em]" style="background: linear-gradient(to right, var(--gold), var(--sigil)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">HERE'S THE DAMN LIST</h1>
+                <p class="text-[10px] tracking-[0.8em] opacity-40 uppercase mt-1">Cory's a poo poo head!</p>
+                
+                <div class="oracle-row">
+                    <span id="clock">00:00:00</span>
+                    <div class="flex items-center gap-2"><span id="weatherIcon">🌧️</span> <span id="temp">59°F</span></div>
+                    <span>FARMINGTON</span>
+                </div>
 
-        <div class="glass-module">
-            <div class="expensive-header">
-                <span>The Provisions</span>
-                <span onclick="purgeList()" class="purge-btn">Purge All</span>
-            </div>
-            <div class="p-6">
-                <div id="marketList" class="space-y-4 mb-6 text-sm font-bold font-inter text-white"></div>
-                <input id="mInput" type="text" placeholder="Add to the list..." onkeydown="if(event.key==='Enter') saveMarket()">
+                <div class="avatar-bar bg-white/5 rounded-2xl border border-white/5">
+                    <div class="avatar-option active" onclick="selectAvatar(this, '🔱')">🔱</div>
+                    <div class="avatar-option" onclick="selectAvatar(this, '🧜‍♀️')">🧜‍♀️</div>
+                    <div class="avatar-option" onclick="selectAvatar(this, '🐚')">🐚</div>
+                    <div class="avatar-option" onclick="selectAvatar(this, '🏴‍☠️')">🏴‍☠️</div>
+                    <div class="avatar-option" onclick="selectAvatar(this, '🔥')">🔥</div>
+                    <div class="avatar-option" onclick="selectAvatar(this, '🐢')">🐢</div>
+                </div>
+                
+                <div class="flex gap-2 mt-4">
+                    <input id="userName" type="text" placeholder="NAME" class="text-center font-black">
+                    <button onclick="toggleThemeMenu()" class="p-4 border border-white/10 rounded-xl text-[9px] uppercase font-black hover:bg-white/5">Vibe</button>
+                </div>
+                <div id="themeMenu" class="mt-2">
+                    <div class="theme-dot bg-cyan-400" onclick="setTheme('')"></div>
+                    <div class="theme-dot bg-purple-600" onclick="setTheme('purple')"></div>
+                    <div class="theme-dot bg-red-600" onclick="setTheme('red')"></div>
+                </div>
+            </header>
+
+            <div class="glass-module">
+                <div class="expensive-header">
+                    <span>The Provisions</span>
+                    <span onclick="purgeList()" class="purge-btn">Purge All</span>
+                </div>
+                <div class="p-6">
+                    <div id="marketList" class="space-y-4 mb-6 text-sm font-bold font-inter text-white"></div>
+                    <input id="mInput" type="text" placeholder="Add to the list..." onkeydown="if(event.key==='Enter') saveMarket()">
+                </div>
             </div>
         </div>
     </div>
