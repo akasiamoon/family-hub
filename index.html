@@ -9,6 +9,12 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@200;400;700;900&display=swap');
 
+        /* THEME VARIABLES */
+        :root { --sigil: #22d3ee; --gold: #fbbf24; }
+        [data-theme="gothic"] { --sigil: #a855f7; --gold: #f472b6; }
+        [data-theme="emerald"] { --sigil: #10b981; --gold: #e2e8f0; }
+        [data-theme="crimson"] { --sigil: #ef4444; --gold: #7f1d1d; }
+
         body, html { 
             margin: 0; padding: 0; height: 100%; width: 100%;
             background: #000 url('thefamilyhub.jpg') no-repeat center center fixed; background-size: cover;
@@ -21,59 +27,55 @@
             position: relative; width: 100%; max-width: 480px; height: 100vh;
             padding: 2.5rem; overflow-y: auto; z-index: 10;
             background: linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,0.85) 85%, rgba(0,0,0,0) 100%);
-            border-right: 3px solid #22d3ee;
-            scrollbar-width: thin; scrollbar-color: #fbbf24 transparent;
+            border-right: 3px solid var(--sigil);
         }
-        .sidebar::-webkit-scrollbar { width: 4px; }
-        .sidebar::-webkit-scrollbar-thumb { background: linear-gradient(#fbbf24, #22d3ee); border-radius: 10px; }
+        .sidebar::-webkit-scrollbar { width: 3px; }
+        .sidebar::-webkit-scrollbar-thumb { background: linear-gradient(var(--gold), var(--sigil)); border-radius: 10px; }
 
-        /* JEWELED 3D HEADERS */
         .expensive-header {
             font-size: 13px; letter-spacing: 0.4em; font-weight: 900; text-transform: uppercase;
             padding: 1.25rem; margin-bottom: 1rem;
-            background: linear-gradient(to right, #fbbf24, #22d3ee);
+            background: linear-gradient(to right, var(--gold), var(--sigil));
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            border-bottom: 2px solid transparent; border-image: linear-gradient(to right, #fbbf24, #22d3ee) 1;
-            filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.5));
+            border-bottom: 2px solid transparent; border-image: linear-gradient(to right, var(--gold), var(--sigil)) 1;
             display: flex; justify-content: space-between; align-items: center;
         }
 
         .glass-module {
             background: rgba(10, 10, 15, 0.95); backdrop-filter: blur(60px);
             border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1rem;
-            margin-bottom: 3rem; overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,1);
+            margin-bottom: 2.5rem; overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,1);
         }
 
-        /* ICONS GRID */
+        /* BANNER */
+        .quest-banner { background: linear-gradient(45deg, rgba(251,191,36,0.2), rgba(34,211,238,0.1)); border: 1px solid var(--gold); border-radius: 0.5rem; padding: 1rem; text-align: center; margin-bottom: 2rem; }
+
         .avatar-bar { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; padding: 15px; }
         .avatar-option { height: 45px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 24px; background: rgba(0,0,0,0.6); transition: 0.3s; }
-        .avatar-option.active { border-color: #22d3ee; box-shadow: 0 0 20px #22d3ee; transform: scale(1.1); }
+        .avatar-option.active { border-color: var(--sigil); box-shadow: 0 0 20px var(--sigil); transform: scale(1.1); }
 
-        input { background: rgba(0,0,0,1) !important; border: 1px solid rgba(34, 211, 238, 0.3) !important; color: #fff !important; padding: 15px !important; border-radius: 10px; font-family: 'Inter', sans-serif; font-weight: 700; width: 100%; }
+        input { background: rgba(0,0,0,1) !important; border: 1px solid rgba(34, 211, 238, 0.3) !important; color: #fff !important; padding: 14px !important; border-radius: 10px; font-family: 'Inter', sans-serif; width: 100%; }
 
-        /* CALENDAR */
-        .cal-date { aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; font-size: 12px; border: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: 0.2s; position: relative; font-weight: 900; }
-        .cal-date:hover { background: rgba(34, 211, 238, 0.2); border-color: #22d3ee; }
-        .cal-today { border: 2px solid #fbbf24 !important; color: #fbbf24; }
-        .has-quest { border-color: #22d3ee !important; background: rgba(34, 211, 238, 0.15); box-shadow: inset 0 0 10px #22d3ee; }
+        .cal-date { aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; font-size: 12px; border: 1px solid rgba(255,255,255,0.05); cursor: pointer; font-weight: 900; }
+        .cal-today { border: 2px solid var(--gold) !important; color: var(--gold); }
+        .has-quest { border-color: var(--sigil) !important; box-shadow: inset 0 0 10px var(--sigil); }
 
-        /* MODAL */
         #questModal { display: none; position: fixed; inset: 0; z-index: 100; background: rgba(0,0,0,0.95); backdrop-filter: blur(20px); align-items: center; justify-content: center; }
-        .modal-glass { background: #08080c; border: 2px solid #fbbf24; padding: 3rem; border-radius: 1rem; width: 90%; max-width: 450px; text-align: center; }
-
-        .archive-heart { color: #ef4444; filter: drop-shadow(0 0 8px #ef4444); }
+        .modal-glass { background: #08080c; border: 2px solid var(--gold); padding: 3rem; border-radius: 1rem; width: 90%; max-width: 450px; }
+        
+        .theme-dot { width: 15px; height: 15px; border-radius: 50%; cursor: pointer; border: 1px solid #fff; }
     </style>
 </head>
-<body>
+<body id="mainBody">
 
     <div id="questModal">
         <div class="modal-glass">
-            <h2 id="modalDateTitle" class="text-2xl font-black mb-6 text-[#fbbf24] tracking-widest"></h2>
+            <h2 id="modalDateTitle" class="text-2xl font-black mb-6 text-white tracking-widest"></h2>
             <div id="modalEventList" class="space-y-4 mb-8 text-left max-h-48 overflow-y-auto pr-2"></div>
-            <input id="modalInput" type="text" placeholder="Assign Appointment..." class="mb-4">
-            <div class="flex gap-4">
-                <button onclick="closeQuestModal()" class="w-full py-3 border border-white/20 uppercase text-[10px] font-black tracking-widest">Return</button>
-                <button id="addQuestBtn" class="w-full py-3 bg-yellow-600/20 border border-[#fbbf24] text-[#fbbf24] uppercase text-[10px] font-black tracking-widest">Assign</button>
+            <input id="modalInput" type="text" placeholder="Assign Appointment...">
+            <div class="flex gap-4 mt-4">
+                <button onclick="closeQuestModal()" class="w-full py-3 border border-white/20 uppercase text-[10px] font-black">Return</button>
+                <button id="addQuestBtn" class="w-full py-3 bg-white/10 border border-white uppercase text-[10px] font-black">Assign</button>
             </div>
         </div>
     </div>
@@ -81,12 +83,26 @@
     <canvas id="particle-canvas"></canvas>
 
     <div class="sidebar">
-        <header class="text-center mb-12">
-            <h1 class="text-3xl font-black tracking-[0.2em]" style="background: linear-gradient(to right, #fbbf24, #22d3ee); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">TUCKER COOPER BURNS</h1>
-            <p class="text-[10px] tracking-[0.8em] opacity-40 uppercase mt-2">Family Hub</p>
-            <div id="weather" class="text-[10px] text-cyan-400 font-black mt-6 tracking-widest uppercase border-y border-cyan-400/20 py-2">FARMINGTON • LOADING...</div>
+        <header class="text-center mb-10">
+            <div class="flex justify-between items-center mb-4">
+                <div id="clock" class="text-[10px] font-black tracking-widest">00:00:00</div>
+                <div class="flex gap-2">
+                    <div class="theme-dot bg-cyan-400" onclick="setTheme('')"></div>
+                    <div class="theme-dot bg-purple-600" onclick="setTheme('gothic')"></div>
+                    <div class="theme-dot bg-emerald-500" onclick="setTheme('emerald')"></div>
+                    <div class="theme-dot bg-red-700" onclick="setTheme('crimson')"></div>
+                </div>
+            </div>
 
-            <div class="avatar-bar mt-8 bg-white/5 rounded-2xl border border-white/10">
+            <div id="weather" class="text-[12px] font-black tracking-[0.3em] uppercase flex items-center justify-center gap-3">
+                <span id="weatherIcon"></span> <span id="temp">--°F</span> • FARMINGTON
+            </div>
+
+            <h1 class="text-3xl font-black tracking-[0.2em] mt-6" style="background: linear-gradient(to right, var(--gold), var(--sigil)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">TUCKER COOPER BURNS</h1>
+            <p class="text-[10px] tracking-[0.8em] opacity-40 uppercase mt-1">Family Hub</p>
+            <div id="heartCount" class="text-[10px] text-red-500 font-black mt-2 tracking-widest">❤️ 0 SHARED HEARTS</div>
+
+            <div class="avatar-bar mt-8 bg-white/5 rounded-2xl">
                 <div class="avatar-option active" onclick="selectAvatar(this, '🔱')">🔱</div>
                 <div class="avatar-option" onclick="selectAvatar(this, '🧜‍♀️')">🧜‍♀️</div>
                 <div class="avatar-option" onclick="selectAvatar(this, '🐚')">🐚</div>
@@ -108,14 +124,19 @@
                 <div class="avatar-option" onclick="selectAvatar(this, '💎')">💎</div>
                 <div class="avatar-option" onclick="selectAvatar(this, '🍺')">🍺</div>
             </div>
-            <input id="userName" type="text" placeholder="NAME" class="mt-4 text-center">
+            <input id="userName" type="text" placeholder="NAME" class="mt-4 text-center font-black">
         </header>
 
-        <div class="glass-module"><div class="expensive-header">Grocery List</div><div class="p-6"><div id="marketList" class="space-y-4 mb-4 text-sm font-bold"></div><input id="mInput" type="text" placeholder="Provision..." onkeydown="if(event.key==='Enter') saveMarket()"></div></div>
+        <div id="dailyBanner" class="quest-banner hidden">
+            <small class="text-[9px] uppercase tracking-[4px] font-black block opacity-60 mb-1">Today's Quests</small>
+            <div id="bannerText" class="text-sm font-bold text-white italic"></div>
+        </div>
+
+        <div class="glass-module"><div class="expensive-header"><span>Grocery List</span><span onclick="purgeMarket()" class="text-[8px] cursor-pointer opacity-30">Purge</span></div><div class="p-6"><div id="marketList" class="space-y-4 mb-4 text-sm font-bold"></div><input id="mInput" type="text" placeholder="Provision..." onkeydown="if(event.key==='Enter') saveMarket()"></div></div>
         
         <div class="glass-module"><div class="expensive-header">Archive of Hearts</div><div id="pinnedLog" class="p-6 space-y-6"></div></div>
 
-        <div class="glass-module"><div class="expensive-header">Love Notes</div><div class="p-6"><div id="notesLog" class="space-y-8 mb-4"></div><input id="nInput" type="text" placeholder="Post devotion..." onkeydown="if(event.key==='Enter') saveNote()"></div></div>
+        <div class="glass-module"><div class="expensive-header">Love Notes</div><div class="p-6"><div id="notesLog" class="space-y-8 mb-4"></div><input id="nInput" type="text" placeholder="Speak your heart..." onkeydown="if(event.key==='Enter') saveNote()"></div></div>
 
         <div class="glass-module">
             <div class="expensive-header"><span onclick="changeMonth(-1)" class="cursor-pointer">◀</span><span id="calMonth"></span><span onclick="changeMonth(1)" class="cursor-pointer">▶</span></div>
@@ -131,16 +152,22 @@
         let currentSigil = '🔱', dispDate = new Date();
 
         function selectAvatar(el, icon) { document.querySelectorAll('.avatar-option').forEach(opt => opt.classList.remove('active')); el.classList.add('active'); currentSigil = icon; }
+        function setTheme(t) { document.body.setAttribute('data-theme', t); }
         function closeQuestModal() { document.getElementById('questModal').style.display = 'none'; }
         function changeMonth(o) { dispDate.setMonth(dispDate.getMonth() + o); buildCalendar(); }
 
-        window.onload = async () => { refreshAll(); buildCalendar(); animate(); updateWeather(); };
+        window.onload = async () => { 
+            refreshAll(); buildCalendar(); animate(); updateWeather(); 
+            setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }, 1000);
+        };
 
         async function updateWeather() {
+            const icons = { 0: "☀️", 1: "🌤️", 2: "⛅", 3: "☁️", 45: "🌫️", 48: "🌫️", 51: "🌦️", 61: "🌧️", 71: "❄️", 95: "⛈️" };
             try {
                 const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=34.93&longitude=-88.51&current_weather=true');
                 const d = await res.json();
-                document.getElementById('weather').innerText = `${Math.round(d.current_weather.temperature * 9/5 + 32)}°F • FARMINGTON, MS`;
+                document.getElementById('temp').innerText = `${Math.round(d.current_weather.temperature * 9/5 + 32)}°F`;
+                document.getElementById('weatherIcon').innerText = icons[d.current_weather.weathercode] || "🌤️";
             } catch(e) {}
         }
 
@@ -151,7 +178,7 @@
             await _supabase.from('market_items').insert([{ text: `${currentSigil} ${document.getElementById('userName').value || 'User'}: ${i.value}` }]);
             i.value = ""; loadMarket();
         }
-
+        async function purgeMarket() { if(confirm("Clear list?")) { await _supabase.from('market_items').delete().neq('id', 0); loadMarket(); } }
         async function loadMarket() {
             const { data } = await _supabase.from('market_items').select('*').order('created_at', { ascending: true });
             document.getElementById('marketList').innerHTML = data ? data.map(item => `<div class="flex justify-between border-b border-white/10 pb-2"><span>${item.text}</span><span class="text-red-600 font-black cursor-pointer" onclick="deleteItem('market_items', '${item.id}')">×</span></div>`).join('') : '';
@@ -160,14 +187,15 @@
         async function saveNote() {
             const i = document.getElementById('nInput'); if(!i.value) return;
             await _supabase.from('family_notes').insert([{ note: i.value, timestamp: `${currentSigil} ${document.getElementById('userName').value || 'User'} • ${new Date().toLocaleTimeString()}`, is_pinned: false }]);
-            i.value = ""; loadNotes();
+            i.value = ""; loadNotes(); triggerBurst();
         }
 
         async function loadNotes() {
             const { data } = await _supabase.from('family_notes').select('*').order('created_at', { ascending: false });
             if(!data) return;
+            document.getElementById('heartCount').innerText = `❤️ ${data.length} SHARED HEARTS`;
             const p = data.filter(n => n.is_pinned), r = data.filter(n => !n.is_pinned);
-            const html = (n) => `<div class="border-l-4 border-cyan-500 pl-4 py-2 group"><small class="text-[10px] text-cyan-400 font-black uppercase font-inter">${n.timestamp}</small><p class="italic text-[18px] font-bold mt-1 text-white">"${n.note}"</p><div class="flex gap-4 mt-2"><span class="cursor-pointer ${n.is_pinned ? 'archive-heart' : 'opacity-20'}" onclick="togglePin('${n.id}', ${n.is_pinned})">❤️</span><span class="text-red-900 cursor-pointer font-black" onclick="deleteItem('family_notes', '${n.id}')">×</span></div></div>`;
+            const html = (n) => `<div class="border-l-4 border-cyan-500 pl-4 py-2 group"><small class="text-[10px] text-cyan-400 font-black uppercase font-inter">${n.timestamp}</small><p class="italic text-[18px] font-bold mt-1 text-white">"${n.note}"</p><div class="flex gap-4 mt-2"><span class="cursor-pointer ${n.is_pinned ? 'text-red-500' : 'opacity-20'}" onclick="togglePin('${n.id}', ${n.is_pinned})">❤️</span><span class="text-red-900 cursor-pointer font-black" onclick="deleteItem('family_notes', '${n.id}')">×</span></div></div>`;
             document.getElementById('pinnedLog').innerHTML = p.map(html).join('');
             document.getElementById('notesLog').innerHTML = r.map(html).join('');
         }
@@ -178,11 +206,19 @@
             const first = new Date(y, m, 1).getDay(), days = new Date(y, m + 1, 0).getDate();
             const grid = document.getElementById('calendarDates'); grid.innerHTML = '';
             const { data: appts } = await _supabase.from('calendar_events').select('*');
+            
+            const todayStr = new Date().toISOString().split('T')[0];
+            const todayQuests = appts?.filter(a => a.start_date === todayStr);
+            if(todayQuests?.length) {
+                document.getElementById('dailyBanner').classList.remove('hidden');
+                document.getElementById('bannerText').innerText = todayQuests.map(q => q.title).join(' • ');
+            } else { document.getElementById('dailyBanner').classList.add('hidden'); }
+
             for (let i = 0; i < first; i++) grid.innerHTML += '<div></div>';
             for (let d = 1; d <= days; d++) {
                 const ds = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
                 const hasA = appts?.some(e => e.start_date === ds);
-                const isT = (d === new Date().getDate() && m === new Date().getMonth());
+                const isT = (d === new Date().getDate() && m === new Date().getMonth() && y === new Date().getFullYear());
                 grid.innerHTML += `<div class="cal-date ${isT ? 'cal-today' : ''} ${hasA ? 'has-quest' : ''}" onclick="openQuestModal('${ds}', ${d})">${d}</div>`;
             }
         }
@@ -208,12 +244,14 @@
         window.addEventListener('resize', resize); resize();
         class Particle {
             constructor() { this.init(); }
-            init() { this.x = Math.random() * canvas.width; this.y = canvas.height + 50; this.size = Math.random() * 20 + 10; this.speed = Math.random() * 1.5 + 0.5; this.opacity = Math.random() * 0.4; this.char = ['♪', '♫', '•'][Math.floor(Math.random()*3)]; }
+            init() { this.x = Math.random() * canvas.width; this.y = canvas.height + 50; this.size = Math.random() * 20 + 10; this.speed = Math.random() * 2 + 1; this.opacity = Math.random() * 0.4; this.char = ['♪', '♫', '•'][Math.floor(Math.random()*3)]; }
             update() { this.y -= this.speed; if(this.y < -50) this.init(); }
             draw() { ctx.fillStyle = `rgba(34, 211, 238, ${this.opacity})`; ctx.font = `${this.size}px serif`; ctx.fillText(this.char, this.x, this.y); }
         }
+        function triggerBurst() { for(let i=0; i<30; i++) particles.push(new Particle()); }
         for (let i = 0; i < 40; i++) particles.push(new Particle());
         function animate() { ctx.clearRect(0, 0, canvas.width, canvas.height); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animate); }
+        animate();
     </script>
 </body>
 </html>
