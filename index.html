@@ -29,76 +29,40 @@
             border-right: 1px solid rgba(34, 211, 238, 0.3);
         }
 
-        /* 20-AVATAR GALLERY */
-        .avatar-bar { 
-            display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; 
-            margin-bottom: 15px; background: rgba(34, 211, 238, 0.05); 
-            padding: 12px; border-radius: 1rem; border: 1px solid rgba(34, 211, 238, 0.1);
-        }
-        .avatar-option {
-            height: 40px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);
-            cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; font-size: 20px;
-            background: rgba(0,0,0,0.5); filter: grayscale(100%); opacity: 0.5;
-        }
+        /* UI ELEMENTS */
+        .avatar-bar { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 15px; background: rgba(34, 211, 238, 0.05); padding: 12px; border-radius: 1rem; border: 1px solid rgba(34, 211, 238, 0.1); }
+        .avatar-option { height: 40px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; font-size: 20px; background: rgba(0,0,0,0.5); filter: grayscale(100%); opacity: 0.5; }
         .avatar-option.active { border-color: #22d3ee; filter: grayscale(0%); opacity: 1; box-shadow: 0 0 15px rgba(34, 211, 238, 0.4); transform: scale(1.1); }
-
-        .name-input {
-            background: rgba(0,0,0,0.8) !important; border: 1px solid rgba(34, 211, 238, 0.3) !important;
-            text-align: center; font-weight: 900; color: #fde68a !important;
-            letter-spacing: 2px; text-transform: uppercase; font-size: 11px !important;
-        }
-
-        /* GLASS MODULES */
-        .glass-module {
-            background: rgba(8, 8, 12, 0.9); backdrop-filter: blur(30px);
-            border: 1px solid rgba(34, 211, 238, 0.2);
-            border-radius: 1.25rem; margin-bottom: 2rem;
-        }
-
+        .name-input { background: rgba(0,0,0,0.8) !important; border: 1px solid rgba(34, 211, 238, 0.3) !important; text-align: center; font-weight: 900; color: #fde68a !important; letter-spacing: 2px; text-transform: uppercase; font-size: 11px !important; }
+        .glass-module { background: rgba(8, 8, 12, 0.9); backdrop-filter: blur(30px); border: 1px solid rgba(34, 211, 238, 0.2); border-radius: 1.25rem; margin-bottom: 2rem; }
         .hub-title { font-family: 'Cinzel', serif; letter-spacing: 0.2em; background: linear-gradient(135deg, #fde68a, #d97706, #22d3ee); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; text-transform: uppercase; }
-        
         input { background: rgba(0,0,0,0.9) !important; border: 1px solid rgba(34, 211, 238, 0.2) !important; color: #fff !important; padding: 12px !important; border-radius: 10px; width: 100%; margin-bottom: 10px; }
 
-        /* LUNAR CALENDAR */
+        /* CALENDAR */
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
-        .cal-day-label { font-size: 9px; font-weight: 900; color: #22d3ee; text-align: center; opacity: 0.6; padding-bottom: 5px; }
-        .cal-date { 
-            aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center;
-            font-size: 11px; font-weight: 700; border-radius: 8px;
-            background: rgba(255,255,255,0.03); border: 1px solid rgba(34, 211, 238, 0.05);
-            transition: 0.3s; cursor: pointer;
-        }
+        .cal-date { aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; border-radius: 8px; background: rgba(255,255,255,0.03); border: 1px solid rgba(34, 211, 238, 0.05); transition: 0.3s; cursor: pointer; }
         .cal-date.has-quest { border-color: #22d3ee !important; background: rgba(34, 211, 238, 0.15); box-shadow: inset 0 0 10px rgba(34, 211, 238, 0.3); }
         .cal-today { color: #fde68a; border-color: #fde68a !important; font-weight: 900; }
 
-        /* MODAL POPUP */
-        #questModal {
-            display: none; position: fixed; inset: 0; z-index: 100;
-            background: rgba(0,0,0,0.8); backdrop-filter: blur(15px);
-            align-items: center; justify-content: center;
-        }
-        .modal-glass {
-            background: rgba(10, 10, 15, 0.95); border: 1px solid #22d3ee;
-            padding: 2.5rem; border-radius: 1.5rem; width: 90%; max-width: 400px;
-            box-shadow: 0 0 50px rgba(34, 211, 238, 0.2);
-        }
-
-        .sidebar::-webkit-scrollbar { width: 3px; }
-        .sidebar::-webkit-scrollbar-thumb { background: linear-gradient(#fde68a, #22d3ee); border-radius: 10px; }
+        /* MODAL */
+        #questModal { display: none; position: fixed; inset: 0; z-index: 100; background: rgba(0,0,0,0.8); backdrop-filter: blur(15px); align-items: center; justify-content: center; }
+        .modal-glass { background: rgba(10, 10, 15, 0.95); border: 1px solid #22d3ee; padding: 2.5rem; border-radius: 1.5rem; width: 90%; max-width: 400px; }
     </style>
 </head>
 <body>
 
     <canvas id="particle-canvas"></canvas>
 
+    <audio id="syncSound" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3" preload="auto"></audio>
+
     <div id="questModal">
         <div class="modal-glass">
             <h2 id="modalDateTitle" class="hub-title text-xl mb-4 text-center"></h2>
             <div id="modalEventList" class="space-y-3 mb-6 max-h-40 overflow-y-auto"></div>
-            <input id="modalInput" type="text" placeholder="Add new appointment..." class="mb-4">
+            <input id="modalInput" type="text" placeholder="Add Quest..." class="mb-4">
             <div class="flex gap-2">
-                <button onclick="closeQuestModal()" class="w-full py-2 bg-white/10 rounded-lg text-xs uppercase font-bold">Close</button>
-                <button id="addQuestBtn" class="w-full py-2 bg-cyan-500/20 border border-cyan-500 rounded-lg text-cyan-400 text-xs uppercase font-bold">Add Quest</button>
+                <button onclick="closeQuestModal()" class="w-full py-2 bg-white/10 rounded-lg text-xs font-bold uppercase">Close</button>
+                <button id="addQuestBtn" class="w-full py-2 bg-cyan-500/20 border border-cyan-500 rounded-lg text-cyan-400 text-xs font-bold uppercase">Add</button>
             </div>
         </div>
     </div>
@@ -132,6 +96,7 @@
                     <div class="avatar-option" onclick="selectAvatar(this, '🍺')">🍺</div>
                 </div>
                 <input id="userName" type="text" placeholder="WHO ARE YOU?" class="name-input" oninput="localStorage.setItem('sands_name', this.value)">
+                <button onclick="toggleMute()" id="muteBtn" class="text-[9px] text-cyan-500 uppercase font-black mt-2 opacity-40 hover:opacity-100">🔊 Sound On</button>
             </div>
         </header>
 
@@ -171,25 +136,43 @@
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let currentSigil = '🔱';
+        let isMuted = false;
         let activeDay = null;
 
         function selectAvatar(el, icon) { document.querySelectorAll('.avatar-option').forEach(opt => opt.classList.remove('active')); el.classList.add('active'); currentSigil = icon; }
+        function toggleMute() { isMuted = !isMuted; document.getElementById('muteBtn').innerText = isMuted ? '🔇 Muted' : '🔊 Sound On'; }
+        
+        function playSyncSound() {
+            if (!isMuted) {
+                const sound = document.getElementById('syncSound');
+                sound.currentTime = 0;
+                sound.play().catch(e => {});
+            }
+        }
+
         window.onload = () => { 
             const saved = localStorage.getItem('sands_name');
             if(saved) document.getElementById('userName').value = saved;
             refreshAll(); buildCalendar(); animate(); 
+            
+            // --- REALTIME SYNC ENGINE ---
+            _supabase.channel('custom-all-channel')
+            .on('postgres_changes', { event: 'INSERT', schema: 'public' }, (payload) => {
+                refreshAll();
+                buildCalendar();
+                playSyncSound();
+            })
+            .subscribe();
         };
 
-        // --- CALENDAR MODAL LOGIC ---
+        // --- CALENDAR LOGIC ---
         async function buildCalendar() {
             const now = new Date();
             document.getElementById('calMonth').innerText = now.toLocaleString('default', { month: 'long' });
             const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).getDay();
             const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
             const grid = document.getElementById('calendarDates'); grid.innerHTML = '';
-
             const { data: events } = await _supabase.from('calendar_events').select('*');
-            
             for (let i = 0; i < firstDay; i++) grid.innerHTML += '<div></div>';
             for (let d = 1; d <= daysInMonth; d++) {
                 const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
@@ -205,25 +188,15 @@
             const modal = document.getElementById('questModal');
             document.getElementById('modalDateTitle').innerText = `${d} ${document.getElementById('calMonth').innerText}`;
             modal.style.display = 'flex';
-            
             const { data: dayEvents } = await _supabase.from('calendar_events').select('*').eq('start_date', dateStr);
             const list = document.getElementById('modalEventList');
-            list.innerHTML = dayEvents?.length ? dayEvents.map(e => `
-                <div class="flex justify-between items-center bg-white/5 p-2 rounded border border-white/5 text-xs">
-                    <span>✦ ${e.title}</span>
-                    <span class="text-red-500 cursor-pointer" onclick="deleteEvent('${e.id}')">×</span>
-                </div>`).join('') : '<p class="text-[10px] text-center opacity-40 italic">No quests scheduled...</p>';
-
+            list.innerHTML = dayEvents?.length ? dayEvents.map(e => `<div class="flex justify-between items-center bg-white/5 p-2 rounded border border-white/5 text-xs"><span>✦ ${e.title}</span><span class="text-red-500 cursor-pointer" onclick="deleteEvent('${e.id}')">×</span></div>`).join('') : '<p class="text-[10px] text-center opacity-40">No quests...</p>';
             document.getElementById('addQuestBtn').onclick = async () => {
-                const val = document.getElementById('modalInput').value;
-                if(!val) return;
+                const val = document.getElementById('modalInput').value; if(!val) return;
                 await _supabase.from('calendar_events').insert([{ title: val, start_date: dateStr }]);
-                document.getElementById('modalInput').value = "";
-                openQuestModal(dateStr, d);
-                buildCalendar();
+                document.getElementById('modalInput').value = ""; openQuestModal(dateStr, d); buildCalendar();
             };
         }
-
         function closeQuestModal() { document.getElementById('questModal').style.display = 'none'; }
         async function deleteEvent(id) { await _supabase.from('calendar_events').delete().eq('id', id); openQuestModal(activeDay, parseInt(activeDay.split('-')[2])); buildCalendar(); }
 
@@ -250,18 +223,6 @@
         window.addEventListener('resize', resize); resize();
         class Particle {
             constructor() { this.reset(); }
-            reset() {
-                this.x = Math.random() * canvas.width; this.y = canvas.height + 50;
-                this.isNote = Math.random() > 0.4; this.size = Math.random() * 35 + 20;
-                this.speed = Math.random() * 1.5 + 0.5; this.opacity = Math.random() * 0.4 + 0.1;
-                this.color = this.isNote ? '34, 211, 238' : '251, 191, 36';
-            }
+            reset() { this.x = Math.random() * canvas.width; this.y = canvas.height + 50; this.isNote = Math.random() > 0.4; this.size = Math.random() * 35 + 20; this.speed = Math.random() * 1.5 + 0.5; this.opacity = Math.random() * 0.4 + 0.1; this.color = this.isNote ? '34, 211, 238' : '251, 191, 36'; }
             update() { this.y -= this.speed; this.x += Math.sin(this.y / 60) * 1; if (this.y < -50) this.reset(); }
             draw() { ctx.fillStyle = `rgba(${this.color}, ${this.opacity})`; if (this.isNote) { ctx.font = `${this.size}px Cinzel`; ctx.fillText('♪', this.x, this.y); } else { ctx.beginPath(); ctx.arc(this.x, this.y, this.size / 4, 0, Math.PI * 2); ctx.fill(); } }
-        }
-        for (let i = 0; i < 35; i++) particles.push(new Particle());
-        function animate() { ctx.clearRect(0, 0, canvas.width, canvas.height); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animate); }
-        animate();
-    </script>
-</body>
-</html>
