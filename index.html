@@ -19,24 +19,31 @@
             overflow-x: hidden; 
         }
 
-        #particle-canvas { position: fixed; inset: 0; z-index: 2; pointer-events: none; }
+        /* ANIMATION CANVAS - FIXED TO BACKGROUND */
+        #particle-canvas { 
+            position: fixed; 
+            inset: 0; 
+            z-index: 1; 
+            pointer-events: none; 
+        }
 
         /* THE MASTER LAYOUT CONTAINER */
         .hub-container {
             display: flex;
-            flex-direction: column; /* Stack vertically on mobile */
+            flex-direction: column;
             min-height: 100vh;
+            position: relative;
+            z-index: 2;
         }
 
         /* THE HERO IMAGE BLOCK */
         .hero-image {
             width: 100%;
-            height: 40vh; /* Image takes 40% height on mobile */
+            height: 40vh;
             background: url('thefamilyhub.jpg') no-repeat center center;
             background-size: cover;
             border-bottom: 3px solid var(--sigil);
             position: relative;
-            z-index: 5;
         }
 
         /* THE SIDEBAR / CONTENT AREA */
@@ -44,27 +51,19 @@
             position: relative; 
             width: 100%; 
             padding: 2rem 1.5rem; 
-            background: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.85) 100%);
-            z-index: 10;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.95) 100%);
             flex-grow: 1;
         }
 
-        /* DESKTOP RESTORATION (Side-by-side above 1024px) */
+        /* DESKTOP RESTORATION */
         @media (min-width: 1024px) {
             .hub-container { flex-direction: row; height: 100vh; overflow: hidden; }
-            
-            .hero-image { 
-                width: 65%; 
-                height: 100vh; 
-                border-bottom: none;
-                border-right: 3px solid var(--sigil);
-            }
-
+            .hero-image { width: 65%; height: 100vh; border-bottom: none; border-right: 3px solid var(--sigil); }
             .sidebar { 
                 max-width: 480px; 
                 height: 100vh;
                 overflow-y: auto;
-                background: linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,0.85) 100%);
+                background: linear-gradient(to right, rgba(0,0,0,0.8) 0%, rgba(0,0,0,1) 100%);
                 scrollbar-width: none;
             }
         }
@@ -85,7 +84,7 @@
         }
 
         .glass-module {
-            background: rgba(10, 10, 15, 0.92); backdrop-filter: blur(40px);
+            background: rgba(10, 10, 15, 0.7); backdrop-filter: blur(40px);
             border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1rem;
             margin-bottom: 2.5rem; overflow: hidden; transition: 0.3s ease;
         }
@@ -104,7 +103,7 @@
         .theme-dot { height: 15px; border-radius: 50%; border: 1px solid white; cursor: pointer; }
     </style>
 </head>
-<body id="mainBody">
+<body>
 
     <canvas id="particle-canvas"></canvas>
 
@@ -187,19 +186,42 @@
 
         async function deleteItem(id) { await _supabase.from('market_items').delete().eq('id', id); loadMarket(); }
 
+        /* RESTORED ANIMATION ENGINE */
         const canvas = document.getElementById('particle-canvas'), ctx = canvas.getContext('2d');
         let particles = [];
         function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
         window.addEventListener('resize', resize); resize();
+        
         class Particle {
             constructor() { this.init(); }
-            init() { this.x = Math.random() * canvas.width; this.y = canvas.height + 50; this.size = Math.random() * 20 + 10; this.speed = Math.random() * 0.5 + 0.3; this.opacity = Math.random() * 0.3; this.isEmber = Math.random() > 0.6; }
-            update() { this.y -= this.speed; if(this.y < -50) this.init(); }
-            draw() { ctx.fillStyle = this.isEmber ? '#f97316' : '#22d3ee'; ctx.globalAlpha = this.opacity; ctx.font = `${this.size}px serif`; ctx.fillText(this.isEmber ? '•' : '♪', this.x, this.y); ctx.globalAlpha = 1; }
+            init() { 
+                this.x = Math.random() * canvas.width; 
+                this.y = canvas.height + 50; 
+                this.size = Math.random() * 20 + 10; 
+                this.speed = Math.random() * 0.5 + 0.3; 
+                this.opacity = Math.random() * 0.3; 
+                this.isEmber = Math.random() > 0.6; 
+                this.char = this.isEmber ? '•' : ['♪', '♫', '♬'][Math.floor(Math.random()*3)];
+            }
+            update() { 
+                this.y -= this.speed; 
+                this.x += Math.sin(this.y / 50) * 0.5; // Adding a gentle sway
+                if (this.y < -50) this.init(); 
+            }
+            draw() { 
+                ctx.fillStyle = this.isEmber ? '#f97316' : '#22d3ee'; 
+                ctx.globalAlpha = this.opacity; 
+                ctx.font = `${this.size}px serif`; 
+                ctx.fillText(this.char, this.x, this.y); 
+                ctx.globalAlpha = 1; 
+            }
         }
-        for (let i = 0; i < 30; i++) particles.push(new Particle());
-        function animate() { ctx.clearRect(0, 0, canvas.width, canvas.height); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animate); }
-        animate();
+        for (let i = 0; i < 40; i++) particles.push(new Particle());
+        function animate() { 
+            ctx.clearRect(0, 0, canvas.width, canvas.height); 
+            particles.forEach(p => { p.update(); p.draw(); }); 
+            requestAnimationFrame(animate); 
+        }
     </script>
 </body>
 </html>
