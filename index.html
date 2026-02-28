@@ -33,8 +33,7 @@
 
         .quest-banner { background: linear-gradient(to right, rgba(34, 211, 238, 0.15), transparent); border-left: 5px solid var(--sigil); padding: 1.5rem; margin: 1rem; border-radius: 0 1rem 1rem 0; font-size: 15px; font-weight: 800; }
         
-        /* CALENDAR STYLE */
-        .cal-date { aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; border: 1px solid rgba(255,255,255,0.02); cursor: pointer; transition: 0.2s; }
+        .cal-date { aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; border: 1px solid rgba(255,255,255,0.02); cursor: pointer; }
         .cal-today { border: 2px solid var(--gold) !important; color: var(--gold); background: rgba(251, 191, 36, 0.1); border-radius: 8px; }
         .has-quest { border: 1.5px solid var(--sigil) !important; box-shadow: inset 0 0 10px var(--sigil); color: var(--sigil); }
 
@@ -42,6 +41,10 @@
         .note-card { border-left: 5px solid var(--sigil); padding: 1.5rem; background: rgba(255,255,255,0.02); margin-bottom: 2rem; border-radius: 0 1rem 1rem 0; }
         .note-img { width: 100%; border-radius: 1rem; margin-top: 1rem; border: 1px solid rgba(255,255,255,0.1); }
         
+        .action-btn { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255,255,255,0.1); padding: 10px 15px; border-radius: 12px; font-size: 11px; font-weight: 900; color: #fff; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+        .listening { background: #ef4444 !important; border-color: #ef4444 !important; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
         #questModal { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.98); backdrop-filter: blur(40px); align-items: center; justify-content: center; }
         .modal-glass { background: #000; border: 1px solid var(--gold); padding: 3rem; border-radius: 2.5rem; width: 90%; max-width: 480px; text-align: center; }
     </style>
@@ -52,7 +55,7 @@
         <div class="modal-glass">
             <h2 id="modalDateTitle" class="text-3xl font-black mb-8 uppercase text-white" style="font-family: 'Cinzel';"></h2>
             <div id="modalEventList" class="space-y-4 mb-8 text-left max-h-72 overflow-y-auto pr-4 text-white"></div>
-            <input id="modalInput" class="text-black p-4 w-full rounded-xl" type="text" placeholder="Quest details...">
+            <input id="modalInput" class="w-full bg-white text-black p-4 rounded-xl outline-none" type="text" placeholder="Quest details...">
             <div class="flex gap-4 mt-8">
                 <button onclick="closeQuestModal()" class="w-full py-5 border border-white/20 uppercase text-xs font-black rounded-2xl">Back</button>
                 <button id="addQuestBtn" class="w-full py-5 bg-white/10 border border-white/30 uppercase text-xs font-black rounded-2xl">Save</button>
@@ -77,8 +80,8 @@
             <div class="glass-module">
                 <div class="expensive-header" onclick="toggleModule('calContent')"><span>The Oracle</span><span>↕</span></div>
                 <div id="calContent">
-                    <div id="activeQuestBanner" class="quest-banner">Initializing Oracle...</div>
-                    <div id="calendarGrid" class="grid grid-cols-7 gap-1 p-6 text-white"></div>
+                    <div id="activeQuestBanner" class="quest-banner">Reading Fate...</div>
+                    <div id="calendarGrid" class="grid grid-cols-7 gap-1 p-6 text-white text-xs"></div>
                 </div>
             </div>
 
@@ -86,17 +89,18 @@
                 <div class="expensive-header" onclick="toggleModule('mealContent')"><span>Meal Plan</span><span>↕</span></div>
                 <div id="mealContent" class="p-6">
                     <div id="mealList" class="mb-4"></div>
-                    <input id="mealInput" class="w-full bg-black border border-white/20 p-4 rounded-xl" type="text" placeholder="Add dinner..." onkeydown="if(event.key==='Enter') saveItem('meal_plan', 'mealInput')">
+                    <input id="mealInput" class="w-full bg-black border border-white/20 p-4 rounded-xl outline-none" type="text" placeholder="Add dinner..." onkeydown="if(event.key==='Enter') saveItem('meal_plan', 'mealInput')">
                 </div>
             </div>
 
             <div class="glass-module">
                 <div class="expensive-header" onclick="toggleModule('noteContent')"><span>The Chronicler</span><span>↕</span></div>
-                <div id="noteContent" class="p-6">
-                    <div id="notesLog" class="space-y-6 mb-6"></div>
-                    <input id="nInput" class="w-full bg-black border border-white/20 p-4 rounded-xl" type="text" placeholder="Tell a story..." onkeydown="if(event.key==='Enter') saveNote()">
-                    <div class="flex gap-2 mt-4">
-                        <button class="bg-white/5 border border-white/10 px-4 py-2 rounded-xl text-xs font-black" id="photoBtn" onclick="document.getElementById('imgUpload').click()">📷 PHOTO</button>
+                <div id="noteContent" class="p-8">
+                    <div id="notesLog" class="space-y-6 mb-6 text-white"></div>
+                    <input id="nInput" class="w-full bg-black border border-white/20 p-4 rounded-xl outline-none mb-4" type="text" placeholder="Tell a story..." onkeydown="if(event.key==='Enter') saveNote()">
+                    <div class="flex gap-3">
+                        <button id="voiceBtn" class="action-btn" onclick="startVoice()">🎤 SPEAK</button>
+                        <button class="action-btn" id="photoBtn" onclick="document.getElementById('imgUpload').click()">📷 PHOTO</button>
                         <input type="file" id="imgUpload" class="hidden" accept="image/*" onchange="uploadAndSave(this)">
                     </div>
                 </div>
@@ -105,9 +109,9 @@
             <div class="glass-module">
                 <div class="expensive-header" onclick="toggleModule('marketContent')"><span>Provisions</span><span>↕</span></div>
                 <div id="marketContent" class="p-6">
-                    <div id="marketList" class="mb-4"></div>
-                    <input id="mInput" class="w-full bg-black border border-white/20 p-4 rounded-xl" type="text" placeholder="Add grocery..." onkeydown="if(event.key==='Enter') saveItem('market_items', 'mInput')">
-                    <button onclick="purgeTable('market_items')" class="w-full mt-4 border border-red-500/30 py-3 rounded-xl text-[10px] font-black text-red-500 uppercase">Purge List</button>
+                    <div id="marketList" class="mb-4 text-white"></div>
+                    <input id="mInput" class="w-full bg-black border border-white/20 p-4 rounded-xl outline-none" type="text" placeholder="Add grocery..." onkeydown="if(event.key==='Enter') saveItem('market_items', 'mInput')">
+                    <button onclick="purgeTable('market_items')" class="w-full mt-6 border border-red-500/40 py-4 rounded-xl text-[10px] font-black text-red-500 uppercase bg-red-500/5 hover:bg-red-500/10 transition">Purge Provisions</button>
                 </div>
             </div>
         </div>
@@ -123,96 +127,8 @@
         window.onload = () => { 
             const savedName = localStorage.getItem('hubCommanderName');
             if (savedName) document.getElementById('userName').value = savedName;
-            
+            const isLarge = localStorage.getItem('hubLargeMode') === 'true';
+            if (isLarge) document.body.classList.add('large-mode');
+
             refreshAll(); buildCalendar(); animate(); updateTodayBanner();
-            setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); }, 1000); 
-        };
-
-        async function updateTodayBanner() {
-            const today = new Date();
-            const ds = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-            const { data } = await _supabase.from('calendar_events').select('title').eq('start_date', ds);
-            document.getElementById('activeQuestBanner').innerText = data?.length ? data.map(e => e.title).join(' • ') : "No quests today.";
-        }
-
-        async function refreshAll() { loadList('market_items', 'marketList'); loadList('meal_plan', 'mealList'); loadNotes(); }
-        
-        async function saveItem(table, inputId) {
-            const i = document.getElementById(inputId); if(!i.value) return;
-            await _supabase.from(table).insert([{ text: `${currentSigil} ${i.value}` }]);
-            i.value = ""; refreshAll();
-        }
-
-        async function uploadAndSave(input) {
-            const file = input.files[0]; if (!file) return;
-            const btn = document.getElementById('photoBtn'); btn.innerText = "⏳...";
-            const path = `note-images/${Date.now()}-${file.name}`;
-            await _supabase.storage.from('note-images').upload(path, file);
-            const { data: { publicUrl } } = _supabase.storage.from('note-images').getPublicUrl(path);
-            await _supabase.from('family_notes').insert([{ note: document.getElementById('nInput').value || "", image_url: publicUrl, timestamp: `${currentSigil} Amber • ${new Date().toLocaleDateString()}` }]);
-            document.getElementById('nInput').value = ""; btn.innerText = "📷 PHOTO"; loadNotes();
-        }
-
-        async function loadList(table, divId) {
-            const { data } = await _supabase.from(table).select('*').order('created_at', { ascending: true });
-            document.getElementById(divId).innerHTML = data?.length ? data.map(item => `
-                <div class="list-item"><span>${item.text}</span><span class="text-red-900 cursor-pointer" onclick="deleteItem('${table}', '${item.id}')">×</span></div>`).join('') : '<div class="opacity-20 italic text-xs">Empty.</div>';
-        }
-
-        async function loadNotes() {
-            const { data } = await _supabase.from('family_notes').select('*').order('created_at', { ascending: false });
-            document.getElementById('notesLog').innerHTML = data ? data.map(n => `
-                <div class="note-card">
-                    <small class="opacity-30 uppercase font-black text-[9px] block mb-2">${n.timestamp}</small>
-                    ${n.note ? `<p class="font-semibold text-lg">"${n.note}"</p>` : ''}
-                    ${n.image_url ? `<img src="${n.image_url}" class="note-img">` : ''}
-                </div>`).join('') : '';
-        }
-
-        async function deleteItem(table, id) { await _supabase.from(table).delete().eq('id', id); refreshAll(); if(table === 'calendar_events') { buildCalendar(); updateTodayBanner(); } }
-        async function purgeTable(table) { if(confirm("Clear list?")) { await _supabase.from(table).delete().neq('id', 0); refreshAll(); } }
-        function toggleModule(id) { const e = document.getElementById(id); e.style.display = e.style.display === 'none' ? 'block' : 'none'; }
-        function closeQuestModal() { document.getElementById('questModal').style.display = 'none'; }
-
-        async function buildCalendar() {
-            const y = dispDate.getFullYear(), m = dispDate.getMonth();
-            const first = new Date(y, m, 1).getDay(), days = new Date(y, m + 1, 0).getDate();
-            const grid = document.getElementById('calendarGrid'); grid.innerHTML = '';
-            const { data: appts } = await _supabase.from('calendar_events').select('*');
-            for (let i = 0; i < first; i++) grid.innerHTML += '<div></div>';
-            for (let d = 1; d <= days; d++) {
-                const ds = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-                const hasA = appts?.some(e => e.start_date === ds);
-                const isT = (d === new Date().getDate() && m === new Date().getMonth());
-                grid.innerHTML += `<div class="cal-date ${isT ? 'cal-today' : ''} ${hasA ? 'has-quest' : ''}" onclick="openQuest('${ds}', ${d})">${d}</div>`;
-            }
-        }
-
-        async function openQuest(ds, d) {
-            document.getElementById('modalDateTitle').innerText = `${d}`;
-            document.getElementById('questModal').style.display = 'flex';
-            const { data: evs } = await _supabase.from('calendar_events').select('*').eq('start_date', ds);
-            document.getElementById('modalEventList').innerHTML = evs?.length ? evs.map(e => `<div class="flex justify-between items-center p-4 bg-white/5 rounded-xl border border-white/10 text-white"><span>${e.title}</span><span class="text-red-500 cursor-pointer" onclick="deleteItem('calendar_events', '${e.id}'); openQuest('${ds}', ${d});">×</span></div>`) : '<p class="opacity-30 italic text-white">No quests.</p>';
-            document.getElementById('addQuestBtn').onclick = async () => {
-                const v = document.getElementById('modalInput').value; if(!v) return;
-                await _supabase.from('calendar_events').insert([{ title: `${currentSigil} ${v}`, start_date: ds }]);
-                document.getElementById('modalInput').value = ""; await buildCalendar(); updateTodayBanner(); openQuest(ds, d);
-            };
-        }
-
-        const canvas = document.getElementById('particle-canvas'), ctx = canvas.getContext('2d');
-        let particles = [];
-        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-        window.addEventListener('resize', resize); resize();
-        class Particle {
-            constructor() { this.init(); }
-            init() { this.x = Math.random() * canvas.width; this.y = canvas.height + 50; this.speed = Math.random() * 1 + 0.5; }
-            update() { this.y -= this.speed; if (this.y < -50) this.init(); }
-            draw() { ctx.fillStyle = '#22d3ee'; ctx.globalAlpha = 0.2; ctx.fillText('•', this.x, this.y); }
-        }
-        for (let i = 0; i < 30; i++) particles.push(new Particle());
-        function animate() { ctx.clearRect(0, 0, canvas.width, canvas.height); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animate); }
-        animate();
-    </script>
-</body>
-</html>
+            setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); }, 1000);
