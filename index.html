@@ -20,7 +20,6 @@
 
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; color: #fff; font-family: 'Inter', sans-serif; overflow-x: hidden; }
         
-        /* TITAN SCALE */
         body.large-mode .list-item, body.large-mode .note-text { font-size: 28px !important; }
         body.large-mode .expensive-header { font-size: 20px !important; }
         body.large-mode input { font-size: 24px !important; }
@@ -42,14 +41,12 @@
         
         .expensive-header { font-family: 'Cinzel', serif; font-size: 13px; letter-spacing: 0.3em; font-weight: 900; text-transform: uppercase; padding: 1.8rem; background: linear-gradient(to right, var(--gold), var(--sigil)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; border-bottom: 1px solid rgba(255, 255, 255, 0.05); display: flex; justify-content: space-between; align-items: center; }
 
-        /* IDENTITY VAULT */
         .avatar-bar { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; padding: 20px; }
         .avatar-option { height: 55px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 26px; background: rgba(255,255,255,0.02); transition: 0.3s; }
         .avatar-option.active { border-color: var(--sigil); box-shadow: 0 0 30px var(--sigil); transform: scale(1.1); background: rgba(34, 211, 238, 0.1); }
         .vibe-bar { display: grid; grid-template-columns: repeat(8, 1fr); gap: 10px; padding: 0 20px 20px 20px; }
         .theme-dot { height: 26px; width: 26px; border-radius: 50%; border: 2px solid #fff; cursor: pointer; transition: 0.2s; }
 
-        /* INTERFACE */
         input { background: #000 !important; border: 1px solid rgba(255, 255, 255, 0.2) !important; color: #fff !important; padding: 22px !important; border-radius: 15px; font-weight: 700; width: 100%; outline: none; margin-top: 15px; }
         .list-item { font-size: 20px; font-weight: 700; padding: 1.2rem; border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: center; }
         
@@ -74,7 +71,7 @@
 
     <div id="questModal">
         <div class="modal-glass">
-            <h2 id="modalDateTitle" class="text-4xl font-black mb-10 uppercase text-white font-serif"></h2>
+            <h2 id="modalDateTitle" class="text-4xl font-black mb-10 uppercase text-white"></h2>
             <div id="modalEventList" class="space-y-5 mb-10 text-left max-h-72 overflow-y-auto pr-4 text-white"></div>
             <input id="modalInput" class="w-full bg-white text-black p-5 rounded-xl outline-none" type="text" placeholder="Quest detail...">
             <div class="flex gap-4 mt-8">
@@ -93,7 +90,7 @@
                 <h1 class="text-7xl font-black tracking-[0.25em]" style="background: linear-gradient(to right, var(--gold), var(--sigil)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-family: 'Cinzel';">TUCKER</h1>
                 <div class="oracle-row">
                     <span id="clock">00:00</span>
-                    <span>FARMINGTON: 52°F</span>
+                    <span id="liveWeather">FARMINGTON: --°F</span>
                     <button id="sizeToggle" class="px-3 border border-white/20 rounded font-black text-[10px]">AA</button>
                 </div>
 
@@ -141,7 +138,7 @@
                     <span class="nav-arrow" onclick="changeMonth(1)">▶</span>
                 </div>
                 <div id="calContent">
-                    <div id="activeQuestBanner" class="quest-banner">Updating Oracle...</div>
+                    <div id="activeQuestBanner" class="quest-banner">Oracle Online...</div>
                     <div id="calendarGrid" class="grid grid-cols-7 gap-1 p-6 text-white text-xs"></div>
                 </div>
             </div>
@@ -189,9 +186,25 @@
             const savedName = localStorage.getItem('hubCommanderName');
             if (savedName) document.getElementById('userName').value = savedName;
             if (localStorage.getItem('hubLargeMode') === 'true') document.body.classList.add('large-mode');
-            refreshAll(); buildCalendar(); animate(); updateTodayBanner();
-            setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); }, 1000); 
+            
+            refreshAll(); buildCalendar(); animate(); updateTodayBanner(); getLiveWeather();
+            
+            setInterval(() => { 
+                document.getElementById('clock').innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); 
+            }, 1000); 
         };
+
+        async function getLiveWeather() {
+            try {
+                // Farmington coordinates approx: 34.80 N, 88.52 W
+                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=34.80&longitude=-88.52&current_weather=true&temperature_unit=fahrenheit');
+                const data = await res.json();
+                const temp = Math.round(data.current_weather.temperature);
+                document.getElementById('liveWeather').innerText = `FARMINGTON: ${temp}°F`;
+            } catch (e) {
+                document.getElementById('liveWeather').innerText = "WEATHER OFFLINE";
+            }
+        }
 
         function selectAvatar(el, icon) { document.querySelectorAll('.avatar-option').forEach(opt => opt.classList.remove('active')); el.classList.add('active'); currentSigil = icon; }
         function setTheme(t) { document.body.setAttribute('data-theme', t); }
@@ -212,7 +225,6 @@
         }
 
         async function refreshAll() { loadList('market_items', 'marketList'); loadList('meal_plan', 'mealList'); loadNotes(); }
-        
         async function saveItem(table, inputId) {
             const i = document.getElementById(inputId); if(!i.value) return;
             const name = document.getElementById('userName').value || 'Tucker';
