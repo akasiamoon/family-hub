@@ -24,7 +24,6 @@
             overflow-x: hidden; 
         }
 
-        /* FIXED BACKGROUND ANIMATION */
         #particle-canvas { 
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             z-index: 0; pointer-events: none; background: #000;
@@ -37,7 +36,7 @@
 
         .hero-image {
             width: 100%; height: 35vh;
-            background: url('thefamilyhub.jpg') no-repeat center center;
+            background: url('thefamilyhub.jpg') center center no-repeat;
             background-size: cover; border-bottom: 3px solid var(--sigil);
         }
 
@@ -61,7 +60,7 @@
         }
 
         .expensive-header {
-            font-size: 12px; letter-spacing: 0.3em; font-weight: 900; text-transform: uppercase;
+            font-size: 13px; letter-spacing: 0.3em; font-weight: 900; text-transform: uppercase;
             padding: 1.1rem 1.25rem; background: linear-gradient(to right, var(--gold), var(--sigil));
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
             border-bottom: 2px solid transparent; border-image: linear-gradient(to right, var(--gold), var(--sigil)) 1;
@@ -69,7 +68,7 @@
         }
 
         .glass-module {
-            background: rgba(20, 20, 25, 0.7); backdrop-filter: blur(40px);
+            background: rgba(20, 20, 25, 0.8); backdrop-filter: blur(40px);
             border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1rem;
             margin-bottom: 2rem; overflow: hidden;
         }
@@ -230,7 +229,7 @@
 
         async function loadList(table, divId) {
             const { data } = await _supabase.from(table).select('*').order('created_at', { ascending: true });
-            document.getElementById(divId).innerHTML = data ? data.map(item => `<div class="flex justify-between border-b border-white/5 pb-2 text-white"><span>${item.text}</span><span class="text-red-900 font-bold cursor-pointer" onclick="deleteItem('${table}', '${item.id}')">×</span></div>`).join('') : '';
+            document.getElementById(divId).innerHTML = data?.length ? data.map(item => `<div class="flex justify-between border-b border-white/5 pb-2 text-white"><span>${item.text}</span><span class="text-red-900 font-bold cursor-pointer" onclick="deleteItem('${table}', '${item.id}')">×</span></div>`).join('') : '<div class="opacity-20 italic text-[10px]">Empty...</div>';
         }
 
         async function saveNote() {
@@ -259,7 +258,7 @@
                 const ds = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
                 const hasA = appts?.some(e => e.start_date === ds);
                 const isT = (d === new Date().getDate() && m === new Date().getMonth() && y === new Date().getFullYear());
-                grid.innerHTML += `<div class="cal-date ${isT ? 'cal-today' : ''} ${hasA ? 'has-quest' : ''} text-white" onclick="openQuest('${ds}', ${d})">${d}</div>`;
+                grid.innerHTML += `<div class="cal-date ${isT ? 'cal-today' : ''} ${hasA ? 'has-quest' : ''}" onclick="openQuest('${ds}', ${d})">${d}</div>`;
             }
         }
 
@@ -276,7 +275,6 @@
             };
         }
 
-        /* GLOBAL PARTICLE ENGINE */
         const canvas = document.getElementById('particle-canvas'), ctx = canvas.getContext('2d');
         let particles = [];
         function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
