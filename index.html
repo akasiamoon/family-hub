@@ -9,7 +9,7 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@300;600;800&display=swap');
         
-        :root { --sigil: #22d3ee; --gold: #fbbf24; --deep-glass: rgba(10, 10, 15, 0.9); }
+        :root { --sigil: #22d3ee; --gold: #fbbf24; --deep-glass: rgba(5, 5, 8, 0.94); }
         [data-theme="purple"] { --sigil: #a855f7; }
         [data-theme="red"] { --sigil: #ef4444; }
         [data-theme="green"] { --sigil: #10b981; }
@@ -20,79 +20,59 @@
 
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; color: #fff; font-family: 'Inter', sans-serif; overflow-x: hidden; }
         
-        #particle-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none; background: #000; }
-        
+        body.large-mode .list-item { font-size: 28px !important; }
+        body.large-mode .expensive-header { font-size: 22px !important; }
+        body.large-mode input { font-size: 24px !important; padding: 25px !important; }
+        body.large-mode .cal-date { font-size: 24px !important; }
+
+        #particle-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none; }
         .hub-container { display: flex; flex-direction: column; min-height: 100vh; position: relative; z-index: 10; background: transparent; }
         
-        .hero-image { width: 100%; height: 40vh; background: url('thefamilyhub.jpg') center center no-repeat; background-size: cover; border-bottom: 2px solid var(--sigil); box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
-        
-        .sidebar { width: 100%; padding: 3rem 2rem; background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.95) 100%); flex-grow: 1; }
+        .hero-image { width: 100%; height: 40vh; background: url('thefamilyhub.jpg') center center no-repeat; background-size: cover; border-bottom: 2px solid var(--sigil); }
+        .sidebar { width: 100%; padding: 3rem 2rem; background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.98) 100%); flex-grow: 1; }
         
         @media (min-width: 1024px) { 
             .hub-container { flex-direction: row; height: 100vh; overflow: hidden; } 
             .hero-image { width: 62%; height: 100vh; border-bottom: none; border-right: 2px solid var(--sigil); } 
-            .sidebar { max-width: 520px; height: 100vh; overflow-y: auto; scrollbar-width: none; } 
+            .sidebar { max-width: 550px; height: 100vh; overflow-y: auto; scrollbar-width: none; } 
         }
 
-        h1 { font-family: 'Cinzel', serif; text-shadow: 0 0 20px rgba(34, 211, 238, 0.3); }
+        .oracle-row { display: flex; justify-content: space-around; align-items: center; font-size: 14px; font-weight: 800; letter-spacing: 4px; color: var(--gold); margin: 2rem 0; padding: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1); border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .glass-module { background: var(--deep-glass); backdrop-filter: blur(60px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1.5rem; margin-bottom: 2.5rem; overflow: hidden; }
+        .expensive-header { font-family: 'Cinzel', serif; font-size: 14px; letter-spacing: 0.4em; font-weight: 900; text-transform: uppercase; padding: 1.8rem; background: linear-gradient(to right, var(--gold), var(--sigil)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; border-bottom: 1px solid rgba(255, 255, 255, 0.05); display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
 
-        .oracle-row { 
-            display: flex; justify-content: space-around; align-items: center; 
-            font-size: 13px; font-weight: 800; letter-spacing: 3px; 
-            color: var(--gold); margin: 2rem 0; padding: 1rem;
-            border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .glass-module { 
-            background: var(--deep-glass); backdrop-filter: blur(50px); 
-            border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 1.25rem; 
-            margin-bottom: 2.5rem; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.6);
-        }
-
-        .expensive-header { 
-            font-family: 'Cinzel', serif; font-size: 15px; letter-spacing: 0.4em; font-weight: 900; text-transform: uppercase; 
-            padding: 1.5rem; background: linear-gradient(to right, var(--gold), var(--sigil)); 
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08); display: flex; justify-content: space-between; align-items: center; cursor: pointer; 
-        }
-
-        .avatar-bar { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; padding: 20px; }
-        .avatar-option { height: 50px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 24px; background: rgba(255,255,255,0.03); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .avatar-option.active { border-color: var(--sigil); box-shadow: 0 0 25px var(--sigil); transform: scale(1.15); background: rgba(34, 211, 238, 0.1); }
+        .avatar-bar { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; padding: 20px; }
+        .avatar-option { height: 55px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 26px; background: rgba(255,255,255,0.02); }
+        .avatar-option.active { border-color: var(--sigil); box-shadow: 0 0 30px var(--sigil); transform: scale(1.1); background: rgba(34, 211, 238, 0.15); }
 
         .vibe-bar { display: grid; grid-template-columns: repeat(8, 1fr); gap: 10px; padding: 0 20px 20px 20px; }
-        .theme-dot { height: 28px; width: 28px; border-radius: 50%; border: 2px solid #fff; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
-        .theme-dot:hover { transform: translateY(-3px); box-shadow: 0 0 15px white; }
+        .theme-dot { height: 26px; width: 26px; border-radius: 50%; border: 2px solid #fff; cursor: pointer; }
 
-        input { background: #000 !important; border: 1px solid rgba(255, 255, 255, 0.15) !important; color: #fff !important; padding: 18px !important; border-radius: 12px; font-size: 16px; font-weight: 600; width: 100%; outline: none; transition: 0.3s; }
-        input:focus { border-color: var(--sigil) !important; box-shadow: 0 0 15px var(--sigil); }
-
-        .list-item { font-size: 18px; font-weight: 700; padding: 1rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); animation: fadeIn 0.5s ease forwards; }
-
-        /* CALENDAR LUXE */
-        .cal-date { aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; border: 1px solid rgba(255,255,255,0.03); cursor: pointer; color: rgba(255,255,255,0.6); }
-        .cal-date:hover { background: var(--sigil); color: #000; border-radius: 8px; }
-        .cal-today { border: 2px solid var(--gold) !important; color: var(--gold) !important; font-size: 18px; }
-        .has-quest { color: var(--sigil) !important; text-shadow: 0 0 10px var(--sigil); font-size: 18px; }
+        input { background: #000 !important; border: 1px solid rgba(255, 255, 255, 0.2) !important; color: #fff !important; padding: 20px !important; border-radius: 15px; font-weight: 700; width: 100%; outline: none; margin-top: 15px; }
         
-        .quest-banner { background: linear-gradient(to right, rgba(251,191,36,0.2), transparent); border-left: 5px solid var(--gold); padding: 1.25rem; margin: 1.5rem; border-radius: 0 12px 12px 0; font-size: 15px; font-weight: 800; }
+        .list-item { font-size: 19px; font-weight: 700; padding: 1.2rem 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .cal-date { aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 800; border: 1px solid rgba(255,255,255,0.02); cursor: pointer; }
+        .cal-today { border: 2px solid var(--gold) !important; color: var(--gold) !important; background: rgba(251, 191, 36, 0.1); border-radius: 10px; }
+        .has-quest { color: var(--sigil) !important; text-shadow: 0 0 15px var(--sigil); }
+        
+        .voice-btn { background: rgba(34, 211, 238, 0.1); border: 1px solid var(--sigil); padding: 10px; border-radius: 10px; font-size: 12px; font-weight: 900; color: var(--sigil); cursor: pointer; margin-top: 10px; display: inline-block; }
+        .voice-btn.listening { background: #ef4444; border-color: #ef4444; color: white; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
-        #questModal { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.96); backdrop-filter: blur(30px); align-items: center; justify-content: center; }
-        .modal-glass { background: #050507; border: 1px solid var(--gold); padding: 3rem; border-radius: 2rem; width: 90%; max-width: 450px; text-align: center; }
+        #questModal { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.98); backdrop-filter: blur(40px); align-items: center; justify-content: center; }
+        .modal-glass { background: #000; border: 1px solid var(--gold); padding: 4rem 3rem; border-radius: 2.5rem; width: 90%; max-width: 500px; text-align: center; }
     </style>
 </head>
 <body id="mainBody">
 
     <div id="questModal">
         <div class="modal-glass">
-            <h2 id="modalDateTitle" class="text-2xl font-black mb-8 tracking-widest uppercase text-white" style="font-family: 'Cinzel';"></h2>
-            <div id="modalEventList" class="space-y-4 mb-8 text-left max-h-60 overflow-y-auto pr-2"></div>
-            <input id="modalInput" type="text" placeholder="Enter Appointment...">
-            <div class="flex gap-4 mt-8">
-                <button onclick="closeQuestModal()" class="w-full py-4 border border-white/10 uppercase text-xs font-black tracking-widest hover:bg-white/5 rounded-xl">Return</button>
-                <button id="addQuestBtn" class="w-full py-4 bg-white/10 border border-white/20 uppercase text-xs font-black tracking-widest hover:bg-white/20 rounded-xl">Assign</button>
+            <h2 id="modalDateTitle" class="text-3xl font-black mb-10 tracking-widest uppercase text-white" style="font-family: 'Cinzel';"></h2>
+            <div id="modalEventList" class="space-y-6 mb-10 text-left max-h-72 overflow-y-auto pr-4"></div>
+            <input id="modalInput" type="text" placeholder="Appointment Name...">
+            <div class="flex gap-4 mt-10">
+                <button onclick="closeQuestModal()" class="w-full py-5 border border-white/20 uppercase text-xs font-black tracking-widest rounded-2xl">Close</button>
+                <button id="addQuestBtn" class="w-full py-5 bg-white/10 border border-white/30 uppercase text-xs font-black tracking-widest rounded-2xl">Add Quest</button>
             </div>
         </div>
     </div>
@@ -102,13 +82,15 @@
     <div class="hub-container">
         <div class="hero-image"></div>
         <div class="sidebar">
-            <header class="text-center mb-10">
-                <h1 class="text-6xl font-black tracking-[0.25em]" style="background: linear-gradient(to right, var(--gold), var(--sigil)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">TUCKER</h1>
+            <header class="text-center mb-12">
+                <h1 class="text-7xl font-black tracking-[0.3em]" style="background: linear-gradient(to right, var(--gold), var(--sigil)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-family: 'Cinzel';">TUCKER</h1>
                 
                 <div class="oracle-row">
-                    <span id="clock" class="text-xl">00:00</span>
-                    <div class="flex items-center gap-3"><span>☁️</span> <span id="temp">52°F</span></div>
-                    <span class="opacity-70">FARMINGTON</span>
+                    <span id="clock" class="text-2xl font-black">00:00</span>
+                    <div class="flex items-center gap-4"><span>🌙</span> <span id="temp">52°F</span></div>
+                    <div class="flex gap-2">
+                        <button onclick="document.body.classList.toggle('large-mode')" class="px-3 py-1 border border-white/20 rounded text-xs font-black hover:bg-white/10">AA</button>
+                    </div>
                 </div>
 
                 <div class="glass-module">
@@ -150,28 +132,28 @@
 
             <div class="glass-module">
                 <div class="expensive-header" onclick="toggleModule('calContent')">
-                    <span onclick="event.stopPropagation(); changeMonth(-1)" class="hover:text-white transition">◀</span>
+                    <span onclick="event.stopPropagation(); changeMonth(-1)">◀</span>
                     <span id="calMonthDisplay">MONTH</span>
-                    <span onclick="event.stopPropagation(); changeMonth(1)" class="hover:text-white transition">▶</span>
+                    <span onclick="event.stopPropagation(); changeMonth(1)">▶</span>
                 </div>
                 <div id="calContent">
-                    <div id="activeQuestBanner" class="quest-banner">Select a date to view assignments.</div>
-                    <div id="calendarGrid" class="grid grid-cols-7 gap-1 p-6"></div>
+                    <div id="activeQuestBanner" class="quest-banner">Select a date.</div>
+                    <div id="calendarGrid" class="grid grid-cols-7 gap-1 p-8"></div>
                 </div>
             </div>
 
             <div class="glass-module">
                 <div class="expensive-header" onclick="toggleModule('marketContent')"><span>Provisions</span><span>↕</span></div>
                 <div id="marketContent" class="p-8">
-                    <div id="marketList" class="mb-6"></div>
-                    <input id="mInput" type="text" placeholder="Add to Provisions..." onkeydown="if(event.key==='Enter') saveItem('market_items', 'mInput')">
+                    <div id="marketList" class="mb-4"></div>
+                    <input id="mInput" type="text" placeholder="Add provision..." onkeydown="if(event.key==='Enter') saveItem('market_items', 'mInput')">
                 </div>
             </div>
 
             <div class="glass-module">
                 <div class="expensive-header" onclick="toggleModule('mealContent')"><span>Meal Plan</span><span>↕</span></div>
                 <div id="mealContent" class="p-8">
-                    <div id="mealList" class="mb-6"></div>
+                    <div id="mealList" class="mb-4"></div>
                     <input id="mealInput" type="text" placeholder="Dinner plan..." onkeydown="if(event.key==='Enter') saveItem('meal_plan', 'mealInput')">
                 </div>
             </div>
@@ -179,8 +161,9 @@
             <div class="glass-module">
                 <div class="expensive-header" onclick="toggleModule('noteContent')"><span>The Chronicler</span><span>↕</span></div>
                 <div id="noteContent" class="p-8">
-                    <div id="notesLog" class="space-y-8 mb-8"></div>
-                    <input id="nInput" type="text" placeholder="Capture a memory..." onkeydown="if(event.key==='Enter') saveNote()">
+                    <div id="notesLog" class="space-y-10 mb-8"></div>
+                    <input id="nInput" type="text" placeholder="Type a memory..." onkeydown="if(event.key==='Enter') saveNote()">
+                    <button id="voiceBtn" class="voice-btn" onclick="startVoice()">🎤 TAP TO SPEAK</button>
                 </div>
             </div>
         </div>
@@ -199,12 +182,7 @@
         function closeQuestModal() { document.getElementById('questModal').style.display = 'none'; }
         function changeMonth(o) { dispDate.setMonth(dispDate.getMonth() + o); buildCalendar(); }
 
-        window.onload = () => { 
-            refreshAll(); buildCalendar(); animate(); 
-            setInterval(() => { 
-                document.getElementById('clock').innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); 
-            }, 1000); 
-        };
+        window.onload = () => { refreshAll(); buildCalendar(); animate(); setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); }, 1000); };
 
         async function refreshAll() { loadList('market_items', 'marketList'); loadList('meal_plan', 'mealList'); loadNotes(); }
         
@@ -217,11 +195,7 @@
         
         async function loadList(table, divId) {
             const { data } = await _supabase.from(table).select('*').order('created_at', { ascending: true });
-            document.getElementById(divId).innerHTML = data?.length ? data.map(item => `
-                <div class="flex justify-between items-center list-item">
-                    <span>${item.text}</span>
-                    <span class="text-red-900 font-black cursor-pointer px-4 hover:text-white" onclick="deleteItem('${table}', '${item.id}')">×</span>
-                </div>`).join('') : '<div class="opacity-20 italic text-sm">Empty...</div>';
+            document.getElementById(divId).innerHTML = data?.length ? data.map(item => `<div class="flex justify-between items-center list-item"><span>${item.text}</span><span class="text-red-900 font-black cursor-pointer px-6 hover:text-white" onclick="deleteItem('${table}', '${item.id}')">×</span></div>`).join('') : '<div class="opacity-20 italic text-sm">Waiting...</div>';
         }
 
         async function saveNote() {
@@ -233,12 +207,7 @@
 
         async function loadNotes() {
             const { data } = await _supabase.from('family_notes').select('*').order('created_at', { ascending: false });
-            document.getElementById('notesLog').innerHTML = data ? data.map(n => `
-                <div class="border-l-4 border-cyan-400 pl-6 py-2 mb-4">
-                    <small class="text-[10px] opacity-40 uppercase font-black tracking-widest block mb-2">${n.timestamp || ''}</small>
-                    <p class="text-xl font-medium tracking-wide">"${n.note}"</p>
-                    <span class="text-[10px] text-red-900 cursor-pointer uppercase font-black mt-4 inline-block" onclick="deleteItem('family_notes', '${n.id}')">Remove entry</span>
-                </div>`).join('') : '';
+            document.getElementById('notesLog').innerHTML = data ? data.map(n => `<div class="border-l-4 border-cyan-400 pl-8 py-3 mb-6 bg-white/5 rounded-r-2xl"><small class="text-[11px] opacity-40 uppercase font-black tracking-widest block mb-2">${n.timestamp || ''}</small><p class="text-2xl font-semibold leading-relaxed">"${n.note}"</p><span class="text-[11px] text-red-900 cursor-pointer uppercase font-black mt-6 inline-block" onclick="deleteItem('family_notes', '${n.id}')">Delete</span></div>`).join('') : '';
         }
 
         async function deleteItem(table, id) { await _supabase.from(table).delete().eq('id', id); refreshAll(); buildCalendar(); }
@@ -260,10 +229,10 @@
 
         async function openQuest(ds, d) {
             const { data: evs } = await _supabase.from('calendar_events').select('*').eq('start_date', ds);
-            document.getElementById('activeQuestBanner').innerText = evs?.length ? evs.map(e => e.title).join(' • ') : `No assignments for ${dispDate.toLocaleString('default', { month: 'short' })} ${d}.`;
+            document.getElementById('activeQuestBanner').innerText = evs?.length ? evs.map(e => e.title).join(' • ') : `Clear schedule for ${dispDate.toLocaleString('default', { month: 'short' })} ${d}.`;
             document.getElementById('modalDateTitle').innerText = `${dispDate.toLocaleString('default', { month: 'long' })} ${d}`;
             document.getElementById('questModal').style.display = 'flex';
-            document.getElementById('modalEventList').innerHTML = evs?.map(e => `<div class="flex justify-between p-4 bg-white/5 rounded-xl border border-white/5"><span>${e.title}</span><span class="text-red-500 font-black cursor-pointer" onclick="deleteItem('calendar_events', '${e.id}'); openQuest('${ds}', ${d});">×</span></div>`).join('') || '';
+            document.getElementById('modalEventList').innerHTML = evs?.map(e => `<div class="flex justify-between items-center p-6 bg-white/5 rounded-2xl border border-white/10 text-xl"><span>${e.title}</span><span class="text-red-500 font-black cursor-pointer" onclick="deleteItem('calendar_events', '${e.id}'); openQuest('${ds}', ${d});">×</span></div>`).join('') || '';
             document.getElementById('addQuestBtn').onclick = async () => {
                 const v = document.getElementById('modalInput').value; if(!v) return;
                 await _supabase.from('calendar_events').insert([{ title: `${currentSigil} ${v}`, start_date: ds }]);
@@ -271,18 +240,15 @@
             };
         }
 
-        const canvas = document.getElementById('particle-canvas'), ctx = canvas.getContext('2d');
-        let particles = [];
-        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-        window.addEventListener('resize', resize); resize();
-        class Particle {
-            constructor() { this.init(); }
-            init() { this.x = Math.random() * canvas.width; this.y = canvas.height + 50; this.size = Math.random() * 30 + 10; this.speed = Math.random() * 1.5 + 0.5; this.opacity = Math.random() * 0.5 + 0.1; this.isEmber = Math.random() > 0.6; this.char = this.isEmber ? '•' : '♪'; }
-            update() { this.y -= this.speed; this.x += Math.sin(this.y / 50) * 0.8; if (this.y < -50) this.init(); }
-            draw() { ctx.fillStyle = this.isEmber ? '#f97316' : '#22d3ee'; ctx.globalAlpha = this.opacity; ctx.font = `${this.size}px serif`; ctx.fillText(this.char, this.x, this.y); }
+        /* VOICE ENGINE */
+        function startVoice() {
+            const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            const btn = document.getElementById('voiceBtn');
+            recognition.lang = 'en-US';
+            recognition.start();
+            btn.classList.add('listening'); btn.innerText = "🎤 LISTENING...";
+            recognition.onresult = (e) => { document.getElementById('nInput').value = e.results[0][0].transcript; btn.classList.remove('listening'); btn.innerText = "🎤 TAP TO SPEAK"; };
+            recognition.onerror = () => { btn.classList.remove('listening'); btn.innerText = "🎤 ERROR - TRY AGAIN"; };
         }
-        for (let i = 0; i < 60; i++) particles.push(new Particle());
-        function animate() { ctx.clearRect(0, 0, canvas.width, canvas.height); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animate); }
-    </script>
-</body>
-</html>
+
+        const canvas = document.getElementById('particle-canvas'), ctx = canvas.
