@@ -8,95 +8,57 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@300;600;800&display=swap');
-        
-        :root { --sigil: #22d3ee; --gold: #fbbf24; --deep-glass: rgba(5, 5, 8, 0.94); }
-        [data-theme="purple"] { --sigil: #a855f7; }
-        [data-theme="red"] { --sigil: #ef4444; }
-        [data-theme="green"] { --sigil: #10b981; }
-        [data-theme="gold"] { --sigil: #fbbf24; }
-        [data-theme="pink"] { --sigil: #f472b6; }
-        [data-theme="orange"] { --sigil: #f97316; }
+        :root { --sigil: #22d3ee; --gold: #fbbf24; --deep-glass: rgba(5, 5, 8, 0.96); }
+        [data-theme="purple"] { --sigil: #a855f7; } [data-theme="red"] { --sigil: #ef4444; } [data-theme="green"] { --sigil: #10b981; }
+        [data-theme="gold"] { --sigil: #fbbf24; } [data-theme="pink"] { --sigil: #f472b6; } [data-theme="orange"] { --sigil: #f97316; }
         [data-theme="silver"] { --sigil: #cbd5e1; }
 
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; color: #fff; font-family: 'Inter', sans-serif; overflow-x: hidden; }
-        
-        /* TITAN SCALE (Large Text Mode) */
         body.large-mode .list-item { font-size: 28px !important; }
         body.large-mode .expensive-header { font-size: 22px !important; }
-        body.large-mode input { font-size: 24px !important; padding: 25px !important; }
-        body.large-mode .cal-date { font-size: 24px !important; }
+        body.large-mode input { font-size: 24px !important; }
 
-        #particle-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none; background: #000; }
+        #particle-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none; }
         .hub-container { display: flex; flex-direction: column; min-height: 100vh; position: relative; z-index: 10; background: transparent; }
+        .hero-image { width: 100%; height: 40vh; background: url('thefamilyhub.jpg') center center no-repeat; background-size: cover; border-bottom: 3px solid var(--sigil); }
+        .sidebar { width: 100%; padding: 2rem 1.5rem; background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, #000 100%); flex-grow: 1; }
+        @media (min-width: 1024px) { .hub-container { flex-direction: row; height: 100vh; } .hero-image { width: 62%; height: 100vh; border-right: 3px solid var(--sigil); } .sidebar { max-width: 550px; height: 100vh; overflow-y: auto; scrollbar-width: none; } }
+
+        .oracle-row { display: flex; justify-content: space-around; align-items: center; font-size: 14px; font-weight: 800; letter-spacing: 4px; color: var(--gold); margin: 2rem 0; padding: 1rem; border-top: 1px solid rgba(255,255,255,0.1); border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .glass-module { background: var(--deep-glass); backdrop-filter: blur(60px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1.5rem; margin-bottom: 2rem; overflow: hidden; }
+        .expensive-header { font-family: 'Cinzel', serif; font-size: 14px; letter-spacing: 0.3em; font-weight: 900; text-transform: uppercase; padding: 1.5rem; background: linear-gradient(to right, var(--gold), var(--sigil)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; border-bottom: 1px solid rgba(255, 255, 255, 0.05); display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+
+        .avatar-bar { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; padding: 15px; }
+        .avatar-option { height: 50px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 24px; background: rgba(255,255,255,0.02); transition: 0.2s; }
+        .avatar-option.active { border-color: var(--sigil); box-shadow: 0 0 20px var(--sigil); transform: scale(1.1); background: rgba(34, 211, 238, 0.1); }
+
+        .vibe-bar { display: grid; grid-template-columns: repeat(8, 1fr); gap: 10px; padding: 0 15px 15px 15px; }
+        .theme-dot { height: 24px; width: 24px; border-radius: 50%; border: 2px solid #fff; cursor: pointer; }
+
+        input { background: #000 !important; border: 1px solid rgba(255, 255, 255, 0.2) !important; color: #fff !important; padding: 18px !important; border-radius: 12px; width: 100%; outline: none; margin-top: 10px; }
+        .list-item { font-size: 18px; font-weight: 700; padding: 1rem 0; border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: center; }
         
-        .hero-image { width: 100%; height: 40vh; background: url('thefamilyhub.jpg') center center no-repeat; background-size: cover; border-bottom: 2px solid var(--sigil); box-shadow: 0 10px 50px #000; }
-        .sidebar { width: 100%; padding: 3rem 2rem; background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.98) 100%); flex-grow: 1; }
-        
-        @media (min-width: 1024px) { 
-            .hub-container { flex-direction: row; height: 100vh; overflow: hidden; } 
-            .hero-image { width: 62%; height: 100vh; border-bottom: none; border-right: 2px solid var(--sigil); } 
-            .sidebar { max-width: 550px; height: 100vh; overflow-y: auto; scrollbar-width: none; } 
-        }
-
-        .oracle-row { display: flex; justify-content: space-around; align-items: center; font-size: 14px; font-weight: 800; letter-spacing: 4px; color: var(--gold); margin: 2rem 0; padding: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1); border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .glass-module { background: var(--deep-glass); backdrop-filter: blur(60px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1.5rem; margin-bottom: 2.5rem; overflow: hidden; box-shadow: 0 40px 80px rgba(0,0,0,0.9); }
-        .expensive-header { font-family: 'Cinzel', serif; font-size: 14px; letter-spacing: 0.4em; font-weight: 900; text-transform: uppercase; padding: 1.8rem; background: linear-gradient(to right, var(--gold), var(--sigil)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; border-bottom: 1px solid rgba(255, 255, 255, 0.05); display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-
-        .avatar-bar { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; padding: 20px; }
-        .avatar-option { height: 55px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 26px; background: rgba(255,255,255,0.02); transition: 0.3s; }
-        .avatar-option.active { border-color: var(--sigil); box-shadow: 0 0 30px var(--sigil); transform: scale(1.1); background: rgba(34, 211, 238, 0.15); }
-
-        .vibe-bar { display: grid; grid-template-columns: repeat(8, 1fr); gap: 10px; padding: 0 20px 20px 20px; }
-        .theme-dot { height: 26px; width: 26px; border-radius: 50%; border: 2px solid #fff; cursor: pointer; }
-
-        input { background: #000 !important; border: 1px solid rgba(255, 255, 255, 0.2) !important; color: #fff !important; padding: 20px !important; border-radius: 15px; font-weight: 700; width: 100%; outline: none; margin-top: 15px; }
-        
-        .list-item { font-size: 19px; font-weight: 700; padding: 1.2rem 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
         .cal-date { aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 800; border: 1px solid rgba(255,255,255,0.02); cursor: pointer; }
-        .cal-today { border: 2px solid var(--gold) !important; color: var(--gold) !important; background: rgba(251, 191, 36, 0.1); border-radius: 10px; }
-        .has-quest { color: var(--sigil) !important; text-shadow: 0 0 15px var(--sigil); }
-        
-        .action-btn { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255,255,255,0.1); padding: 12px 18px; border-radius: 12px; font-size: 12px; font-weight: 900; color: #fff; cursor: pointer; margin-top: 12px; display: inline-flex; align-items: center; gap: 10px; transition: 0.3s; }
-        .action-btn:hover { background: rgba(34, 211, 238, 0.1); border-color: var(--sigil); }
-        .listening { background: #ef4444 !important; border-color: #ef4444 !important; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .cal-today { border: 2px solid var(--gold); color: var(--gold); }
+        .has-quest { color: var(--sigil); text-shadow: 0 0 10px var(--sigil); }
 
-        #questModal { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.98); backdrop-filter: blur(40px); align-items: center; justify-content: center; }
-        .modal-glass { background: #000; border: 1px solid var(--gold); padding: 4rem 3rem; border-radius: 2.5rem; width: 90%; max-width: 500px; text-align: center; }
-        
-        .note-img { width: 100%; border-radius: 15px; margin-top: 20px; border: 1px solid rgba(255,255,255,0.1); }
+        .action-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 10px 15px; border-radius: 10px; font-size: 11px; font-weight: 900; cursor: pointer; margin-top: 10px; display: inline-flex; align-items: center; gap: 8px; }
+        .listening { background: #ef4444 !important; }
+        .note-img { width: 100%; border-radius: 12px; margin-top: 15px; border: 1px solid rgba(255,255,255,0.1); }
     </style>
 </head>
-<body id="mainBody">
-
-    <div id="questModal">
-        <div class="modal-glass">
-            <h2 id="modalDateTitle" class="text-3xl font-black mb-10 tracking-widest uppercase text-white" style="font-family: 'Cinzel';"></h2>
-            <div id="modalEventList" class="space-y-6 mb-10 text-left max-h-72 overflow-y-auto pr-4 text-white"></div>
-            <input id="modalInput" type="text" placeholder="Appointment Name...">
-            <div class="flex gap-4 mt-10">
-                <button onclick="closeQuestModal()" class="w-full py-5 border border-white/20 uppercase text-xs font-black tracking-widest rounded-2xl">Close</button>
-                <button id="addQuestBtn" class="w-full py-5 bg-white/10 border border-white/30 uppercase text-xs font-black tracking-widest rounded-2xl">Add Quest</button>
-            </div>
-        </div>
-    </div>
-
+<body>
     <canvas id="particle-canvas"></canvas>
-
     <div class="hub-container">
         <div class="hero-image"></div>
         <div class="sidebar">
-            <header class="text-center mb-12">
-                <h1 class="text-7xl font-black tracking-[0.3em]" style="background: linear-gradient(to right, var(--gold), var(--sigil)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-family: 'Cinzel';">TUCKER</h1>
-                
+            <header class="text-center mb-10">
+                <h1 class="text-6xl font-black tracking-[0.2em]" style="background: linear-gradient(to right, var(--gold), var(--sigil)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-family: 'Cinzel';">TUCKER</h1>
                 <div class="oracle-row">
-                    <span id="clock" class="text-2xl font-black">00:00</span>
-                    <div class="flex items-center gap-4"><span>🌙</span> <span id="temp">52°F</span></div>
-                    <div class="flex gap-2">
-                        <button onclick="document.body.classList.toggle('large-mode')" class="px-3 py-1 border border-white/20 rounded text-xs font-black hover:bg-white/10">AA</button>
-                    </div>
+                    <span id="clock" class="text-xl">00:00</span>
+                    <div class="flex items-center gap-2"><span>☁️</span> <span>52°F</span></div>
+                    <button onclick="document.body.classList.toggle('large-mode')" class="px-2 border border-white/20 rounded text-[10px] font-black">AA</button>
                 </div>
-
                 <div class="glass-module">
                     <div class="avatar-bar">
                         <div class="avatar-option active" onclick="selectAvatar(this, '🔱')">🔱</div>
@@ -131,42 +93,28 @@
                         <div class="theme-dot bg-slate-400" onclick="setTheme('silver')"></div>
                     </div>
                 </div>
-                <input id="userName" type="text" placeholder="WHO IS COMMANDING?" class="text-center tracking-widest font-black uppercase">
             </header>
 
             <div class="glass-module">
-                <div class="expensive-header" onclick="toggleModule('calContent')">
-                    <span onclick="event.stopPropagation(); changeMonth(-1)">◀</span>
-                    <span id="calMonthDisplay">MONTH</span>
-                    <span onclick="event.stopPropagation(); changeMonth(1)">▶</span>
-                </div>
-                <div id="calContent">
-                    <div id="activeQuestBanner" class="quest-banner">Select a date.</div>
-                    <div id="calendarGrid" class="grid grid-cols-7 gap-1 p-8 text-white"></div>
-                </div>
+                <div class="expensive-header" onclick="toggleModule('calContent')"><span>Calendar</span><span>↕</span></div>
+                <div id="calContent" class="p-4"><div id="calendarGrid" class="grid grid-cols-7 gap-1 text-white"></div></div>
             </div>
 
             <div class="glass-module">
                 <div class="expensive-header" onclick="toggleModule('marketContent')"><span>Provisions</span><span>↕</span></div>
-                <div id="marketContent" class="p-8">
-                    <div id="marketList" class="mb-4 text-white"></div>
-                    <input id="mInput" type="text" placeholder="Add provision..." onkeydown="if(event.key==='Enter') saveItem('market_items', 'mInput')">
-                </div>
+                <div id="marketContent" class="p-6"><div id="marketList"></div><input id="mInput" type="text" placeholder="Add provision..." onkeydown="if(event.key==='Enter') saveItem('market_items', 'mInput')"></div>
             </div>
 
             <div class="glass-module">
                 <div class="expensive-header" onclick="toggleModule('mealContent')"><span>Meal Plan</span><span>↕</span></div>
-                <div id="mealContent" class="p-8">
-                    <div id="mealList" class="mb-4 text-white"></div>
-                    <input id="mealInput" type="text" placeholder="Dinner plan..." onkeydown="if(event.key==='Enter') saveItem('meal_plan', 'mealInput')">
-                </div>
+                <div id="mealContent" class="p-6"><div id="mealList"></div><input id="mealInput" type="text" placeholder="Dinner plan..." onkeydown="if(event.key==='Enter') saveItem('meal_plan', 'mealInput')"></div>
             </div>
 
             <div class="glass-module">
                 <div class="expensive-header" onclick="toggleModule('noteContent')"><span>The Chronicler</span><span>↕</span></div>
-                <div id="noteContent" class="p-8">
-                    <div id="notesLog" class="space-y-10 mb-8 text-white"></div>
-                    <input id="nInput" type="text" placeholder="Capture a memory..." onkeydown="if(event.key==='Enter') saveNote()">
+                <div id="noteContent" class="p-6">
+                    <div id="notesLog"></div>
+                    <input id="nInput" type="text" placeholder="New memory..." onkeydown="if(event.key==='Enter') saveNote()">
                     <div class="flex gap-2">
                         <button id="voiceBtn" class="action-btn" onclick="startVoice()">🎤 SPEAK</button>
                         <button class="action-btn" onclick="document.getElementById('imgUpload').click()">📷 PHOTO</button>
@@ -181,124 +129,63 @@
         const SUPABASE_URL = 'https://yflfpwcaowzkoxqnohso.supabase.co'; 
         const SUPABASE_KEY = 'sb_publishable_OUXpGQk3QkOoUu94S9YZNg_Sb34-Jc4';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
         let currentSigil = '🔱', dispDate = new Date(), currentImgUrl = null;
 
         function selectAvatar(el, icon) { document.querySelectorAll('.avatar-option').forEach(opt => opt.classList.remove('active')); el.classList.add('active'); currentSigil = icon; }
         function setTheme(t) { document.body.setAttribute('data-theme', t); }
         function toggleModule(id) { const e = document.getElementById(id); e.style.display = e.style.display === 'none' ? 'block' : 'none'; }
-        function closeQuestModal() { document.getElementById('questModal').style.display = 'none'; }
-        function changeMonth(o) { dispDate.setMonth(dispDate.getMonth() + o); buildCalendar(); }
-
+        
         window.onload = () => { refreshAll(); buildCalendar(); animate(); setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); }, 1000); };
 
         async function refreshAll() { loadList('market_items', 'marketList'); loadList('meal_plan', 'mealList'); loadNotes(); }
         
         async function saveItem(table, inputId) {
             const i = document.getElementById(inputId); if(!i.value) return;
-            const name = document.getElementById('userName').value || 'Amber';
-            await _supabase.from(table).insert([{ text: `${currentSigil} ${name}: ${i.value}` }]);
+            const { error } = await _supabase.from(table).insert([{ text: `${currentSigil} ${i.value}` }]);
+            if(error) alert("Error saving to " + table);
             i.value = ""; refreshAll();
         }
         
         async function loadList(table, divId) {
             const { data } = await _supabase.from(table).select('*').order('created_at', { ascending: true });
-            document.getElementById(divId).innerHTML = data?.length ? data.map(item => `<div class="flex justify-between items-center list-item"><span>${item.text}</span><span class="text-red-900 font-black cursor-pointer px-6 hover:text-white" onclick="deleteItem('${table}', '${item.id}')">×</span></div>`).join('') : '<div class="opacity-20 italic text-sm">Empty...</div>';
+            document.getElementById(divId).innerHTML = data?.length ? data.map(item => `<div class="list-item"><span>${item.text}</span><span class="text-red-900 cursor-pointer px-4" onclick="deleteItem('${table}', '${item.id}')">×</span></div>`).join('') : '<div class="opacity-20 italic p-4 text-sm">Empty</div>';
         }
 
-       async function uploadImage(input) {
-    const file = input.files[0]; 
-    if (!file) return;
-    
-    const btn = document.querySelector('button[onclick*="imgUpload"]');
-    btn.innerText = "⏳ UPLOADING...";
-    
-    // Clean the filename so mobile special characters don't break it
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${Date.now()}.${fileExt}`;
-    const path = fileName; // Uploading directly to bucket root
-
-    const { data, error } = await _supabase.storage
-        .from('note-images')
-        .upload(path, file, {
-            cacheControl: '3600',
-            upsert: false
-        });
-
-    if (error) { 
-        console.error("Upload Error:", error);
-        alert("Upload failed! Make sure you added the 'INSERT' Policy in Supabase Storage."); 
-        btn.innerText = "📷 PHOTO"; 
-        return; 
-    }
-
-    const { data: { publicUrl } } = _supabase.storage
-        .from('note-images')
-        .getPublicUrl(path);
-
-    currentImgUrl = publicUrl;
-    btn.innerText = "✅ READY";
-    btn.style.borderColor = "var(--sigil)";
-}
+        async function uploadImage(input) {
+            const file = input.files[0]; if (!file) return;
+            const path = `${Date.now()}-${file.name}`;
+            const { error } = await _supabase.storage.from('note-images').upload(path, file);
+            if (error) { alert("Check bucket policies!"); return; }
+            const { data: { publicUrl } } = _supabase.storage.from('note-images').getPublicUrl(path);
+            currentImgUrl = publicUrl;
+            alert("Image Ready!");
         }
 
         async function saveNote() {
             const i = document.getElementById('nInput'); if(!i.value && !currentImgUrl) return;
-            const name = document.getElementById('userName').value || 'Amber';
-            await _supabase.from('family_notes').insert([{ note: i.value, image_url: currentImgUrl, timestamp: `${currentSigil} ${name} • ${new Date().toLocaleDateString()}` }]);
-            i.value = ""; currentImgUrl = null; 
-            document.querySelector('button[onclick*="imgUpload"]').innerText = "📷 PHOTO";
-            loadNotes();
+            await _supabase.from('family_notes').insert([{ note: i.value, image_url: currentImgUrl, timestamp: `${currentSigil} ${new Date().toLocaleDateString()}` }]);
+            i.value = ""; currentImgUrl = null; loadNotes();
         }
 
         async function loadNotes() {
             const { data } = await _supabase.from('family_notes').select('*').order('created_at', { ascending: false });
-            document.getElementById('notesLog').innerHTML = data ? data.map(n => `
-                <div class="border-l-4 border-cyan-400 pl-8 py-3 mb-6 bg-white/5 rounded-r-2xl">
-                    <small class="text-[11px] opacity-40 uppercase font-black tracking-widest block mb-2">${n.timestamp || ''}</small>
-                    ${n.note ? `<p class="text-2xl font-semibold leading-relaxed">"${n.note}"</p>` : ''}
-                    ${n.image_url ? `<img src="${n.image_url}" class="note-img">` : ''}
-                    <span class="text-[11px] text-red-900 cursor-pointer uppercase font-black mt-6 inline-block" onclick="deleteItem('family_notes', '${n.id}')">Delete</span>
-                </div>`).join('') : '';
+            document.getElementById('notesLog').innerHTML = data?.map(n => `<div class="border-l-4 border-cyan-400 pl-4 py-2 mb-4 bg-white/5 rounded-r-xl"><small class="text-[10px] opacity-40">${n.timestamp || ''}</small>${n.note ? `<p class="text-xl font-semibold mt-1">"${n.note}"</p>` : ''}${n.image_url ? `<img src="${n.image_url}" class="note-img">` : ''}<span class="text-[10px] text-red-900 cursor-pointer mt-2 inline-block" onclick="deleteItem('family_notes', '${n.id}')">Delete</span></div>`).join('') || '';
         }
 
-        async function deleteItem(table, id) { await _supabase.from(table).delete().eq('id', id); refreshAll(); buildCalendar(); }
+        async function deleteItem(table, id) { await _supabase.from(table).delete().eq('id', id); refreshAll(); }
 
         async function buildCalendar() {
-            const y = dispDate.getFullYear(), m = dispDate.getMonth();
-            document.getElementById('calMonthDisplay').innerText = dispDate.toLocaleString('default', { month: 'long', year: 'numeric' });
-            const first = new Date(y, m, 1).getDay(), days = new Date(y, m + 1, 0).getDate();
             const grid = document.getElementById('calendarGrid'); grid.innerHTML = '';
-            const { data: appts } = await _supabase.from('calendar_events').select('*');
-            for (let i = 0; i < first; i++) grid.innerHTML += '<div></div>';
-            for (let d = 1; d <= days; d++) {
-                const ds = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-                const hasA = appts?.some(e => e.start_date === ds);
-                const isT = (d === new Date().getDate() && m === new Date().getMonth() && y === new Date().getFullYear());
-                grid.innerHTML += `<div class="cal-date ${isT ? 'cal-today' : ''} ${hasA ? 'has-quest' : ''}" onclick="openQuest('${ds}', ${d})">${d}</div>`;
+            for (let d = 1; d <= 31; d++) {
+                grid.innerHTML += `<div class="cal-date ${d === new Date().getDate() ? 'cal-today' : ''}">${d}</div>`;
             }
-        }
-
-        async function openQuest(ds, d) {
-            const { data: evs } = await _supabase.from('calendar_events').select('*').eq('start_date', ds);
-            document.getElementById('activeQuestBanner').innerText = evs?.length ? evs.map(e => e.title).join(' • ') : `Clear schedule for ${dispDate.toLocaleString('default', { month: 'short' })} ${d}.`;
-            document.getElementById('modalDateTitle').innerText = `${dispDate.toLocaleString('default', { month: 'long' })} ${d}`;
-            document.getElementById('questModal').style.display = 'flex';
-            document.getElementById('modalEventList').innerHTML = evs?.map(e => `<div class="flex justify-between items-center p-6 bg-white/5 rounded-2xl border border-white/10 text-xl"><span>${e.title}</span><span class="text-red-500 font-black cursor-pointer" onclick="deleteItem('calendar_events', '${e.id}'); openQuest('${ds}', ${d});">×</span></div>`).join('') || '';
-            document.getElementById('addQuestBtn').onclick = async () => {
-                const v = document.getElementById('modalInput').value; if(!v) return;
-                await _supabase.from('calendar_events').insert([{ title: `${currentSigil} ${v}`, start_date: ds }]);
-                document.getElementById('modalInput').value = ""; await buildCalendar(); openQuest(ds, d);
-            };
         }
 
         function startVoice() {
             const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-            const btn = document.getElementById('voiceBtn');
-            recognition.lang = 'en-US'; recognition.start();
-            btn.classList.add('listening'); btn.innerText = "LISTENING...";
-            recognition.onresult = (e) => { document.getElementById('nInput').value = e.results[0][0].transcript; btn.classList.remove('listening'); btn.innerText = "🎤 SPEAK"; };
-            recognition.onerror = () => { btn.classList.remove('listening'); btn.innerText = "ERROR"; };
+            recognition.start();
+            document.getElementById('voiceBtn').classList.add('listening');
+            recognition.onresult = (e) => { document.getElementById('nInput').value = e.results[0][0].transcript; document.getElementById('voiceBtn').classList.remove('listening'); };
         }
 
         const canvas = document.getElementById('particle-canvas'), ctx = canvas.getContext('2d');
@@ -307,11 +194,11 @@
         window.addEventListener('resize', resize); resize();
         class Particle {
             constructor() { this.init(); }
-            init() { this.x = Math.random() * canvas.width; this.y = canvas.height + 50; this.size = Math.random() * 35 + 10; this.speed = Math.random() * 1.5 + 0.5; this.opacity = Math.random() * 0.4 + 0.1; this.isEmber = Math.random() > 0.6; this.char = this.isEmber ? '•' : '♪'; }
-            update() { this.y -= this.speed; this.x += Math.sin(this.y / 50) * 0.8; if (this.y < -50) this.init(); }
-            draw() { ctx.fillStyle = this.isEmber ? '#f97316' : '#22d3ee'; ctx.globalAlpha = this.opacity; ctx.font = `${this.size}px serif`; ctx.fillText(this.char, this.x, this.y); }
+            init() { this.x = Math.random() * canvas.width; this.y = canvas.height + 50; this.size = Math.random() * 20 + 10; this.speed = Math.random() * 1 + 0.5; }
+            update() { this.y -= this.speed; if (this.y < -50) this.init(); }
+            draw() { ctx.fillStyle = '#22d3ee'; ctx.globalAlpha = 0.2; ctx.fillText('♪', this.x, this.y); }
         }
-        for (let i = 0; i < 50; i++) particles.push(new Particle());
+        for (let i = 0; i < 40; i++) particles.push(new Particle());
         function animate() { ctx.clearRect(0, 0, canvas.width, canvas.height); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animate); }
         animate();
     </script>
