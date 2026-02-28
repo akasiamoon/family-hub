@@ -13,6 +13,10 @@
         [data-theme="purple"] { --sigil: #a855f7; }
         [data-theme="red"] { --sigil: #ef4444; }
         [data-theme="green"] { --sigil: #10b981; }
+        [data-theme="gold"] { --sigil: #fbbf24; }
+        [data-theme="pink"] { --sigil: #f472b6; }
+        [data-theme="orange"] { --sigil: #f97316; }
+        [data-theme="silver"] { --sigil: #94a3b8; }
 
         body, html { 
             margin: 0; padding: 0; width: 100%; height: 100%;
@@ -20,7 +24,11 @@
             overflow-x: hidden; 
         }
 
-        #particle-canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+        /* FIXED BACKGROUND ANIMATION */
+        #particle-canvas { 
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: 0; pointer-events: none; background: #000;
+        }
 
         .hub-container { 
             display: flex; flex-direction: column; min-height: 100vh; 
@@ -34,8 +42,8 @@
         }
 
         .sidebar {
-            width: 100%; padding: 2.5rem 1.5rem; 
-            background: linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.95) 100%);
+            width: 100%; padding: 2rem 1.5rem; 
+            background: linear-gradient(to bottom, rgba(10,10,15,0.4) 0%, rgba(0,0,0,0.9) 100%);
             flex-grow: 1;
         }
 
@@ -53,7 +61,7 @@
         }
 
         .expensive-header {
-            font-size: 13px; letter-spacing: 0.35em; font-weight: 900; text-transform: uppercase;
+            font-size: 12px; letter-spacing: 0.3em; font-weight: 900; text-transform: uppercase;
             padding: 1.1rem 1.25rem; background: linear-gradient(to right, var(--gold), var(--sigil));
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
             border-bottom: 2px solid transparent; border-image: linear-gradient(to right, var(--gold), var(--sigil)) 1;
@@ -61,24 +69,27 @@
         }
 
         .glass-module {
-            background: rgba(20, 20, 25, 0.8); backdrop-filter: blur(40px);
+            background: rgba(20, 20, 25, 0.7); backdrop-filter: blur(40px);
             border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1rem;
             margin-bottom: 2rem; overflow: hidden;
         }
 
-        .avatar-bar { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; padding: 15px; }
-        .avatar-option { height: 45px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 24px; background: rgba(0,0,0,0.6); }
+        .avatar-bar { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; padding: 15px; }
+        .avatar-option { height: 42px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 20px; background: rgba(0,0,0,0.6); transition: 0.3s; }
         .avatar-option.active { border-color: var(--sigil); box-shadow: 0 0 15px var(--sigil); transform: scale(1.1); }
 
-        input { background: rgba(0,0,0,1) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; color: #fff !important; padding: 15px !important; border-radius: 10px; font-family: 'Inter', sans-serif; width: 100%; }
+        .vibe-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 10px 20px; }
+        .theme-dot { height: 22px; width: 22px; border-radius: 50%; border: 1px solid white; cursor: pointer; justify-self: center; }
+
+        input { background: rgba(0,0,0,0.6) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; color: #fff !important; padding: 12px !important; border-radius: 10px; font-family: 'Inter', sans-serif; width: 100%; }
         
-        .cal-date { aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; font-size: 11px; border: 1px solid rgba(255,255,255,0.05); cursor: pointer; font-weight: 900; }
+        .cal-date { aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; font-size: 11px; border: 1px solid rgba(255,255,255,0.05); cursor: pointer; font-weight: 900; color: #fff; }
         .cal-today { border: 2px solid var(--gold) !important; color: var(--gold); }
         .has-quest { border-color: var(--sigil) !important; box-shadow: inset 0 0 10px var(--sigil); }
 
-        .quest-banner { background: linear-gradient(to right, rgba(251,191,36,0.15), transparent); border-left: 4px solid var(--gold); padding: 12px; margin: 15px; border-radius: 0 8px 8px 0; font-size: 12px; font-weight: 700; }
+        .quest-banner { background: linear-gradient(to right, rgba(251,191,36,0.15), transparent); border-left: 4px solid var(--gold); padding: 12px; margin: 15px; border-radius: 0 8px 8px 0; font-size: 12px; font-weight: 700; color: #fff; }
 
-        .collapsible-content { transition: max-height 0.4s ease-out; max-height: 1000px; }
+        .collapsible-content { transition: max-height 0.4s ease-out; max-height: 1200px; }
         .collapsed { max-height: 0 !important; overflow: hidden; }
 
         #questModal { display: none; position: fixed; inset: 0; z-index: 100; background: rgba(0,0,0,0.95); backdrop-filter: blur(20px); align-items: center; justify-content: center; }
@@ -88,13 +99,13 @@
 <body id="mainBody">
 
     <div id="questModal">
-        <div class="modal-glass">
-            <h2 id="modalDateTitle" class="text-xl font-black mb-6 text-white tracking-widest uppercase"></h2>
+        <div class="modal-glass text-white">
+            <h2 id="modalDateTitle" class="text-xl font-black mb-6 tracking-widest uppercase"></h2>
             <div id="modalEventList" class="space-y-3 mb-6 text-left max-h-40 overflow-y-auto"></div>
             <input id="modalInput" type="text" placeholder="Assign Appointment...">
             <div class="flex gap-4 mt-6">
-                <button onclick="closeQuestModal()" class="w-full py-3 border border-white/10 uppercase text-[10px] font-black text-white">Return</button>
-                <button id="addQuestBtn" class="w-full py-3 bg-white/5 border border-white/20 uppercase text-[10px] font-black text-white">Assign</button>
+                <button onclick="closeQuestModal()" class="w-full py-3 border border-white/10 uppercase text-[10px] font-black">Return</button>
+                <button id="addQuestBtn" class="w-full py-3 bg-white/5 border border-white/20 uppercase text-[10px] font-black">Assign</button>
             </div>
         </div>
     </div>
@@ -108,35 +119,58 @@
                 <h1 class="text-3xl font-black tracking-[0.1em]" style="background: linear-gradient(to right, var(--gold), var(--sigil)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">TUCKER COOPER BURNS</h1>
                 <div class="oracle-row">
                     <span id="clock">00:00:00</span>
-                    <div class="flex items-center gap-2"><span>🌤️</span> <span id="temp">57°F</span></div>
+                    <div class="flex items-center gap-2"><span>🌤️</span> <span id="temp">51°F</span></div>
                     <span>FARMINGTON</span>
                 </div>
                 
-                <div class="avatar-bar bg-white/5 rounded-2xl border border-white/5 mb-4">
-                    <div class="avatar-option active" onclick="selectAvatar(this, '🔱')">🔱</div>
-                    <div class="avatar-option" onclick="selectAvatar(this, '🧜‍♀️')">🧜‍♀️</div>
-                    <div class="avatar-option" onclick="selectAvatar(this, '🐚')">🐚</div>
-                    <div class="avatar-option" onclick="selectAvatar(this, '🏴‍☠️')">🏴‍☠️</div>
-                    <div class="avatar-option" onclick="selectAvatar(this, '🔥')">🔥</div>
+                <div class="glass-module mb-4">
+                    <div class="avatar-bar">
+                        <div class="avatar-option active" onclick="selectAvatar(this, '🔱')">🔱</div>
+                        <div class="avatar-option" onclick="selectAvatar(this, '🧜‍♀️')">🧜‍♀️</div>
+                        <div class="avatar-option" onclick="selectAvatar(this, '🐚')">🐚</div>
+                        <div class="avatar-option" onclick="selectAvatar(this, '🏴‍☠️')">🏴‍☠️</div>
+                        <div class="avatar-option" onclick="selectAvatar(this, '🔥')">🔥</div>
+                        <div class="avatar-option" onclick="selectAvatar(this, '🐢')">🐢</div>
+                        <div class="avatar-option" onclick="selectAvatar(this, '🐺')">🐺</div>
+                        <div class="avatar-option" onclick="selectAvatar(this, '🦉')">🦉</div>
+                        <div class="avatar-option" onclick="selectAvatar(this, '⚓')">⚓</div>
+                        <div class="avatar-option" onclick="selectAvatar(this, '📖')">📖</div>
+                        <div class="avatar-option" onclick="selectAvatar(this, '🥥')">🥥</div>
+                        <div class="avatar-option" onclick="selectAvatar(this, '🌴')">🌴</div>
+                        <div class="avatar-option" onclick="selectAvatar(this, '🐬')">🐬</div>
+                        <div class="avatar-option" onclick="selectAvatar(this, '🦀')">🦀</div>
+                        <div class="avatar-option" onclick="selectAvatar(this, '🎸')">🎸</div>
+                        <div class="avatar-option" onclick="selectAvatar(this, '🏹')">🏹</div>
+                        <div class="avatar-option" onclick="selectAvatar(this, '⚔️')">⚔️</div>
+                        <div class="avatar-option" onclick="selectAvatar(this, '🍄')">🍄</div>
+                        <div class="avatar-option" onclick="selectAvatar(this, '💎')">💎</div>
+                        <div class="avatar-option" onclick="selectAvatar(this, '🍺')">🍺</div>
+                    </div>
                 </div>
-                <input id="userName" type="text" placeholder="WHO IS COMMANDING?" class="text-center font-black">
-                
-                <div class="flex justify-center gap-4 mt-6">
-                    <div class="w-6 h-6 rounded-full bg-cyan-400 border border-white cursor-pointer" onclick="setTheme('')"></div>
-                    <div class="w-6 h-6 rounded-full bg-purple-600 border border-white cursor-pointer" onclick="setTheme('purple')"></div>
-                    <div class="w-6 h-6 rounded-full bg-red-600 border border-white cursor-pointer" onclick="setTheme('red')"></div>
-                    <div class="w-6 h-6 rounded-full bg-green-500 border border-white cursor-pointer" onclick="setTheme('green')"></div>
+
+                <div class="glass-module mb-6">
+                    <div class="vibe-bar">
+                        <div class="theme-dot bg-cyan-400" onclick="setTheme('')"></div>
+                        <div class="theme-dot bg-purple-600" onclick="setTheme('purple')"></div>
+                        <div class="theme-dot bg-red-600" onclick="setTheme('red')"></div>
+                        <div class="theme-dot bg-emerald-500" onclick="setTheme('green')"></div>
+                        <div class="theme-dot bg-yellow-500" onclick="setTheme('gold')"></div>
+                        <div class="theme-dot bg-pink-400" onclick="setTheme('pink')"></div>
+                        <div class="theme-dot bg-orange-500" onclick="setTheme('orange')"></div>
+                        <div class="theme-dot bg-slate-400" onclick="setTheme('silver')"></div>
+                    </div>
+                    <input id="userName" type="text" placeholder="WHO IS COMMANDING?" class="text-center font-black">
                 </div>
             </header>
 
             <div class="glass-module">
                 <div class="expensive-header" onclick="toggleModule('calContent')">
                     <span onclick="event.stopPropagation(); changeMonth(-1)">◀</span>
-                    <span id="calMonth">FEBRUARY 2026</span>
+                    <span id="calMonthDisplay">MONTH</span>
                     <span onclick="event.stopPropagation(); changeMonth(1)">▶</span>
                 </div>
                 <div id="calContent" class="collapsible-content">
-                    <div id="activeQuestBanner" class="quest-banner">Select a date to view assignments.</div>
+                    <div id="activeQuestBanner" class="quest-banner">Select a date.</div>
                     <div id="calendarGrid" class="grid grid-cols-7 gap-1 p-4"></div>
                 </div>
             </div>
@@ -146,6 +180,14 @@
                 <div id="marketContent" class="collapsible-content p-6">
                     <div id="marketList" class="space-y-4 mb-4 text-sm font-bold text-white"></div>
                     <input id="mInput" type="text" placeholder="Add provision..." onkeydown="if(event.key==='Enter') saveItem('market_items', 'mInput')">
+                </div>
+            </div>
+
+            <div class="glass-module">
+                <div class="expensive-header" onclick="toggleModule('mealContent')"><span>Meal Plan</span><span>↕</span></div>
+                <div id="mealContent" class="collapsible-content p-6">
+                    <div id="mealList" class="space-y-4 mb-4 text-sm font-bold text-white"></div>
+                    <input id="mealInput" type="text" placeholder="Dinner plan..." onkeydown="if(event.key==='Enter') saveItem('meal_plan', 'mealInput')">
                 </div>
             </div>
 
@@ -177,7 +219,7 @@
             setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'}); }, 1000);
         };
 
-        async function refreshAll() { loadList('market_items', 'marketList'); loadNotes(); }
+        async function refreshAll() { loadList('market_items', 'marketList'); loadList('meal_plan', 'mealList'); loadNotes(); }
 
         async function saveItem(table, inputId) {
             const i = document.getElementById(inputId); if(!i.value) return;
@@ -188,7 +230,7 @@
 
         async function loadList(table, divId) {
             const { data } = await _supabase.from(table).select('*').order('created_at', { ascending: true });
-            document.getElementById(divId).innerHTML = data ? data.map(item => `<div class="flex justify-between border-b border-white/5 pb-2"><span>${item.text}</span><span class="text-red-900 font-bold cursor-pointer" onclick="deleteItem('${table}', '${item.id}')">×</span></div>`).join('') : '';
+            document.getElementById(divId).innerHTML = data ? data.map(item => `<div class="flex justify-between border-b border-white/5 pb-2 text-white"><span>${item.text}</span><span class="text-red-900 font-bold cursor-pointer" onclick="deleteItem('${table}', '${item.id}')">×</span></div>`).join('') : '';
         }
 
         async function saveNote() {
@@ -200,14 +242,14 @@
 
         async function loadNotes() {
             const { data } = await _supabase.from('family_notes').select('*').order('created_at', { ascending: false });
-            document.getElementById('notesLog').innerHTML = data ? data.map(n => `<div class="border-l-4 border-cyan-400 pl-4 py-2 bg-white/5 rounded-r-lg"><p class="text-sm font-bold">${n.note}</p></div>`).join('') : '';
+            document.getElementById('notesLog').innerHTML = data ? data.map(n => `<div class="border-l-4 border-cyan-400 pl-4 py-2 bg-white/5 rounded-r-lg text-white mb-2"><small class="text-[9px] opacity-40 uppercase font-black tracking-widest">${n.timestamp || ''}</small><p class="text-sm font-bold mt-1">"${n.note}"</p><span class="text-[8px] text-red-900 cursor-pointer uppercase font-black" onclick="deleteItem('family_notes', '${n.id}')">Delete</span></div>`).join('') : '';
         }
 
         async function deleteItem(table, id) { await _supabase.from(table).delete().eq('id', id); refreshAll(); buildCalendar(); }
 
         async function buildCalendar() {
             const y = dispDate.getFullYear(), m = dispDate.getMonth();
-            document.getElementById('calMonth').innerText = dispDate.toLocaleString('default', { month: 'long', year: 'numeric' });
+            document.getElementById('calMonthDisplay').innerText = dispDate.toLocaleString('default', { month: 'long', year: 'numeric' });
             const first = new Date(y, m, 1).getDay(), days = new Date(y, m + 1, 0).getDate();
             const grid = document.getElementById('calendarGrid'); grid.innerHTML = '';
             const { data: appts } = await _supabase.from('calendar_events').select('*');
@@ -217,14 +259,14 @@
                 const ds = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
                 const hasA = appts?.some(e => e.start_date === ds);
                 const isT = (d === new Date().getDate() && m === new Date().getMonth() && y === new Date().getFullYear());
-                grid.innerHTML += `<div class="cal-date ${isT ? 'cal-today' : ''} ${hasA ? 'has-quest' : ''}" onclick="openQuest('${ds}', ${d})">${d}</div>`;
+                grid.innerHTML += `<div class="cal-date ${isT ? 'cal-today' : ''} ${hasA ? 'has-quest' : ''} text-white" onclick="openQuest('${ds}', ${d})">${d}</div>`;
             }
         }
 
         async function openQuest(ds, d) {
             const { data: evs } = await _supabase.from('calendar_events').select('*').eq('start_date', ds);
-            document.getElementById('activeQuestBanner').innerText = evs?.length ? evs.map(e => e.title).join(' • ') : `No quests for Feb ${d}.`;
-            document.getElementById('modalDateTitle').innerText = `February ${d}`;
+            document.getElementById('activeQuestBanner').innerText = evs?.length ? evs.map(e => e.title).join(' • ') : `No quests recorded.`;
+            document.getElementById('modalDateTitle').innerText = `${dispDate.toLocaleString('default', { month: 'long' })} ${d}`;
             document.getElementById('questModal').style.display = 'flex';
             document.getElementById('modalEventList').innerHTML = evs?.map(e => `<div class="flex justify-between p-2 bg-white/5 rounded"><span>${e.title}</span><span class="text-red-500 cursor-pointer" onclick="deleteItem('calendar_events', '${e.id}'); openQuest('${ds}', ${d});">×</span></div>`).join('') || '';
             document.getElementById('addQuestBtn').onclick = async () => {
@@ -234,19 +276,36 @@
             };
         }
 
-        /* PARTICLES */
+        /* GLOBAL PARTICLE ENGINE */
         const canvas = document.getElementById('particle-canvas'), ctx = canvas.getContext('2d');
         let particles = [];
         function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
         window.addEventListener('resize', resize); resize();
         class Particle {
             constructor() { this.init(); }
-            init() { this.x = Math.random() * canvas.width; this.y = canvas.height + 50; this.size = Math.random() * 20 + 10; this.speed = Math.random() * 1 + 0.5; this.isEmber = Math.random() > 0.6; this.char = this.isEmber ? '•' : '♪'; }
-            update() { this.y -= this.speed; if (this.y < -50) this.init(); }
-            draw() { ctx.fillStyle = this.isEmber ? '#f97316' : '#22d3ee'; ctx.globalAlpha = 0.4; ctx.font = `${this.size}px serif`; ctx.fillText(this.char, this.x, this.y); }
+            init() { 
+                this.x = Math.random() * canvas.width; 
+                this.y = canvas.height + 50; 
+                this.size = Math.random() * 25 + 10; 
+                this.speed = Math.random() * 1.5 + 0.5; 
+                this.opacity = Math.random() * 0.4 + 0.1;
+                this.isEmber = Math.random() > 0.6; 
+                this.char = this.isEmber ? '•' : ['♪', '♫', '♬'][Math.floor(Math.random()*3)];
+            }
+            update() { 
+                this.y -= this.speed; 
+                this.x += Math.sin(this.y / 50) * 0.8;
+                if (this.y < -50) this.init(); 
+            }
+            draw() { 
+                ctx.fillStyle = this.isEmber ? '#f97316' : '#22d3ee'; 
+                ctx.globalAlpha = this.opacity; 
+                ctx.font = `${this.size}px serif`; 
+                ctx.fillText(this.char, this.x, this.y); 
+            }
         }
-        for(let i=0; i<40; i++) particles.push(new Particle());
-        function animate() { ctx.clearRect(0,0,canvas.width,canvas.height); particles.forEach(p=>{p.update(); p.draw();}); requestAnimationFrame(animate); }
+        for (let i = 0; i < 50; i++) particles.push(new Particle());
+        function animate() { ctx.clearRect(0, 0, canvas.width, canvas.height); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animate); }
         animate();
     </script>
 </body>
