@@ -20,15 +20,16 @@
 
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; color: #fff; font-family: 'Inter', sans-serif; overflow-x: hidden; }
         
+        /* TITAN SCALE (Large Text Mode) */
         body.large-mode .list-item { font-size: 28px !important; }
         body.large-mode .expensive-header { font-size: 22px !important; }
         body.large-mode input { font-size: 24px !important; padding: 25px !important; }
         body.large-mode .cal-date { font-size: 24px !important; }
 
-        #particle-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none; }
+        #particle-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none; background: #000; }
         .hub-container { display: flex; flex-direction: column; min-height: 100vh; position: relative; z-index: 10; background: transparent; }
         
-        .hero-image { width: 100%; height: 40vh; background: url('thefamilyhub.jpg') center center no-repeat; background-size: cover; border-bottom: 2px solid var(--sigil); }
+        .hero-image { width: 100%; height: 40vh; background: url('thefamilyhub.jpg') center center no-repeat; background-size: cover; border-bottom: 2px solid var(--sigil); box-shadow: 0 10px 50px #000; }
         .sidebar { width: 100%; padding: 3rem 2rem; background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.98) 100%); flex-grow: 1; }
         
         @media (min-width: 1024px) { 
@@ -38,11 +39,11 @@
         }
 
         .oracle-row { display: flex; justify-content: space-around; align-items: center; font-size: 14px; font-weight: 800; letter-spacing: 4px; color: var(--gold); margin: 2rem 0; padding: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1); border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .glass-module { background: var(--deep-glass); backdrop-filter: blur(60px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1.5rem; margin-bottom: 2.5rem; overflow: hidden; }
+        .glass-module { background: var(--deep-glass); backdrop-filter: blur(60px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1.5rem; margin-bottom: 2.5rem; overflow: hidden; box-shadow: 0 40px 80px rgba(0,0,0,0.9); }
         .expensive-header { font-family: 'Cinzel', serif; font-size: 14px; letter-spacing: 0.4em; font-weight: 900; text-transform: uppercase; padding: 1.8rem; background: linear-gradient(to right, var(--gold), var(--sigil)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; border-bottom: 1px solid rgba(255, 255, 255, 0.05); display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
 
         .avatar-bar { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; padding: 20px; }
-        .avatar-option { height: 55px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 26px; background: rgba(255,255,255,0.02); }
+        .avatar-option { height: 55px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 26px; background: rgba(255,255,255,0.02); transition: 0.3s; }
         .avatar-option.active { border-color: var(--sigil); box-shadow: 0 0 30px var(--sigil); transform: scale(1.1); background: rgba(34, 211, 238, 0.15); }
 
         .vibe-bar { display: grid; grid-template-columns: repeat(8, 1fr); gap: 10px; padding: 0 20px 20px 20px; }
@@ -53,16 +54,17 @@
         .list-item { font-size: 19px; font-weight: 700; padding: 1.2rem 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
         .cal-date { aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 800; border: 1px solid rgba(255,255,255,0.02); cursor: pointer; }
         .cal-today { border: 2px solid var(--gold) !important; color: var(--gold) !important; background: rgba(251, 191, 36, 0.1); border-radius: 10px; }
+        .has-quest { color: var(--sigil) !important; text-shadow: 0 0 15px var(--sigil); }
         
-        .action-btn { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255,255,255,0.1); padding: 10px 15px; border-radius: 10px; font-size: 11px; font-weight: 900; color: #fff; cursor: pointer; margin-top: 10px; display: inline-flex; align-items: center; gap: 8px; }
-        .action-btn:hover { background: rgba(255,255,255,0.15); border-color: var(--sigil); }
-        .listening { background: #ef4444 !important; animation: pulse 1.5s infinite; }
+        .action-btn { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255,255,255,0.1); padding: 12px 18px; border-radius: 12px; font-size: 12px; font-weight: 900; color: #fff; cursor: pointer; margin-top: 12px; display: inline-flex; align-items: center; gap: 10px; transition: 0.3s; }
+        .action-btn:hover { background: rgba(34, 211, 238, 0.1); border-color: var(--sigil); }
+        .listening { background: #ef4444 !important; border-color: #ef4444 !important; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
         #questModal { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.98); backdrop-filter: blur(40px); align-items: center; justify-content: center; }
         .modal-glass { background: #000; border: 1px solid var(--gold); padding: 4rem 3rem; border-radius: 2.5rem; width: 90%; max-width: 500px; text-align: center; }
         
-        .note-img { width: 100%; border-radius: 12px; margin-top: 15px; border: 1px solid rgba(255,255,255,0.1); }
+        .note-img { width: 100%; border-radius: 15px; margin-top: 20px; border: 1px solid rgba(255,255,255,0.1); }
     </style>
 </head>
 <body id="mainBody">
@@ -70,7 +72,7 @@
     <div id="questModal">
         <div class="modal-glass">
             <h2 id="modalDateTitle" class="text-3xl font-black mb-10 tracking-widest uppercase text-white" style="font-family: 'Cinzel';"></h2>
-            <div id="modalEventList" class="space-y-6 mb-10 text-left max-h-72 overflow-y-auto pr-4"></div>
+            <div id="modalEventList" class="space-y-6 mb-10 text-left max-h-72 overflow-y-auto pr-4 text-white"></div>
             <input id="modalInput" type="text" placeholder="Appointment Name...">
             <div class="flex gap-4 mt-10">
                 <button onclick="closeQuestModal()" class="w-full py-5 border border-white/20 uppercase text-xs font-black tracking-widest rounded-2xl">Close</button>
@@ -129,7 +131,7 @@
                         <div class="theme-dot bg-slate-400" onclick="setTheme('silver')"></div>
                     </div>
                 </div>
-                <input id="userName" type="text" placeholder="COMMANDER NAME" class="text-center tracking-widest font-black uppercase">
+                <input id="userName" type="text" placeholder="WHO IS COMMANDING?" class="text-center tracking-widest font-black uppercase">
             </header>
 
             <div class="glass-module">
@@ -140,14 +142,14 @@
                 </div>
                 <div id="calContent">
                     <div id="activeQuestBanner" class="quest-banner">Select a date.</div>
-                    <div id="calendarGrid" class="grid grid-cols-7 gap-1 p-8"></div>
+                    <div id="calendarGrid" class="grid grid-cols-7 gap-1 p-8 text-white"></div>
                 </div>
             </div>
 
             <div class="glass-module">
                 <div class="expensive-header" onclick="toggleModule('marketContent')"><span>Provisions</span><span>↕</span></div>
                 <div id="marketContent" class="p-8">
-                    <div id="marketList" class="mb-4"></div>
+                    <div id="marketList" class="mb-4 text-white"></div>
                     <input id="mInput" type="text" placeholder="Add provision..." onkeydown="if(event.key==='Enter') saveItem('market_items', 'mInput')">
                 </div>
             </div>
@@ -155,7 +157,7 @@
             <div class="glass-module">
                 <div class="expensive-header" onclick="toggleModule('mealContent')"><span>Meal Plan</span><span>↕</span></div>
                 <div id="mealContent" class="p-8">
-                    <div id="mealList" class="mb-4"></div>
+                    <div id="mealList" class="mb-4 text-white"></div>
                     <input id="mealInput" type="text" placeholder="Dinner plan..." onkeydown="if(event.key==='Enter') saveItem('meal_plan', 'mealInput')">
                 </div>
             </div>
@@ -163,8 +165,8 @@
             <div class="glass-module">
                 <div class="expensive-header" onclick="toggleModule('noteContent')"><span>The Chronicler</span><span>↕</span></div>
                 <div id="noteContent" class="p-8">
-                    <div id="notesLog" class="space-y-10 mb-8"></div>
-                    <input id="nInput" type="text" placeholder="Describe the moment..." onkeydown="if(event.key==='Enter') saveNote()">
+                    <div id="notesLog" class="space-y-10 mb-8 text-white"></div>
+                    <input id="nInput" type="text" placeholder="Capture a memory..." onkeydown="if(event.key==='Enter') saveNote()">
                     <div class="flex gap-2">
                         <button id="voiceBtn" class="action-btn" onclick="startVoice()">🎤 SPEAK</button>
                         <button class="action-btn" onclick="document.getElementById('imgUpload').click()">📷 PHOTO</button>
@@ -194,14 +196,14 @@
         
         async function saveItem(table, inputId) {
             const i = document.getElementById(inputId); if(!i.value) return;
-            const name = document.getElementById('userName').value || 'Tucker';
+            const name = document.getElementById('userName').value || 'Amber';
             await _supabase.from(table).insert([{ text: `${currentSigil} ${name}: ${i.value}` }]);
             i.value = ""; refreshAll();
         }
         
         async function loadList(table, divId) {
             const { data } = await _supabase.from(table).select('*').order('created_at', { ascending: true });
-            document.getElementById(divId).innerHTML = data?.length ? data.map(item => `<div class="flex justify-between items-center list-item"><span>${item.text}</span><span class="text-red-900 font-black cursor-pointer px-6" onclick="deleteItem('${table}', '${item.id}')">×</span></div>`).join('') : '<div class="opacity-20 italic text-sm">Empty...</div>';
+            document.getElementById(divId).innerHTML = data?.length ? data.map(item => `<div class="flex justify-between items-center list-item"><span>${item.text}</span><span class="text-red-900 font-black cursor-pointer px-6 hover:text-white" onclick="deleteItem('${table}', '${item.id}')">×</span></div>`).join('') : '<div class="opacity-20 italic text-sm">Empty...</div>';
         }
 
         async function uploadImage(input) {
@@ -212,20 +214,15 @@
             if (error) { alert("Upload failed: Check bucket settings"); btn.innerText = "📷 PHOTO"; return; }
             const { data: { publicUrl } } = _supabase.storage.from('note-images').getPublicUrl(path);
             currentImgUrl = publicUrl;
-            btn.innerText = "✅ READY"; btn.style.borderColor = "var(--sigil)";
+            btn.innerText = "✅ READY";
         }
 
         async function saveNote() {
             const i = document.getElementById('nInput'); if(!i.value && !currentImgUrl) return;
-            const name = document.getElementById('userName').value || 'Tucker';
-            await _supabase.from('family_notes').insert([{ 
-                note: i.value, 
-                image_url: currentImgUrl,
-                timestamp: `${currentSigil} ${name} • ${new Date().toLocaleDateString()}` 
-            }]);
+            const name = document.getElementById('userName').value || 'Amber';
+            await _supabase.from('family_notes').insert([{ note: i.value, image_url: currentImgUrl, timestamp: `${currentSigil} ${name} • ${new Date().toLocaleDateString()}` }]);
             i.value = ""; currentImgUrl = null; 
-            const photoBtn = document.querySelector('button[onclick*="imgUpload"]');
-            photoBtn.innerText = "📷 PHOTO"; photoBtn.style.borderColor = "rgba(255,255,255,0.1)";
+            document.querySelector('button[onclick*="imgUpload"]').innerText = "📷 PHOTO";
             loadNotes();
         }
 
@@ -259,7 +256,7 @@
 
         async function openQuest(ds, d) {
             const { data: evs } = await _supabase.from('calendar_events').select('*').eq('start_date', ds);
-            document.getElementById('activeQuestBanner').innerText = evs?.length ? evs.map(e => e.title).join(' • ') : `No quests for ${dispDate.toLocaleString('default', { month: 'short' })} ${d}.`;
+            document.getElementById('activeQuestBanner').innerText = evs?.length ? evs.map(e => e.title).join(' • ') : `Clear schedule for ${dispDate.toLocaleString('default', { month: 'short' })} ${d}.`;
             document.getElementById('modalDateTitle').innerText = `${dispDate.toLocaleString('default', { month: 'long' })} ${d}`;
             document.getElementById('questModal').style.display = 'flex';
             document.getElementById('modalEventList').innerHTML = evs?.map(e => `<div class="flex justify-between items-center p-6 bg-white/5 rounded-2xl border border-white/10 text-xl"><span>${e.title}</span><span class="text-red-500 font-black cursor-pointer" onclick="deleteItem('calendar_events', '${e.id}'); openQuest('${ds}', ${d});">×</span></div>`).join('') || '';
