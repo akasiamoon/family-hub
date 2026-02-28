@@ -24,6 +24,7 @@
             overflow-x: hidden; 
         }
 
+        /* FULL SCREEN ANIMATION LAYER */
         #particle-canvas { 
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             z-index: 0; pointer-events: none; background: #000;
@@ -78,7 +79,8 @@
         .avatar-option.active { border-color: var(--sigil); box-shadow: 0 0 15px var(--sigil); transform: scale(1.1); }
 
         .vibe-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 10px 20px; }
-        .theme-dot { height: 22px; width: 22px; border-radius: 50%; border: 1px solid white; cursor: pointer; justify-self: center; }
+        .theme-dot { height: 22px; width: 22px; border-radius: 50%; border: 1px solid white; cursor: pointer; justify-self: center; transition: 0.3s; }
+        .theme-dot:hover { transform: scale(1.2); }
 
         input { background: rgba(0,0,0,0.6) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; color: #fff !important; padding: 12px !important; border-radius: 10px; font-family: 'Inter', sans-serif; width: 100%; margin-top: 10px; }
         
@@ -175,7 +177,10 @@
             </div>
 
             <div class="glass-module">
-                <div class="expensive-header" onclick="toggleModule('marketContent')"><span>The Provisions</span><span>↕</span></div>
+                <div class="expensive-header" onclick="toggleModule('marketContent')">
+                    <span>The Provisions</span>
+                    <span>↕</span>
+                </div>
                 <div id="marketContent" class="collapsible-content p-6">
                     <div id="marketList" class="space-y-4 mb-4 text-sm font-bold text-white"></div>
                     <input id="mInput" type="text" placeholder="Add provision..." onkeydown="if(event.key==='Enter') saveItem('market_items', 'mInput')">
@@ -183,15 +188,21 @@
             </div>
 
             <div class="glass-module">
-                <div class="expensive-header" onclick="toggleModule('mealContent')"><span>Meal Plan</span><span>↕</span></div>
+                <div class="expensive-header" onclick="toggleModule('mealContent')">
+                    <span>Meal Plan</span>
+                    <span>↕</span>
+                </div>
                 <div id="mealContent" class="collapsible-content p-6">
                     <div id="mealList" class="space-y-4 mb-4 text-sm font-bold text-white"></div>
-                    <input id="mealInput" type="text" placeholder="Dinner plan..." onkeydown="if(event.key==='Enter') saveItem('meal_plan', 'mealInput')">
+                    <input id="mealInput" type="text" placeholder="What's for dinner?..." onkeydown="if(event.key==='Enter') saveItem('meal_plan', 'mealInput')">
                 </div>
             </div>
 
             <div class="glass-module">
-                <div class="expensive-header" onclick="toggleModule('noteContent')"><span>The Chronicler</span><span>↕</span></div>
+                <div class="expensive-header" onclick="toggleModule('noteContent')">
+                    <span>The Chronicler</span>
+                    <span>↕</span>
+                </div>
                 <div id="noteContent" class="collapsible-content p-6">
                     <div id="notesLog" class="space-y-4 mb-4 text-sm font-bold text-white"></div>
                     <input id="nInput" type="text" placeholder="Write history..." onkeydown="if(event.key==='Enter') saveNote()">
@@ -218,18 +229,31 @@
             setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'}); }, 1000);
         };
 
-        async function refreshAll() { loadList('market_items', 'marketList'); loadList('meal_plan', 'mealList'); loadNotes(); }
+        async function refreshAll() { 
+            loadList('market_items', 'marketList'); 
+            loadList('meal_plan', 'mealList'); 
+            loadNotes(); 
+        }
 
         async function saveItem(table, inputId) {
             const i = document.getElementById(inputId); if(!i.value) return;
             const name = document.getElementById('userName').value || 'Someone';
-            await _supabase.from(table).insert([{ text: `${currentSigil} ${name}: ${i.value}` }]);
+            const { error } = await _supabase.from(table).insert([{ text: `${currentSigil} ${name}: ${i.value}` }]);
+            if(error) console.error("Save Error:", error);
             i.value = ""; refreshAll();
         }
 
         async function loadList(table, divId) {
-            const { data } = await _supabase.from(table).select('*').order('created_at', { ascending: true });
-            document.getElementById(divId).innerHTML = data?.length ? data.map(item => `<div class="flex justify-between border-b border-white/5 pb-2 text-white"><span>${item.text}</span><span class="text-red-900 font-bold cursor-pointer" onclick="deleteItem('${table}', '${item.id}')">×</span></div>`).join('') : '<div class="opacity-20 italic text-[10px]">No entries found.</div>';
+            const { data, error } = await _supabase.from(table).select('*').order('created_at', { ascending: true });
+            if(error) {
+                document.getElementById(divId).innerHTML = `<div class="text-red-500 text-[10px]">Table Error: Check Supabase!</div>`;
+                return;
+            }
+            document.getElementById(divId).innerHTML = data?.length ? data.map(item => `
+                <div class="flex justify-between border-b border-white/5 pb-2 text-white">
+                    <span>${item.text}</span>
+                    <span class="text-red-900 font-bold cursor-pointer" onclick="deleteItem('${table}', '${item.id}')">×</span>
+                </div>`).join('') : '<div class="opacity-20 italic text-[10px]">Empty...</div>';
         }
 
         async function saveNote() {
@@ -241,7 +265,12 @@
 
         async function loadNotes() {
             const { data } = await _supabase.from('family_notes').select('*').order('created_at', { ascending: false });
-            document.getElementById('notesLog').innerHTML = data ? data.map(n => `<div class="border-l-4 border-cyan-400 pl-4 py-2 bg-white/5 rounded-r-lg text-white mb-2"><small class="text-[9px] opacity-40 uppercase font-black tracking-widest">${n.timestamp || ''}</small><p class="text-sm font-bold mt-1">"${n.note}"</p><span class="text-[8px] text-red-900 cursor-pointer uppercase font-black" onclick="deleteItem('family_notes', '${n.id}')">Delete</span></div>`).join('') : '';
+            document.getElementById('notesLog').innerHTML = data ? data.map(n => `
+                <div class="border-l-4 border-cyan-400 pl-4 py-2 bg-white/5 rounded-r-lg text-white mb-2">
+                    <small class="text-[9px] opacity-40 uppercase font-black tracking-widest">${n.timestamp || ''}</small>
+                    <p class="text-sm font-bold mt-1">"${n.note}"</p>
+                    <span class="text-[8px] text-red-900 cursor-pointer uppercase font-black" onclick="deleteItem('family_notes', '${n.id}')">Delete</span>
+                </div>`).join('') : '';
         }
 
         async function deleteItem(table, id) { await _supabase.from(table).delete().eq('id', id); refreshAll(); buildCalendar(); }
@@ -275,6 +304,7 @@
             };
         }
 
+        /* GLOBAL PARTICLE ENGINE */
         const canvas = document.getElementById('particle-canvas'), ctx = canvas.getContext('2d');
         let particles = [];
         function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
