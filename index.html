@@ -53,14 +53,16 @@
         .list-item { font-size: 19px; font-weight: 700; padding: 1.2rem 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
         .cal-date { aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 800; border: 1px solid rgba(255,255,255,0.02); cursor: pointer; }
         .cal-today { border: 2px solid var(--gold) !important; color: var(--gold) !important; background: rgba(251, 191, 36, 0.1); border-radius: 10px; }
-        .has-quest { color: var(--sigil) !important; text-shadow: 0 0 15px var(--sigil); }
         
-        .voice-btn { background: rgba(34, 211, 238, 0.1); border: 1px solid var(--sigil); padding: 10px; border-radius: 10px; font-size: 12px; font-weight: 900; color: var(--sigil); cursor: pointer; margin-top: 10px; display: inline-block; }
-        .voice-btn.listening { background: #ef4444; border-color: #ef4444; color: white; animation: pulse 1.5s infinite; }
+        .action-btn { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255,255,255,0.1); padding: 10px 15px; border-radius: 10px; font-size: 11px; font-weight: 900; color: #fff; cursor: pointer; margin-top: 10px; display: inline-flex; align-items: center; gap: 8px; }
+        .action-btn:hover { background: rgba(255,255,255,0.15); border-color: var(--sigil); }
+        .listening { background: #ef4444 !important; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
         #questModal { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.98); backdrop-filter: blur(40px); align-items: center; justify-content: center; }
         .modal-glass { background: #000; border: 1px solid var(--gold); padding: 4rem 3rem; border-radius: 2.5rem; width: 90%; max-width: 500px; text-align: center; }
+        
+        .note-img { width: 100%; border-radius: 12px; margin-top: 15px; border: 1px solid rgba(255,255,255,0.1); }
     </style>
 </head>
 <body id="mainBody">
@@ -127,7 +129,7 @@
                         <div class="theme-dot bg-slate-400" onclick="setTheme('silver')"></div>
                     </div>
                 </div>
-                <input id="userName" type="text" placeholder="WHO IS COMMANDING?" class="text-center tracking-widest font-black uppercase">
+                <input id="userName" type="text" placeholder="COMMANDER NAME" class="text-center tracking-widest font-black uppercase">
             </header>
 
             <div class="glass-module">
@@ -162,8 +164,12 @@
                 <div class="expensive-header" onclick="toggleModule('noteContent')"><span>The Chronicler</span><span>↕</span></div>
                 <div id="noteContent" class="p-8">
                     <div id="notesLog" class="space-y-10 mb-8"></div>
-                    <input id="nInput" type="text" placeholder="Type a memory..." onkeydown="if(event.key==='Enter') saveNote()">
-                    <button id="voiceBtn" class="voice-btn" onclick="startVoice()">🎤 TAP TO SPEAK</button>
+                    <input id="nInput" type="text" placeholder="Describe the moment..." onkeydown="if(event.key==='Enter') saveNote()">
+                    <div class="flex gap-2">
+                        <button id="voiceBtn" class="action-btn" onclick="startVoice()">🎤 SPEAK</button>
+                        <button class="action-btn" onclick="document.getElementById('imgUpload').click()">📷 PHOTO</button>
+                        <input type="file" id="imgUpload" class="hidden" accept="image/*" onchange="uploadImage(this)">
+                    </div>
                 </div>
             </div>
         </div>
@@ -174,7 +180,7 @@
         const SUPABASE_KEY = 'sb_publishable_OUXpGQk3QkOoUu94S9YZNg_Sb34-Jc4';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        let currentSigil = '🔱', dispDate = new Date();
+        let currentSigil = '🔱', dispDate = new Date(), currentImgUrl = null;
 
         function selectAvatar(el, icon) { document.querySelectorAll('.avatar-option').forEach(opt => opt.classList.remove('active')); el.classList.add('active'); currentSigil = icon; }
         function setTheme(t) { document.body.setAttribute('data-theme', t); }
@@ -195,19 +201,43 @@
         
         async function loadList(table, divId) {
             const { data } = await _supabase.from(table).select('*').order('created_at', { ascending: true });
-            document.getElementById(divId).innerHTML = data?.length ? data.map(item => `<div class="flex justify-between items-center list-item"><span>${item.text}</span><span class="text-red-900 font-black cursor-pointer px-6 hover:text-white" onclick="deleteItem('${table}', '${item.id}')">×</span></div>`).join('') : '<div class="opacity-20 italic text-sm">Waiting...</div>';
+            document.getElementById(divId).innerHTML = data?.length ? data.map(item => `<div class="flex justify-between items-center list-item"><span>${item.text}</span><span class="text-red-900 font-black cursor-pointer px-6" onclick="deleteItem('${table}', '${item.id}')">×</span></div>`).join('') : '<div class="opacity-20 italic text-sm">Empty...</div>';
+        }
+
+        async function uploadImage(input) {
+            const file = input.files[0]; if (!file) return;
+            const btn = input.previousElementSibling; btn.innerText = "⏳ UPLOADING...";
+            const path = `note-images/${Date.now()}-${file.name}`;
+            const { data, error } = await _supabase.storage.from('note-images').upload(path, file);
+            if (error) { alert("Upload failed: Check bucket settings"); btn.innerText = "📷 PHOTO"; return; }
+            const { data: { publicUrl } } = _supabase.storage.from('note-images').getPublicUrl(path);
+            currentImgUrl = publicUrl;
+            btn.innerText = "✅ READY"; btn.style.borderColor = "var(--sigil)";
         }
 
         async function saveNote() {
-            const i = document.getElementById('nInput'); if(!i.value) return;
+            const i = document.getElementById('nInput'); if(!i.value && !currentImgUrl) return;
             const name = document.getElementById('userName').value || 'Tucker';
-            await _supabase.from('family_notes').insert([{ note: i.value, timestamp: `${currentSigil} ${name} • ${new Date().toLocaleDateString()}` }]);
-            i.value = ""; loadNotes();
+            await _supabase.from('family_notes').insert([{ 
+                note: i.value, 
+                image_url: currentImgUrl,
+                timestamp: `${currentSigil} ${name} • ${new Date().toLocaleDateString()}` 
+            }]);
+            i.value = ""; currentImgUrl = null; 
+            const photoBtn = document.querySelector('button[onclick*="imgUpload"]');
+            photoBtn.innerText = "📷 PHOTO"; photoBtn.style.borderColor = "rgba(255,255,255,0.1)";
+            loadNotes();
         }
 
         async function loadNotes() {
             const { data } = await _supabase.from('family_notes').select('*').order('created_at', { ascending: false });
-            document.getElementById('notesLog').innerHTML = data ? data.map(n => `<div class="border-l-4 border-cyan-400 pl-8 py-3 mb-6 bg-white/5 rounded-r-2xl"><small class="text-[11px] opacity-40 uppercase font-black tracking-widest block mb-2">${n.timestamp || ''}</small><p class="text-2xl font-semibold leading-relaxed">"${n.note}"</p><span class="text-[11px] text-red-900 cursor-pointer uppercase font-black mt-6 inline-block" onclick="deleteItem('family_notes', '${n.id}')">Delete</span></div>`).join('') : '';
+            document.getElementById('notesLog').innerHTML = data ? data.map(n => `
+                <div class="border-l-4 border-cyan-400 pl-8 py-3 mb-6 bg-white/5 rounded-r-2xl">
+                    <small class="text-[11px] opacity-40 uppercase font-black tracking-widest block mb-2">${n.timestamp || ''}</small>
+                    ${n.note ? `<p class="text-2xl font-semibold leading-relaxed">"${n.note}"</p>` : ''}
+                    ${n.image_url ? `<img src="${n.image_url}" class="note-img">` : ''}
+                    <span class="text-[11px] text-red-900 cursor-pointer uppercase font-black mt-6 inline-block" onclick="deleteItem('family_notes', '${n.id}')">Delete</span>
+                </div>`).join('') : '';
         }
 
         async function deleteItem(table, id) { await _supabase.from(table).delete().eq('id', id); refreshAll(); buildCalendar(); }
@@ -229,7 +259,7 @@
 
         async function openQuest(ds, d) {
             const { data: evs } = await _supabase.from('calendar_events').select('*').eq('start_date', ds);
-            document.getElementById('activeQuestBanner').innerText = evs?.length ? evs.map(e => e.title).join(' • ') : `Clear schedule for ${dispDate.toLocaleString('default', { month: 'short' })} ${d}.`;
+            document.getElementById('activeQuestBanner').innerText = evs?.length ? evs.map(e => e.title).join(' • ') : `No quests for ${dispDate.toLocaleString('default', { month: 'short' })} ${d}.`;
             document.getElementById('modalDateTitle').innerText = `${dispDate.toLocaleString('default', { month: 'long' })} ${d}`;
             document.getElementById('questModal').style.display = 'flex';
             document.getElementById('modalEventList').innerHTML = evs?.map(e => `<div class="flex justify-between items-center p-6 bg-white/5 rounded-2xl border border-white/10 text-xl"><span>${e.title}</span><span class="text-red-500 font-black cursor-pointer" onclick="deleteItem('calendar_events', '${e.id}'); openQuest('${ds}', ${d});">×</span></div>`).join('') || '';
@@ -240,15 +270,28 @@
             };
         }
 
-        /* VOICE ENGINE */
         function startVoice() {
             const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
             const btn = document.getElementById('voiceBtn');
-            recognition.lang = 'en-US';
-            recognition.start();
-            btn.classList.add('listening'); btn.innerText = "🎤 LISTENING...";
-            recognition.onresult = (e) => { document.getElementById('nInput').value = e.results[0][0].transcript; btn.classList.remove('listening'); btn.innerText = "🎤 TAP TO SPEAK"; };
-            recognition.onerror = () => { btn.classList.remove('listening'); btn.innerText = "🎤 ERROR - TRY AGAIN"; };
+            recognition.lang = 'en-US'; recognition.start();
+            btn.classList.add('listening'); btn.innerText = "LISTENING...";
+            recognition.onresult = (e) => { document.getElementById('nInput').value = e.results[0][0].transcript; btn.classList.remove('listening'); btn.innerText = "🎤 SPEAK"; };
+            recognition.onerror = () => { btn.classList.remove('listening'); btn.innerText = "ERROR"; };
         }
 
-        const canvas = document.getElementById('particle-canvas'), ctx = canvas.
+        const canvas = document.getElementById('particle-canvas'), ctx = canvas.getContext('2d');
+        let particles = [];
+        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resize); resize();
+        class Particle {
+            constructor() { this.init(); }
+            init() { this.x = Math.random() * canvas.width; this.y = canvas.height + 50; this.size = Math.random() * 35 + 10; this.speed = Math.random() * 1.5 + 0.5; this.opacity = Math.random() * 0.4 + 0.1; this.isEmber = Math.random() > 0.6; this.char = this.isEmber ? '•' : '♪'; }
+            update() { this.y -= this.speed; this.x += Math.sin(this.y / 50) * 0.8; if (this.y < -50) this.init(); }
+            draw() { ctx.fillStyle = this.isEmber ? '#f97316' : '#22d3ee'; ctx.globalAlpha = this.opacity; ctx.font = `${this.size}px serif`; ctx.fillText(this.char, this.x, this.y); }
+        }
+        for (let i = 0; i < 50; i++) particles.push(new Particle());
+        function animate() { ctx.clearRect(0, 0, canvas.width, canvas.height); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animate); }
+        animate();
+    </script>
+</body>
+</html>
