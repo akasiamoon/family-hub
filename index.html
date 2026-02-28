@@ -9,7 +9,7 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@300;600;800&display=swap');
         
-        :root { --sigil: #22d3ee; --gold: #fbbf24; --deep-glass: rgba(5, 5, 8, 0.95); }
+        :root { --sigil: #22d3ee; --gold: #fbbf24; --deep-glass: rgba(5, 5, 8, 0.96); }
         [data-theme="purple"] { --sigil: #a855f7; } [data-theme="red"] { --sigil: #ef4444; } [data-theme="green"] { --sigil: #10b981; }
         [data-theme="gold"] { --sigil: #fbbf24; } [data-theme="pink"] { --sigil: #f472b6; } [data-theme="orange"] { --sigil: #f97316; }
         [data-theme="silver"] { --sigil: #cbd5e1; }
@@ -18,8 +18,8 @@
         
         /* TITAN SCALE (AA) */
         body.large-mode .list-item, body.large-mode .note-text { font-size: 26px !important; }
-        body.large-mode .expensive-header { font-size: 20px !important; }
-        body.large-mode input { font-size: 22px !important; padding: 25px !important; }
+        body.large-mode .expensive-header { font-size: 22px !important; }
+        body.large-mode input { font-size: 22px !important; }
 
         #particle-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none; background: #000; }
         .hub-container { display: flex; flex-direction: column; min-height: 100vh; position: relative; z-index: 10; background: transparent; }
@@ -38,41 +38,42 @@
         .expensive-header { font-family: 'Cinzel', serif; font-size: 14px; letter-spacing: 0.3em; font-weight: 900; text-transform: uppercase; padding: 1.8rem; background: linear-gradient(to right, var(--gold), var(--sigil)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; border-bottom: 1px solid rgba(255, 255, 255, 0.05); display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
 
         .avatar-bar { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; padding: 20px; }
-        .avatar-option { height: 55px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 26px; background: rgba(255,255,255,0.02); transition: 0.3s; }
-        .avatar-option.active { border-color: var(--sigil); box-shadow: 0 0 30px var(--sigil); transform: scale(1.1); background: rgba(34, 211, 238, 0.15); }
+        .avatar-option { height: 55px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 26px; background: rgba(255,255,255,0.02); }
+        .avatar-option.active { border-color: var(--sigil); box-shadow: 0 0 30px var(--sigil); transform: scale(1.1); background: rgba(34, 211, 238, 0.1); }
 
         .vibe-bar { display: grid; grid-template-columns: repeat(8, 1fr); gap: 10px; padding: 0 20px 20px 20px; }
         .theme-dot { height: 26px; width: 26px; border-radius: 50%; border: 2px solid #fff; cursor: pointer; }
 
         input { background: #000 !important; border: 1px solid rgba(255, 255, 255, 0.2) !important; color: #fff !important; padding: 20px !important; border-radius: 15px; font-weight: 700; width: 100%; outline: none; margin-top: 15px; }
-        .list-item { font-size: 19px; font-weight: 700; padding: 1.2rem 0; border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: center; }
+        .list-item { font-size: 19px; font-weight: 700; padding: 1rem 0; border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: center; }
         
-        .cal-date { aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 800; border: 1px solid rgba(255,255,255,0.02); cursor: pointer; }
-        .cal-today { border: 2px solid var(--gold); color: var(--gold); background: rgba(251, 191, 36, 0.1); border-radius: 10px; }
-        .has-quest { color: var(--sigil); text-shadow: 0 0 15px var(--sigil); }
+        /* CALENDAR */
+        .cal-date { aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 800; border: 1px solid rgba(255,255,255,0.02); cursor: pointer; transition: 0.2s; }
+        .cal-today { border: 2px solid var(--gold) !important; color: var(--gold); background: rgba(251, 191, 36, 0.1); border-radius: 8px; }
+        .has-quest { border: 1.5px solid var(--sigil) !important; box-shadow: inset 0 0 10px var(--sigil); color: var(--sigil); }
 
-        /* THE SCRAPBOOK EFFECT */
-        .note-card { border-left: 5px solid var(--sigil); padding: 1.5rem; background: rgba(255,255,255,0.03); margin-bottom: 2rem; border-radius: 0 1.5rem 1.5rem 0; }
+        /* THE SCRAPBOOK */
+        .note-card { border-left: 5px solid var(--sigil); padding: 1.5rem; background: rgba(255,255,255,0.03); margin-bottom: 2rem; border-radius: 0 1.5rem 1.5rem 0; position: relative; }
         .note-img { width: 100%; border-radius: 1rem; margin-top: 1.5rem; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 15px 30px rgba(0,0,0,0.5); }
         
-        .action-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 12px 20px; border-radius: 12px; font-size: 12px; font-weight: 900; cursor: pointer; margin-top: 15px; display: inline-flex; align-items: center; gap: 10px; transition: 0.3s; }
+        .action-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 12px 18px; border-radius: 12px; font-size: 11px; font-weight: 900; color: #fff; cursor: pointer; margin-top: 12px; display: inline-flex; align-items: center; gap: 8px; }
         .listening { background: #ef4444 !important; border-color: #ef4444 !important; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
         #questModal { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.98); backdrop-filter: blur(40px); align-items: center; justify-content: center; }
-        .modal-glass { background: #000; border: 1px solid var(--gold); padding: 4rem 3rem; border-radius: 2.5rem; width: 90%; max-width: 500px; text-align: center; }
+        .modal-glass { background: #000; border: 1px solid var(--gold); padding: 3rem; border-radius: 2.5rem; width: 90%; max-width: 480px; text-align: center; }
     </style>
 </head>
 <body id="mainBody">
 
     <div id="questModal">
         <div class="modal-glass">
-            <h2 id="modalDateTitle" class="text-3xl font-black mb-10 tracking-widest uppercase text-white" style="font-family: 'Cinzel';"></h2>
-            <div id="modalEventList" class="space-y-6 mb-10 text-left max-h-72 overflow-y-auto pr-4 text-white"></div>
-            <input id="modalInput" type="text" placeholder="Appointment Name...">
-            <div class="flex gap-4 mt-10">
-                <button onclick="closeQuestModal()" class="w-full py-5 border border-white/20 uppercase text-xs font-black tracking-widest rounded-2xl">Close</button>
-                <button id="addQuestBtn" class="w-full py-5 bg-white/10 border border-white/30 uppercase text-xs font-black tracking-widest rounded-2xl">Assign</button>
+            <h2 id="modalDateTitle" class="text-3xl font-black mb-8 tracking-widest uppercase text-white" style="font-family: 'Cinzel';"></h2>
+            <div id="modalEventList" class="space-y-4 mb-8 text-left max-h-72 overflow-y-auto pr-4 text-white"></div>
+            <input id="modalInput" type="text" placeholder="Appointment Details...">
+            <div class="flex gap-4 mt-8">
+                <button onclick="closeQuestModal()" class="w-full py-5 border border-white/20 uppercase text-xs font-black tracking-widest rounded-2xl hover:bg-white/5">Back</button>
+                <button id="addQuestBtn" class="w-full py-5 bg-white/10 border border-white/30 uppercase text-xs font-black tracking-widest rounded-2xl hover:bg-white/20">Add Appointment</button>
             </div>
         </div>
     </div>
@@ -135,31 +136,25 @@
                     <span onclick="event.stopPropagation(); changeMonth(1)">▶</span>
                 </div>
                 <div id="calContent">
-                    <div id="calendarGrid" class="grid grid-cols-7 gap-1 p-8 text-white"></div>
+                    <div id="calendarGrid" class="grid grid-cols-7 gap-1 p-6 text-white"></div>
                 </div>
             </div>
 
             <div class="glass-module">
                 <div class="expensive-header" onclick="toggleModule('marketContent')"><span>Provisions</span><span>↕</span></div>
-                <div id="marketContent" class="p-8">
-                    <div id="marketList" class="mb-4 text-white"></div>
-                    <input id="mInput" type="text" placeholder="Add provision..." onkeydown="if(event.key==='Enter') saveItem('market_items', 'mInput')">
-                </div>
+                <div id="marketContent" class="p-8"><div id="marketList" class="mb-4 text-white"></div><input id="mInput" type="text" placeholder="Add provision..." onkeydown="if(event.key==='Enter') saveItem('market_items', 'mInput')"></div>
             </div>
 
             <div class="glass-module">
                 <div class="expensive-header" onclick="toggleModule('mealContent')"><span>Meal Plan</span><span>↕</span></div>
-                <div id="mealContent" class="p-8">
-                    <div id="mealList" class="mb-4 text-white"></div>
-                    <input id="mealInput" type="text" placeholder="Dinner plan..." onkeydown="if(event.key==='Enter') saveItem('meal_plan', 'mealInput')">
-                </div>
+                <div id="mealContent" class="p-8"><div id="mealList" class="mb-4 text-white"></div><input id="mealInput" type="text" placeholder="Dinner plan..." onkeydown="if(event.key==='Enter') saveItem('meal_plan', 'mealInput')"></div>
             </div>
 
             <div class="glass-module">
                 <div class="expensive-header" onclick="toggleModule('noteContent')"><span>The Chronicler</span><span>↕</span></div>
                 <div id="noteContent" class="p-8">
-                    <div id="notesLog" class="space-y-6 mb-8 text-white"></div>
-                    <input id="nInput" type="text" placeholder="Tell a story..." onkeydown="if(event.key==='Enter') saveNote()">
+                    <div id="notesLog" class="space-y-10 mb-8 text-white"></div>
+                    <input id="nInput" type="text" placeholder="New memory..." onkeydown="if(event.key==='Enter') saveNote()">
                     <div class="flex gap-3">
                         <button id="voiceBtn" class="action-btn" onclick="startVoice()">🎤 SPEAK</button>
                         <button class="action-btn" onclick="document.getElementById('imgUpload').click()">📷 PHOTO</button>
@@ -196,25 +191,24 @@
         
         async function loadList(table, divId) {
             const { data } = await _supabase.from(table).select('*').order('created_at', { ascending: true });
-            document.getElementById(divId).innerHTML = data?.length ? data.map(item => `<div class="list-item"><span>${item.text}</span><span class="text-red-900 font-black cursor-pointer px-6 hover:text-white" onclick="deleteItem('${table}', '${item.id}')">×</span></div>`).join('') : '<div class="opacity-20 italic text-sm">Empty...</div>';
+            document.getElementById(divId).innerHTML = data?.length ? data.map(item => `<div class="list-item"><span>${item.text}</span><span class="text-red-900 font-black cursor-pointer px-6" onclick="deleteItem('${table}', '${item.id}')">×</span></div>`).join('') : '<div class="opacity-20 italic text-sm">Empty...</div>';
         }
 
         async function uploadImage(input) {
             const file = input.files[0]; if (!file) return;
-            const btn = document.querySelector('button[onclick*="imgUpload"]'); btn.innerText = "⏳ LOADING...";
+            const btn = document.querySelector('button[onclick*="imgUpload"]'); btn.innerText = "⏳ UPLOADING...";
             const path = `note-images/${Date.now()}-${file.name}`;
-            const { data, error } = await _supabase.storage.from('note-images').upload(path, file);
-            if (error) { alert("Upload failed: Ensure 'note-images' bucket is Public and Policies are set to true!"); btn.innerText = "📷 PHOTO"; return; }
+            const { error } = await _supabase.storage.from('note-images').upload(path, file);
+            if (error) { alert("Check Supabase Storage Policies!"); btn.innerText = "📷 PHOTO"; return; }
             const { data: { publicUrl } } = _supabase.storage.from('note-images').getPublicUrl(path);
-            currentImgUrl = publicUrl; btn.innerText = "✅ PHOTO READY";
+            currentImgUrl = publicUrl; btn.innerText = "✅ READY";
         }
 
         async function saveNote() {
             const i = document.getElementById('nInput'); if(!i.value && !currentImgUrl) return;
             const name = document.getElementById('userName').value || 'Amber';
             await _supabase.from('family_notes').insert([{ note: i.value, image_url: currentImgUrl, timestamp: `${currentSigil} ${name} • ${new Date().toLocaleDateString()}` }]);
-            i.value = ""; currentImgUrl = null; 
-            document.querySelector('button[onclick*="imgUpload"]').innerText = "📷 PHOTO";
+            i.value = ""; currentImgUrl = null; document.querySelector('button[onclick*="imgUpload"]').innerText = "📷 PHOTO";
             loadNotes();
         }
 
@@ -223,7 +217,7 @@
             document.getElementById('notesLog').innerHTML = data ? data.map(n => `
                 <div class="note-card">
                     <div class="flex justify-between items-start mb-2">
-                        <small class="text-[11px] opacity-40 uppercase font-black tracking-widest">${n.timestamp || ''}</small>
+                        <small class="text-[11px] opacity-40 uppercase font-black">${n.timestamp || ''}</small>
                         <span class="text-red-900 font-black cursor-pointer text-[10px]" onclick="deleteItem('family_notes', '${n.id}')">DELETE</span>
                     </div>
                     ${n.note ? `<p class="note-text text-2xl font-semibold leading-relaxed">"${n.note}"</p>` : ''}
@@ -231,16 +225,21 @@
                 </div>`).join('') : '';
         }
 
-        async function deleteItem(table, id) { await _supabase.from(table).delete().eq('id', id); refreshAll(); buildCalendar(); }
+        async function deleteItem(table, id) { await _supabase.from(table).delete().eq('id', id); refreshAll(); if(table === 'calendar_events') buildCalendar(); }
 
         async function buildCalendar() {
             const y = dispDate.getFullYear(), m = dispDate.getMonth();
             document.getElementById('calMonthDisplay').innerText = dispDate.toLocaleString('default', { month: 'long', year: 'numeric' });
             const first = new Date(y, m, 1).getDay(), days = new Date(y, m + 1, 0).getDate();
             const grid = document.getElementById('calendarGrid'); grid.innerHTML = '';
+            const { data: appts } = await _supabase.from('calendar_events').select('*');
+
             for (let i = 0; i < first; i++) grid.innerHTML += '<div></div>';
             for (let d = 1; d <= days; d++) {
-                grid.innerHTML += `<div class="cal-date ${d === new Date().getDate() && m === new Date().getMonth() ? 'cal-today' : ''}" onclick="openQuest('${y}-${m+1}-${d}', ${d})">${d}</div>`;
+                const ds = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                const hasA = appts?.some(e => e.start_date === ds);
+                const isT = (d === new Date().getDate() && m === new Date().getMonth() && y === new Date().getFullYear());
+                grid.innerHTML += `<div class="cal-date ${isT ? 'cal-today' : ''} ${hasA ? 'has-quest' : ''}" onclick="openQuest('${ds}', ${d})">${d}</div>`;
             }
         }
 
@@ -248,7 +247,7 @@
             document.getElementById('modalDateTitle').innerText = `${dispDate.toLocaleString('default', { month: 'long' })} ${d}`;
             document.getElementById('questModal').style.display = 'flex';
             const { data: evs } = await _supabase.from('calendar_events').select('*').eq('start_date', ds);
-            document.getElementById('modalEventList').innerHTML = evs?.map(e => `<div class="flex justify-between items-center p-4 bg-white/5 rounded-xl"><span>${e.title}</span><span class="text-red-500 cursor-pointer" onclick="deleteItem('calendar_events', '${e.id}'); openQuest('${ds}', ${d});">×</span></div>`).join('') || '';
+            document.getElementById('modalEventList').innerHTML = evs?.length ? evs.map(e => `<div class="flex justify-between items-center p-4 bg-white/5 rounded-xl border border-white/10"><span>${e.title}</span><span class="text-red-500 font-black cursor-pointer" onclick="deleteItem('calendar_events', '${e.id}'); openQuest('${ds}', ${d});">×</span></div>`).join('') : '<p class="text-center opacity-30 italic">No appointments.</p>';
             document.getElementById('addQuestBtn').onclick = async () => {
                 const v = document.getElementById('modalInput').value; if(!v) return;
                 await _supabase.from('calendar_events').insert([{ title: `${currentSigil} ${v}`, start_date: ds }]);
@@ -260,6 +259,7 @@
             const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
             recognition.start(); document.getElementById('voiceBtn').classList.add('listening');
             recognition.onresult = (e) => { document.getElementById('nInput').value = e.results[0][0].transcript; document.getElementById('voiceBtn').classList.remove('listening'); };
+            recognition.onerror = () => { document.getElementById('voiceBtn').classList.remove('listening'); };
         }
 
         const canvas = document.getElementById('particle-canvas'), ctx = canvas.getContext('2d');
@@ -268,7 +268,7 @@
         window.addEventListener('resize', resize); resize();
         class Particle {
             constructor() { this.init(); }
-            init() { this.x = Math.random() * canvas.width; this.y = canvas.height + 50; this.size = Math.random() * 30 + 10; this.speed = Math.random() * 1.2 + 0.6; this.opacity = Math.random() * 0.4 + 0.1; this.char = Math.random() > 0.6 ? '•' : '♪'; }
+            init() { this.x = Math.random() * canvas.width; this.y = canvas.height + 50; this.size = Math.random() * 30 + 10; this.speed = Math.random() * 1.5 + 0.5; this.opacity = Math.random() * 0.4 + 0.1; this.char = Math.random() > 0.6 ? '•' : '♪'; }
             update() { this.y -= this.speed; this.x += Math.sin(this.y / 50) * 0.6; if (this.y < -50) this.init(); }
             draw() { ctx.fillStyle = '#22d3ee'; ctx.globalAlpha = this.opacity; ctx.font = `${this.size}px serif`; ctx.fillText(this.char, this.x, this.y); }
         }
