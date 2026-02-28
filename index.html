@@ -206,15 +206,40 @@
             document.getElementById(divId).innerHTML = data?.length ? data.map(item => `<div class="flex justify-between items-center list-item"><span>${item.text}</span><span class="text-red-900 font-black cursor-pointer px-6 hover:text-white" onclick="deleteItem('${table}', '${item.id}')">×</span></div>`).join('') : '<div class="opacity-20 italic text-sm">Empty...</div>';
         }
 
-        async function uploadImage(input) {
-            const file = input.files[0]; if (!file) return;
-            const btn = input.previousElementSibling; btn.innerText = "⏳ UPLOADING...";
-            const path = `note-images/${Date.now()}-${file.name}`;
-            const { data, error } = await _supabase.storage.from('note-images').upload(path, file);
-            if (error) { alert("Upload failed: Check bucket settings"); btn.innerText = "📷 PHOTO"; return; }
-            const { data: { publicUrl } } = _supabase.storage.from('note-images').getPublicUrl(path);
-            currentImgUrl = publicUrl;
-            btn.innerText = "✅ READY";
+       async function uploadImage(input) {
+    const file = input.files[0]; 
+    if (!file) return;
+    
+    const btn = document.querySelector('button[onclick*="imgUpload"]');
+    btn.innerText = "⏳ UPLOADING...";
+    
+    // Clean the filename so mobile special characters don't break it
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Date.now()}.${fileExt}`;
+    const path = fileName; // Uploading directly to bucket root
+
+    const { data, error } = await _supabase.storage
+        .from('note-images')
+        .upload(path, file, {
+            cacheControl: '3600',
+            upsert: false
+        });
+
+    if (error) { 
+        console.error("Upload Error:", error);
+        alert("Upload failed! Make sure you added the 'INSERT' Policy in Supabase Storage."); 
+        btn.innerText = "📷 PHOTO"; 
+        return; 
+    }
+
+    const { data: { publicUrl } } = _supabase.storage
+        .from('note-images')
+        .getPublicUrl(path);
+
+    currentImgUrl = publicUrl;
+    btn.innerText = "✅ READY";
+    btn.style.borderColor = "var(--sigil)";
+}
         }
 
         async function saveNote() {
