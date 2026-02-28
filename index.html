@@ -71,7 +71,6 @@
 
         input { background: rgba(0,0,0,1) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; color: #fff !important; padding: 15px !important; border-radius: 10px; font-family: 'Inter', sans-serif; width: 100%; }
         
-        /* CALENDAR */
         .cal-date { aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; font-size: 11px; border: 1px solid rgba(255,255,255,0.05); cursor: pointer; font-weight: 900; }
         .cal-today { border: 2px solid var(--gold) !important; color: var(--gold); }
         .has-quest { border-color: var(--sigil) !important; box-shadow: inset 0 0 10px var(--sigil); }
@@ -108,7 +107,7 @@
                 <h1 class="text-3xl font-black tracking-[0.1em]" style="background: linear-gradient(to right, var(--gold), var(--sigil)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">TUCKER COOPER BURNS</h1>
                 <div class="oracle-row">
                     <span id="clock">00:00:00</span>
-                    <div class="flex items-center gap-2"><span>🌤️</span> <span id="temp">57°F</span></div>
+                    <div class="flex items-center gap-2"><span>🌤️</span> <span id="temp">50°F</span></div>
                     <span>FARMINGTON</span>
                 </div>
                 
@@ -149,4 +148,104 @@
             </div>
 
             <div class="glass-module">
-                <div class="expensive-header" onclick="toggleModule('noteContent')
+                <div class="expensive-header" onclick="toggleModule('noteContent')"><span>The Chronicler</span><span>↕</span></div>
+                <div id="noteContent" class="collapsible-content p-6">
+                    <div id="notesLog" class="space-y-4 mb-4 text-sm font-bold text-white"></div>
+                    <input id="nInput" type="text" placeholder="Write history..." onkeydown="if(event.key==='Enter') saveNote()">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://yflfpwcaowzkoxqnohso.supabase.co'; 
+        const SUPABASE_KEY = 'sb_publishable_OUXpGQk3QkOoUu94S9YZNg_Sb34-Jc4';
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let currentSigil = '🔱', dispDate = new Date();
+
+        function selectAvatar(el, icon) { document.querySelectorAll('.avatar-option').forEach(opt => opt.classList.remove('active')); el.classList.add('active'); currentSigil = icon; }
+        function setTheme(t) { document.body.setAttribute('data-theme', t); }
+        function toggleModule(id) { document.getElementById(id).classList.toggle('collapsed'); }
+        function closeQuestModal() { document.getElementById('questModal').style.display = 'none'; }
+        function changeMonth(o) { dispDate.setMonth(dispDate.getMonth() + o); buildCalendar(); }
+
+        window.onload = () => { 
+            refreshAll(); buildCalendar(); animate(); 
+            setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'}); }, 1000);
+        };
+
+        async function refreshAll() { loadList('market_items', 'marketList'); loadNotes(); }
+
+        async function saveItem(table, inputId) {
+            const i = document.getElementById(inputId); if(!i.value) return;
+            const name = document.getElementById('userName').value || 'Someone';
+            await _supabase.from(table).insert([{ text: `${currentSigil} ${name}: ${i.value}` }]);
+            i.value = ""; refreshAll();
+        }
+
+        async function loadList(table, divId) {
+            const { data } = await _supabase.from(table).select('*').order('created_at', { ascending: true });
+            document.getElementById(divId).innerHTML = data ? data.map(item => `<div class="flex justify-between border-b border-white/5 pb-2"><span>${item.text}</span><span class="text-red-900 font-bold cursor-pointer" onclick="deleteItem('${table}', '${item.id}')">×</span></div>`).join('') : '';
+        }
+
+        async function saveNote() {
+            const i = document.getElementById('nInput'); if(!i.value) return;
+            const name = document.getElementById('userName').value || 'Someone';
+            await _supabase.from('family_notes').insert([{ note: i.value, timestamp: `${currentSigil} ${name} • ${new Date().toLocaleTimeString()}` }]);
+            i.value = ""; loadNotes();
+        }
+
+        async function loadNotes() {
+            const { data } = await _supabase.from('family_notes').select('*').order('created_at', { ascending: false });
+            document.getElementById('notesLog').innerHTML = data ? data.map(n => `<div class="border-l-4 border-cyan-400 pl-4 py-2 bg-white/5 rounded-r-lg"><p class="text-sm font-bold">${n.note}</p></div>`).join('') : '';
+        }
+
+        async function deleteItem(table, id) { await _supabase.from(table).delete().eq('id', id); refreshAll(); buildCalendar(); }
+
+        async function buildCalendar() {
+            const y = dispDate.getFullYear(), m = dispDate.getMonth();
+            document.getElementById('calMonth').innerText = dispDate.toLocaleString('default', { month: 'long', year: 'numeric' });
+            const first = new Date(y, m, 1).getDay(), days = new Date(y, m + 1, 0).getDate();
+            const grid = document.getElementById('calendarGrid'); grid.innerHTML = '';
+            const { data: appts } = await _supabase.from('calendar_events').select('*');
+            
+            for (let i = 0; i < first; i++) grid.innerHTML += '<div></div>';
+            for (let d = 1; d <= days; d++) {
+                const ds = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                const hasA = appts?.some(e => e.start_date === ds);
+                const isT = (d === new Date().getDate() && m === new Date().getMonth() && y === new Date().getFullYear());
+                grid.innerHTML += `<div class="cal-date ${isT ? 'cal-today' : ''} ${hasA ? 'has-quest' : ''}" onclick="openQuest('${ds}', ${d})">${d}</div>`;
+            }
+        }
+
+        async function openQuest(ds, d) {
+            const { data: evs } = await _supabase.from('calendar_events').select('*').eq('start_date', ds);
+            document.getElementById('activeQuestBanner').innerText = evs?.length ? evs.map(e => e.title).join(' • ') : `No quests for Feb ${d}.`;
+            document.getElementById('modalDateTitle').innerText = `February ${d}`;
+            document.getElementById('questModal').style.display = 'flex';
+            document.getElementById('modalEventList').innerHTML = evs?.map(e => `<div class="flex justify-between p-2 bg-white/5 rounded"><span>${e.title}</span><span class="text-red-500 cursor-pointer" onclick="deleteItem('calendar_events', '${e.id}'); openQuest('${ds}', ${d});">×</span></div>`).join('') || '';
+            document.getElementById('addQuestBtn').onclick = async () => {
+                const v = document.getElementById('modalInput').value; if(!v) return;
+                await _supabase.from('calendar_events').insert([{ title: `${currentSigil} ${v}`, start_date: ds }]);
+                document.getElementById('modalInput').value = ""; await buildCalendar(); openQuest(ds, d);
+            };
+        }
+
+        /* PARTICLES */
+        const canvas = document.getElementById('particle-canvas'), ctx = canvas.getContext('2d');
+        let particles = [];
+        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resize); resize();
+        class Particle {
+            constructor() { this.init(); }
+            init() { this.x = Math.random() * canvas.width; this.y = canvas.height + 50; this.size = Math.random() * 20 + 10; this.speed = Math.random() * 1 + 0.5; this.isEmber = Math.random() > 0.6; this.char = this.isEmber ? '•' : '♪'; }
+            update() { this.y -= this.speed; if (this.y < -50) this.init(); }
+            draw() { ctx.fillStyle = this.isEmber ? '#f97316' : '#22d3ee'; ctx.globalAlpha = 0.4; ctx.font = `${this.size}px serif`; ctx.fillText(this.char, this.x, this.y); }
+        }
+        for(let i=0; i<40; i++) particles.push(new Particle());
+        function animate() { ctx.clearRect(0,0,canvas.width,canvas.height); particles.forEach(p=>{p.update(); p.draw();}); requestAnimationFrame(animate); }
+        animate();
+    </script>
+</body>
+</html>
