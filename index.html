@@ -12,9 +12,10 @@
         :root { --sigil: #22d3ee; --gold: #fbbf24; }
         [data-theme="purple"] { --sigil: #a855f7; }
         [data-theme="red"] { --sigil: #ef4444; }
+        [data-theme="green"] { --sigil: #10b981; }
 
         body, html { 
-            margin: 0; padding: 0; height: 100%; width: 100%;
+            margin: 0; padding: 0; width: 100%; height: 100%;
             background: #000; color: #e2e8f0; font-family: 'Cinzel', serif;
             overflow-x: hidden; 
         }
@@ -107,7 +108,7 @@
                 <h1 class="text-3xl font-black tracking-[0.1em]" style="background: linear-gradient(to right, var(--gold), var(--sigil)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">TUCKER COOPER BURNS</h1>
                 <div class="oracle-row">
                     <span id="clock">00:00:00</span>
-                    <div class="flex items-center gap-2"><span>🌤️</span> <span id="temp">50°F</span></div>
+                    <div class="flex items-center gap-2"><span>🌤️</span> <span id="temp">57°F</span></div>
                     <span>FARMINGTON</span>
                 </div>
                 
@@ -124,6 +125,7 @@
                     <div class="w-6 h-6 rounded-full bg-cyan-400 border border-white cursor-pointer" onclick="setTheme('')"></div>
                     <div class="w-6 h-6 rounded-full bg-purple-600 border border-white cursor-pointer" onclick="setTheme('purple')"></div>
                     <div class="w-6 h-6 rounded-full bg-red-600 border border-white cursor-pointer" onclick="setTheme('red')"></div>
+                    <div class="w-6 h-6 rounded-full bg-green-500 border border-white cursor-pointer" onclick="setTheme('green')"></div>
                 </div>
             </header>
 
